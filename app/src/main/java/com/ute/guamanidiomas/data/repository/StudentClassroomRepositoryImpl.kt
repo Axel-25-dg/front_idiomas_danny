@@ -16,7 +16,8 @@ class StudentClassroomRepositoryImpl @Inject constructor(
     override suspend fun getMyClassrooms(): Result<List<Classroom>> = runCatching {
         val response = api.getMyClassrooms()
         if (response.isSuccessful) {
-            response.body()?.map { it.toDomain() } ?: emptyList()
+            // El backend devuelve { count, next, previous, results:[...] }
+            response.body()?.results?.map { it.toDomain() } ?: emptyList()
         } else throw Exception(apiError(response.code(), response.errorBody()?.string()))
     }
 
@@ -29,7 +30,8 @@ class StudentClassroomRepositoryImpl @Inject constructor(
     override suspend fun getClassroomResources(classroomId: Int?): Result<List<TeacherResource>> = runCatching {
         val response = api.getClassroomResources(classroomId)
         if (response.isSuccessful) {
-            response.body()?.map { dto ->
+            // El backend devuelve { count, next, previous, results:[...] }
+            response.body()?.results?.map { dto ->
                 TeacherResource(
                     id            = dto.id,
                     classroomId   = dto.classroomId,

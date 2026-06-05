@@ -10,7 +10,7 @@ interface TeacherResourceApi {
     @GET("teacher-resources/")
     suspend fun getResources(
         @Query("classroom") classroomId: Int? = null
-    ): Response<List<TeacherResourceDto>>
+    ): Response<TeacherResourcePage>
 
     @GET("teacher-resources/{id}/")
     suspend fun getResourceById(@Path("id") id: Int): Response<TeacherResourceDto>
@@ -27,3 +27,11 @@ interface TeacherResourceApi {
     @DELETE("teacher-resources/{id}/")
     suspend fun deleteResource(@Path("id") id: Int): Response<Unit>
 }
+
+/** Wrapper paginado para teacher-resources */
+data class TeacherResourcePage(
+    val count: Int,
+    val next: String?,
+    val previous: String?,
+    val results: List<TeacherResourceDto>
+)
