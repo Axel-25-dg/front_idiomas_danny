@@ -97,25 +97,8 @@ class HomeViewModel @Inject constructor(
                     }
                 }
 
-                // Simulación de Tareas del Profesor hasta tener el endpoint real
-                val mockTasks = listOf(
-                    com.ute.guamanidiomas.ui.home.TeacherTask(
-                        id = 1,
-                        title = "Ensayo de Presentación",
-                        description = "Escribir 500 palabras sobre tus hobbies.",
-                        dueDate = "Mañana, 18:00",
-                        status = "Pendiente",
-                        priority = "Alta"
-                    ),
-                    com.ute.guamanidiomas.ui.home.TeacherTask(
-                        id = 2,
-                        title = "Práctica de Vocabulario",
-                        description = "Completar la unidad 3 de vocabulario.",
-                        dueDate = "Viernes, 23:59",
-                        status = "Pendiente",
-                        priority = "Media"
-                    )
-                )
+                // Simulación de Tareas del Profesor — removido: no hay endpoint disponible
+                // La sección teacherTasks se dejó vacía para no mostrar datos ficticios
 
                 _uiState.update { currentState ->
                     currentState.copy(
@@ -127,7 +110,7 @@ class HomeViewModel @Inject constructor(
                         stats = stats,
                         unlockedAchievementsCount = achievementsCount,
                         lessonProgressList = lessonProgressList,
-                        teacherTasks = mockTasks
+                        teacherTasks = emptyList()   // sin datos quemados
                     )
                 }
 

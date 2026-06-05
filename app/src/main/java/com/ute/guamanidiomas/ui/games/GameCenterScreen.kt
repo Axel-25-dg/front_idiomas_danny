@@ -1,7 +1,6 @@
 package com.ute.guamanidiomas.ui.games
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -9,10 +8,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Extension
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Style
-import androidx.compose.material.icons.filled.Translate
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,6 +19,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ute.guamanidiomas.ui.theme.*
@@ -32,7 +29,9 @@ data class GameInfo(
     val title: String,
     val description: String,
     val icon: ImageVector,
-    val color: Color
+    val color: Color,
+    val xpReward: Int,
+    val difficulty: String  // Fácil / Medio / Difícil
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,44 +41,87 @@ fun GameCenterScreen(
 ) {
     val games = listOf(
         GameInfo(
-            "word_match",
-            "Word Match",
-            "Une las palabras con su significado en español.",
-            Icons.Default.Translate,
-            PrimaryBlue
+            id          = "word_match",
+            title       = "Word Match",
+            description = "Une palabras con su traducción",
+            icon        = Icons.Default.Translate,
+            color       = PrimaryBlue,
+            xpReward    = 90,
+            difficulty  = "Fácil"
         ),
         GameInfo(
-            "flashcards",
-            "Flashcards",
-            "Memoriza vocabulario nuevo con tarjetas interactivas.",
-            Icons.Default.Style,
-            PrimaryRed
+            id          = "flashcards",
+            title       = "Flashcards",
+            description = "Memoriza vocabulario nuevo",
+            icon        = Icons.Default.Style,
+            color       = PrimaryRed,
+            xpReward    = 160,
+            difficulty  = "Fácil"
         ),
         GameInfo(
-            "sentence_builder",
-            "Constructor",
-            "Ordena las palabras para formar oraciones correctas.",
-            Icons.Default.Extension,
-            Warning
+            id          = "sentence_builder",
+            title       = "Constructor",
+            description = "Forma oraciones correctas",
+            icon        = Icons.Default.Extension,
+            color       = Warning,
+            xpReward    = 100,
+            difficulty  = "Medio"
+        ),
+        GameInfo(
+            id          = "vocab_quiz",
+            title       = "Vocab Quiz",
+            description = "Quiz con tiempo y opciones",
+            icon        = Icons.Default.Quiz,
+            color       = Color(0xFF8B5CF6),
+            xpReward    = 150,
+            difficulty  = "Medio"
+        ),
+        GameInfo(
+            id          = "hangman",
+            title       = "Ahorcado",
+            description = "Adivina la palabra letra a letra",
+            icon        = Icons.Default.Psychology,
+            color       = Color(0xFF0891B2),
+            xpReward    = 120,
+            difficulty  = "Medio"
+        ),
+        GameInfo(
+            id          = "memory_cards",
+            title       = "Memory",
+            description = "Encuentra los pares en el tablero",
+            icon        = Icons.Default.GridView,
+            color       = Color(0xFF059669),
+            xpReward    = 120,
+            difficulty  = "Difícil"
         )
     )
 
     Scaffold(
         topBar = {
-            Surface(color = SurfaceColor, shadowElevation = 2.dp, modifier = Modifier.fillMaxWidth()) {
+            Surface(
+                color           = SurfaceColor,
+                shadowElevation = 2.dp,
+                modifier        = Modifier.fillMaxWidth()
+            ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .statusBarsPadding()
                         .padding(horizontal = 20.dp, vertical = 14.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(
-                        "Centro de Juegos",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Black,
-                        color = TextPrimary
-                    )
+                    Column {
+                        Text("Centro de Juegos", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black, color = TextPrimary)
+                        Text("${games.size} juegos disponibles", style = MaterialTheme.typography.labelSmall, color = TextSecondary)
+                    }
+                    Surface(color = Warning.copy(alpha = 0.12f), shape = RoundedCornerShape(10.dp)) {
+                        Text(
+                            "🎮 ${games.sumOf { it.xpReward }} XP total",
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                            color = Warning, fontWeight = FontWeight.Bold, fontSize = 12.sp
+                        )
+                    }
                 }
             }
         },
@@ -89,57 +131,46 @@ fun GameCenterScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(20.dp)
+                .padding(horizontal = 16.dp)
         ) {
-            // Hero section
+            Spacer(Modifier.height(12.dp))
+
+            // Hero
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .shadow(6.dp, RoundedCornerShape(22.dp))
                     .clip(RoundedCornerShape(22.dp))
                     .background(Brush.linearGradient(listOf(PrimaryBlue, DarkBlue)))
-                    .padding(24.dp)
+                    .padding(22.dp)
             ) {
                 Box(
-                    modifier = Modifier
-                        .size(100.dp)
+                    Modifier.size(90.dp)
                         .align(Alignment.TopEnd)
                         .offset(x = 30.dp, y = (-20).dp)
                         .clip(CircleShape)
                         .background(PrimaryRed.copy(alpha = 0.2f))
                 )
                 Column {
-                    Text(
-                        "Aprende jugando 🎮",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Black,
-                        color = Color.White
-                    )
-                    Spacer(Modifier.height(6.dp))
-                    Text(
-                        "Gana XP completando retos divertidos",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.White.copy(alpha = 0.75f)
-                    )
+                    Text("Aprende jugando 🎮", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black, color = Color.White)
+                    Spacer(Modifier.height(4.dp))
+                    Text("Gana XP completando retos • Sube de nivel", style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.75f))
                 }
             }
 
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(20.dp))
 
-            Text(
-                "Juegos disponibles",
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold,
-                color = TextSecondary
-            )
-            Spacer(Modifier.height(14.dp))
+            Text("Elige tu juego", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = TextSecondary)
+            Spacer(Modifier.height(12.dp))
 
             LazyVerticalGrid(
-                columns = GridCells.Fixed(1),
-                verticalArrangement = Arrangement.spacedBy(14.dp)
+                columns             = GridCells.Fixed(2),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding      = PaddingValues(bottom = 24.dp)
             ) {
                 items(games) { game ->
-                    GameCard(game = game, onClick = { onNavigateToGame(game.id) })
+                    GameGridCard(game = game, onClick = { onNavigateToGame(game.id) })
                 }
             }
         }
@@ -147,63 +178,79 @@ fun GameCenterScreen(
 }
 
 @Composable
-fun GameCard(game: GameInfo, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
-        shape = RoundedCornerShape(22.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceColor),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+fun GameGridCard(game: GameInfo, onClick: () -> Unit) {
+    Surface(
+        onClick         = onClick,
+        shape           = RoundedCornerShape(20.dp),
+        color           = SurfaceColor,
+        shadowElevation = 4.dp,
+        modifier        = Modifier.fillMaxWidth()
     ) {
-        Row(
-            modifier = Modifier
-                .padding(18.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier            = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.Start
         ) {
-            Box(
-                modifier = Modifier
-                    .size(64.dp)
-                    .clip(RoundedCornerShape(18.dp))
-                    .background(game.color.copy(alpha = 0.1f)),
-                contentAlignment = Alignment.Center
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = game.icon,
-                    contentDescription = null,
-                    tint = game.color,
-                    modifier = Modifier.size(32.dp)
-                )
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(game.color.copy(alpha = 0.12f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(game.icon, null, tint = game.color, modifier = Modifier.size(26.dp))
+                }
+                Surface(
+                    color = difficultyColor(game.difficulty).copy(alpha = 0.12f),
+                    shape = RoundedCornerShape(6.dp)
+                ) {
+                    Text(
+                        game.difficulty,
+                        modifier  = Modifier.padding(horizontal = 7.dp, vertical = 3.dp),
+                        color     = difficultyColor(game.difficulty),
+                        fontSize  = 10.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(Modifier.height(12.dp))
+            Text(game.title, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = TextPrimary)
+            Spacer(Modifier.height(3.dp))
+            Text(game.description, style = MaterialTheme.typography.bodySmall, color = TextSecondary, maxLines = 2)
 
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = game.title,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = TextPrimary
-                )
-                Spacer(Modifier.height(2.dp))
-                Text(
-                    text = game.description,
-                    fontSize = 13.sp,
-                    color = TextSecondary,
-                    lineHeight = 18.sp
-                )
-            }
-
-            Spacer(Modifier.width(12.dp))
-
-            FilledIconButton(
-                onClick = onClick,
-                colors = IconButtonDefaults.filledIconButtonColors(containerColor = game.color),
-                modifier = Modifier.size(44.dp)
+            Spacer(Modifier.height(12.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Icon(Icons.Default.PlayArrow, null, tint = Color.White, modifier = Modifier.size(22.dp))
+                Surface(color = Warning.copy(alpha = 0.1f), shape = RoundedCornerShape(6.dp)) {
+                    Text(
+                        "⚡ ${game.xpReward} XP",
+                        modifier  = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        color     = Warning,
+                        fontSize  = 11.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                Icon(Icons.Default.PlayArrow, null, tint = game.color, modifier = Modifier.size(22.dp))
             }
         }
     }
+}
+
+// Mantener compatibilidad con la función GameCard existente
+@Composable
+fun GameCard(game: GameInfo, onClick: () -> Unit) = GameGridCard(game = game, onClick = onClick)
+
+private fun difficultyColor(d: String): Color = when (d) {
+    "Fácil"  -> Color(0xFF10B981)
+    "Medio"  -> Color(0xFFF59E0B)
+    "Difícil" -> Color(0xFFEF4444)
+    else     -> Color(0xFF6B7280)
 }

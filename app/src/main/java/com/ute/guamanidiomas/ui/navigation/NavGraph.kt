@@ -23,6 +23,9 @@ import com.ute.guamanidiomas.ui.games.GameCenterScreen
 import com.ute.guamanidiomas.ui.games.WordMatchScreen
 import com.ute.guamanidiomas.ui.games.FlashcardsScreen
 import com.ute.guamanidiomas.ui.games.SentenceBuilderScreen
+import com.ute.guamanidiomas.ui.games.VocabQuizScreen
+import com.ute.guamanidiomas.ui.games.HangmanScreen
+import com.ute.guamanidiomas.ui.games.MemoryCardsScreen
 import com.ute.guamanidiomas.ui.orders.OrdersScreen
 import com.ute.guamanidiomas.ui.admin.AdminDashboardScreen
 import com.ute.guamanidiomas.ui.admin.CourseManagementScreen
@@ -308,30 +311,39 @@ private fun NavGraphContent(
                 GameCenterScreen(
                     onNavigateToGame = { gameId ->
                         when (gameId) {
-                            "word_match" -> navController.navigate(Screen.WordMatch.route)
-                            "flashcards" -> navController.navigate(Screen.Flashcards.route)
+                            "word_match"       -> navController.navigate(Screen.WordMatch.route)
+                            "flashcards"       -> navController.navigate(Screen.Flashcards.route)
                             "sentence_builder" -> navController.navigate(Screen.SentenceBuilder.route)
+                            "vocab_quiz"       -> navController.navigate(Screen.VocabQuiz.route)
+                            "hangman"          -> navController.navigate(Screen.Hangman.route)
+                            "memory_cards"     -> navController.navigate(Screen.MemoryCards.route)
                         }
                     }
                 )
             }
 
             composable(Screen.WordMatch.route) {
-                WordMatchScreen(
-                    onBack = { navController.popBackStack() }
-                )
+                WordMatchScreen(onBack = { navController.popBackStack() })
             }
 
             composable(Screen.Flashcards.route) {
-                FlashcardsScreen(
-                    onBack = { navController.popBackStack() }
-                )
+                FlashcardsScreen(onBack = { navController.popBackStack() })
             }
 
             composable(Screen.SentenceBuilder.route) {
-                SentenceBuilderScreen(
-                    onBack = { navController.popBackStack() }
-                )
+                SentenceBuilderScreen(onBack = { navController.popBackStack() })
+            }
+
+            composable(Screen.VocabQuiz.route) {
+                VocabQuizScreen(onBack = { navController.popBackStack() })
+            }
+
+            composable(Screen.Hangman.route) {
+                HangmanScreen(onBack = { navController.popBackStack() })
+            }
+
+            composable(Screen.MemoryCards.route) {
+                MemoryCardsScreen(onBack = { navController.popBackStack() })
             }
 
             composable(Screen.JoinClass.route) {
