@@ -7,31 +7,31 @@ import retrofit2.http.*
 
 interface TeacherResourceApi {
 
-    @GET("teacher-resources/")
+    @GET("resources/")
     suspend fun getResources(
         @Query("classroom") classroomId: Int? = null
     ): Response<TeacherResourcePage>
 
-    @GET("teacher-resources/{id}/")
+    @GET("resources/{id}/")
     suspend fun getResourceById(@Path("id") id: Int): Response<TeacherResourceDto>
 
-    @POST("teacher-resources/")
+    @POST("resources/")
     suspend fun createResource(@Body request: TeacherResourceRequest): Response<TeacherResourceDto>
 
-    @PUT("teacher-resources/{id}/")
+    @PUT("resources/{id}/")
     suspend fun updateResource(
         @Path("id") id: Int,
         @Body request: TeacherResourceRequest
     ): Response<TeacherResourceDto>
 
-    @DELETE("teacher-resources/{id}/")
+    @DELETE("resources/{id}/")
     suspend fun deleteResource(@Path("id") id: Int): Response<Unit>
 }
 
-/** Wrapper paginado para teacher-resources */
+/** Wrapper paginado para resources */
 data class TeacherResourcePage(
-    val count: Int,
-    val next: String?,
-    val previous: String?,
-    val results: List<TeacherResourceDto>
+    val count: Int = 0,
+    val next: String? = null,
+    val previous: String? = null,
+    val results: List<TeacherResourceDto>? = null
 )

@@ -73,6 +73,6 @@ private fun sectionTitle(section: TeacherSection): String = when (section) {
     TeacherSection.HOME      -> "Panel del Profesor"
     TeacherSection.CLASSES   -> "Mis Clases"
     TeacherSection.STUDENTS  -> "Estudiantes"
-    TeacherSection.EXAMS     -> "Exámenes"
+    TeacherSection.EXAMS     -> "Examenes"
     TeacherSection.RESOURCES -> "Recursos"
 }

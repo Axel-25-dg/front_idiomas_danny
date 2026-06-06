@@ -1,421 +1,362 @@
-# 📱 JumpUp UTE — Frontend Android
+# JumpUp UTE - Aplicacion Movil de Aprendizaje de Ingles
 
-**Plataforma de aprendizaje de inglés** desarrollada con Kotlin y Jetpack Compose para la Universidad Tecnológica Equinoccial (UTE).
+## Universidad Tecnologica Equinoccial (UTE)
+### Facultad de Ciencias de la Ingenieria e Industrias
+### Carrera de Software
+
+**Materia:** Desarrollo Movil  
+**Estudiante:** Danny Guaman  
+**Periodo:** 2024-2025
 
 ---
 
-## 🛠️ Stack Tecnológico
+## Descripcion del Proyecto
 
-| Tecnología | Versión | Uso |
+Aplicacion movil Android desarrollada en Kotlin con Jetpack Compose que consume una API REST construida con Django REST Framework y PostgreSQL. La plataforma permite el aprendizaje de ingles con tres roles diferenciados: administrador, profesor y estudiante.
+
+El sistema implementa autenticacion JWT, operaciones CRUD completas sobre 7 entidades, busqueda con paginacion, manejo de errores HTTP y diferenciacion de permisos por rol.
+
+---
+
+## Stack Tecnologico
+
+| Tecnologia | Version | Uso |
 |---|---|---|
 | Kotlin | 2.0+ | Lenguaje principal |
 | Jetpack Compose | BOM 2024+ | UI declarativa |
-| Material 3 | Última estable | Diseño y componentes |
-| Hilt | 2.51+ | Inyección de dependencias |
+| Material 3 | Ultima estable | Diseno y componentes |
+| Hilt | 2.51+ | Inyeccion de dependencias |
 | Retrofit | 2.9+ | Consumo de APIs REST |
-| OkHttp | 4.12+ | Cliente HTTP + interceptor JWT |
-| Navigation Compose | 2.7+ | Navegación entre pantallas |
-| DataStore Preferences | 1.0+ | Persistencia local de sesión |
-| Coil | 2.5+ | Carga de imágenes |
-| Coroutines + StateFlow | — | Programación reactiva |
+| OkHttp | 4.12+ | Cliente HTTP con interceptor JWT |
+| Navigation Compose | 2.7+ | Navegacion entre pantallas |
+| DataStore Preferences | 1.0+ | Persistencia local de sesion |
+| Coil | 2.5+ | Carga de imagenes |
+| Coroutines + StateFlow | - | Programacion reactiva |
 | KSP | 2.0+ | Procesamiento de anotaciones Hilt |
 
 ---
 
-## 🏗️ Arquitectura
+## Arquitectura
 
 ```
-┌──────────────────────────────────────────────────────┐
-│                      UI Layer                         │
-│  Screens (Compose) → ViewModels (StateFlow)          │
-├──────────────────────────────────────────────────────┤
-│                    Domain Layer                       │
-│  Repository Interfaces → Models                      │
-├──────────────────────────────────────────────────────┤
-│                     Data Layer                        │
-│  Repository Impl → Retrofit APIs → DTOs              │
-├──────────────────────────────────────────────────────┤
-│                    DI (Hilt)                          │
-│  NetworkModule → RepositoryModule                    │
-└──────────────────────────────────────────────────────┘
++------------------------------------------------------+
+|                      UI Layer                         |
+|  Screens (Compose) -> ViewModels (StateFlow)         |
++------------------------------------------------------+
+|                    Domain Layer                       |
+|  Repository Interfaces -> Models                     |
++------------------------------------------------------+
+|                     Data Layer                        |
+|  Repository Impl -> Retrofit APIs -> DTOs            |
++------------------------------------------------------+
+|                    DI (Hilt)                          |
+|  NetworkModule -> RepositoryModule                   |
++------------------------------------------------------+
 ```
 
-**Patrón:** MVVM + Repository Pattern + Clean Architecture
+Patron: MVVM + Repository Pattern + Clean Architecture
 
 ---
 
-## 👥 Roles del Sistema
+## Credenciales de Prueba
 
-| Rol | Pantalla de inicio | Funcionalidades |
-|---|---|---|
-| **Admin** | Panel de administración con NavigationDrawer | Gestión de usuarios, cursos, órdenes, roles, auditoría, suscripciones |
-| **Teacher** | Panel del profesor con BottomNav propio | Gestión de clases, estudiantes, exámenes, recursos |
-| **Student** | Home con BottomNav (Inicio, Clases, Juegos, Perfil) | Aprendizaje, gamificación, certificados, suscripciones |
+| Rol | Correo | Contrasena | Funcionalidades |
+|---|---|---|---|
+| Admin | alexander18br17@gmail.com | principe123 | Panel completo de administracion |
+| Teacher | profe1@gmail.com | principe123 | Panel del profesor (clases, examenes, recursos) |
+| Student | alex1234@gmail.com | principe123 | Experiencia de aprendizaje completa |
 
 ---
 
-## 🌐 Base URL del Backend
+## Configuracion de la URL Base
 
 ```
 https://guaman-idiomas-ute.online/api/
 ```
 
-Configurado en `local.properties` → `API_BASE_URL`
-
----
-
-## 📡 APIs Consumidas — Total: 18 interfaces Retrofit
-
-### Resumen por módulo
-
-| # | Interfaz API | Archivo | Endpoints | Usado por |
-|---|---|---|---|---|
-| 1 | `AuthApi` | `data/remote/api/AuthApi.kt` | 4 | Login, Register, Logout, Refresh Token |
-| 2 | `CourseApi` | `data/remote/api/CourseApi.kt` | 6 | CRUD Cursos + Join Class |
-| 3 | `ModuleApi` | `data/remote/api/ModuleApi.kt` | 6 | CRUD Módulos por curso |
-| 4 | `LessonApi` | `data/remote/api/LessonApi.kt` | 5 | CRUD Lecciones |
-| 5 | `ExerciseApi` | `data/remote/api/ExerciseApi.kt` | 6 | CRUD Ejercicios por módulo |
-| 6 | `GamificationApi` | `data/remote/api/GamificationApi.kt` | 5 | Stats, Progress, Achievements |
-| 7 | `HomeApi` | `data/remote/api/HomeApi.kt` | 3 | Stats del home, logros, progreso |
-| 8 | `LanguageApi` | `data/remote/api/LanguageApi.kt` | 4 | CRUD Idiomas |
-| 9 | `OrderApi` | `data/remote/api/OrderApi.kt` | 8 | Órdenes, ítems, confirmación, stats |
-| 10 | `SubscriptionApi` | `data/remote/api/SubscriptionApi.kt` | 4 | Planes, mis suscripciones, pagos |
-| 11 | `AdminConsoleApi` | `data/remote/api/AdminConsoleApi.kt` | 3 | Roles, Audit Logs |
-| 12 | `AdminUsersApi` | `data/remote/api/AdminUsersApi.kt` | 3 | CRUD Usuarios (staff) |
-| 13 | `TeacherClassroomApi` | `data/remote/api/TeacherClassroomApi.kt` | 7 | Stats profesor, Classrooms CRUD, Enrollments |
-| 14 | `TeacherExamApi` | `data/remote/api/TeacherExamApi.kt` | 6 | CRUD Exámenes + Resultados |
-| 15 | `TeacherResourceApi` | `data/remote/api/TeacherResourceApi.kt` | 5 | CRUD Recursos educativos |
-| 16 | `ClassroomApi` | `data/remote/api/ClassroomApi.kt` | 4 | Mis clases (student), recursos, salir de clase |
-| 17 | `CertificateApi` | `data/remote/api/CertificateApi.kt` | 5 | Crear, listar, emitir, revocar, verificar |
-| 18 | `TutorApi` | `data/remote/api/TutorApi.kt` | 1 | IA Tutor (POST prompt) |
-
-**Total de endpoints consumidos: 85+**
-
----
-
-## 📡 Detalle de Endpoints por API
-
-### 1. AuthApi — Autenticación
-```
-POST /api/auth/login/          → Login con JWT
-POST /api/auth/register/       → Registro de usuarios
-POST /api/auth/logout/         → Cierre de sesión
-POST /api/auth/token/refresh/  → Renovar token de acceso
-```
-
-### 2. CourseApi — Cursos
-```
-GET    /api/courses/           → Listar cursos (paginado + filtros)
-GET    /api/courses/{id}/      → Detalle de curso
-POST   /api/courses/           → Crear curso
-PUT    /api/courses/{id}/      → Editar curso
-DELETE /api/courses/{id}/      → Eliminar curso
-POST   /api/courses/join/      → Unirse a clase con código de acceso
-```
-
-### 3. ModuleApi — Módulos
-```
-GET    /api/modules/                      → Listar todos los módulos
-GET    /api/courses/{courseId}/modules/    → Módulos de un curso
-GET    /api/modules/{id}/                 → Detalle de módulo
-POST   /api/modules/                      → Crear módulo
-PUT    /api/modules/{id}/                 → Editar módulo
-DELETE /api/modules/{id}/                 → Eliminar módulo
-```
-
-### 4. LessonApi — Lecciones
-```
-GET    /api/lessons/           → Listar lecciones (paginado)
-GET    /api/lessons/{id}/      → Detalle de lección
-POST   /api/lessons/           → Crear lección
-PUT    /api/lessons/{id}/      → Editar lección
-DELETE /api/lessons/{id}/      → Eliminar lección
-```
-
-### 5. ExerciseApi — Ejercicios
-```
-GET    /api/exercises/                      → Listar todos
-GET    /api/modules/{moduleId}/exercises/   → Ejercicios por módulo
-GET    /api/exercises/{id}/                 → Detalle
-POST   /api/exercises/                      → Crear ejercicio
-PUT    /api/exercises/{id}/                 → Editar
-DELETE /api/exercises/{id}/                 → Eliminar
-```
-
-### 6. GamificationApi — Gamificación
-```
-GET  /api/stats/               → Estadísticas del usuario (XP, racha, módulos)
-POST /api/progress/            → Registrar progreso (lección + puntaje)
-GET  /api/progress/            → Historial de progreso (paginado)
-GET  /api/achievements/        → Todos los logros disponibles
-GET  /api/my-achievements/     → Logros desbloqueados del usuario
-```
-
-### 7. HomeApi — Dashboard del estudiante
-```
-GET /api/stats/                → Stats resumidas para el home
-GET /api/my-achievements/      → Logros del usuario
-GET /api/progress/             → Progreso reciente
-```
-
-### 8. LanguageApi — Idiomas
-```
-GET    /api/languages/         → Listar idiomas
-GET    /api/languages/{id}/    → Detalle
-POST   /api/languages/         → Crear
-DELETE /api/languages/{id}/    → Eliminar
-```
-
-### 9. OrderApi — Órdenes de compra
-```
-GET   /api/orders/                    → Listar órdenes (paginado + filtro)
-GET   /api/orders/{id}/               → Detalle de orden
-POST  /api/orders/                    → Crear orden vacía
-POST  /api/orders/{id}/add_item/      → Agregar item al carrito
-POST  /api/orders/{id}/confirm/       → Confirmar orden
-PATCH /api/orders/{id}/update_status/ → Cambiar estado (admin)
-PATCH /api/orders/{id}/               → Patch estado alternativo
-GET   /api/orders/stats/              → Estadísticas de ventas
-```
-
-### 10. SubscriptionApi — Suscripciones Premium
-```
-GET  /api/subscriptions/       → Planes disponibles
-GET  /api/my-subscriptions/    → Suscripciones del usuario
-POST /api/subscriptions/       → Suscribirse a un plan
-GET  /api/payments/            → Historial de pagos (paginado)
-```
-
-### 11. AdminConsoleApi — Administración
-```
-GET  /api/roles/               → Listar roles
-POST /api/roles/               → Crear rol con permisos
-GET  /api/audit-logs/          → Bitácora del sistema
-```
-
-### 12. AdminUsersApi — Gestión de personal
-```
-GET   /api/users/              → Listar usuarios
-POST  /api/users/              → Crear usuario con rol
-PATCH /api/users/{id}/         → Actualizar usuario (activar/desactivar, cambiar rol)
-```
-
-### 13. TeacherClassroomApi — Clases del profesor
-```
-GET    /api/teacher/stats/             → Estadísticas del profesor
-GET    /api/classrooms/                → Listar clases (paginado)
-GET    /api/classrooms/{id}/           → Detalle de clase
-POST   /api/classrooms/               → Crear clase
-PUT    /api/classrooms/{id}/           → Editar clase
-DELETE /api/classrooms/{id}/           → Eliminar clase
-GET    /api/classrooms/{id}/enrollments/ → Estudiantes inscritos
-```
-
-### 14. TeacherExamApi — Exámenes
-```
-GET    /api/exams/                     → Listar exámenes (paginado)
-GET    /api/exams/{id}/                → Detalle
-POST   /api/exams/                     → Crear examen
-PUT    /api/exams/{id}/                → Editar examen
-DELETE /api/exams/{id}/                → Eliminar examen
-GET    /api/exams/{id}/results/        → Resultados de estudiantes
-```
-
-### 15. TeacherResourceApi — Recursos educativos
-```
-GET    /api/teacher-resources/         → Listar recursos
-GET    /api/teacher-resources/{id}/    → Detalle
-POST   /api/teacher-resources/         → Crear recurso
-PUT    /api/teacher-resources/{id}/    → Editar
-DELETE /api/teacher-resources/{id}/    → Eliminar
-```
-
-### 16. ClassroomApi — Clases del estudiante
-```
-GET  /api/classrooms/mine/             → Mis clases inscritas
-GET  /api/classrooms/{id}/             → Detalle de clase
-GET  /api/resources/                   → Recursos de una clase
-POST /api/classrooms/{id}/remove-student/ → Salir de una clase
-```
-
-### 17. CertificateApi — Certificados
-```
-POST  /api/certificates/               → Crear certificado
-GET   /api/certificates/               → Mis certificados
-PATCH /api/certificates/{id}/issue/    → Emitir certificado (teacher)
-PATCH /api/certificates/{id}/revoke/   → Revocar certificado (teacher)
-GET   /api/certificates/verify/{code}/ → Verificar código
-```
-
-### 18. TutorApi — IA Tutor
-```
-POST /api/tutor/ask/                   → Enviar prompt al tutor IA
+Configurado en `local.properties`:
+```properties
+API_BASE_URL=https://guaman-idiomas-ute.online/api/
 ```
 
 ---
 
-## 🎮 Módulo de Juegos — 6 juegos interactivos
+## Entidades Implementadas con CRUD Completo (7 entidades)
 
-| Juego | Descripción | XP máximo | Dificultad |
+| N | Entidad | Listar | Detalle | Crear | Actualizar | Eliminar | Archivo API | Pantalla |
+|---|---|---|---|---|---|---|---|---|
+| 1 | Courses | Si | Si | Si | Si | Si | CourseApi.kt | Admin - Cursos |
+| 2 | Modules | Si | Si | Si | Si | Si | ModuleApi.kt | Admin - Modulos |
+| 3 | Classrooms | Si | Si | Si | Si | Si | TeacherClassroomApi.kt | Teacher - Clases |
+| 4 | Users | Si | Si | Si | Si | Si | AdminUsersApi.kt | Admin - Usuarios |
+| 5 | Orders | Si | Si | Si | Si | - | OrderApi.kt | Admin - Ordenes |
+| 6 | Resources | Si | Si | Si | Si | Si | TeacherResourceApi.kt | Teacher - Recursos |
+| 7 | Subscriptions | Si | Si | Si | - | - | SubscriptionApi.kt | Student - Premium |
+
+---
+
+## APIs Consumidas - Total: 18 interfaces Retrofit (85+ endpoints)
+
+| N | Interfaz | Endpoints | Uso |
 |---|---|---|---|
-| Word Match | Emparejar inglés–español | 90 | Fácil |
-| Flashcards | Tarjetas de vocabulario con flip 3D | 160 | Fácil |
-| Constructor | Ordenar palabras para formar oraciones | 100 | Medio |
-| Vocab Quiz | Preguntas con temporizador de 10s | 150 | Medio |
-| Ahorcado | Adivinar palabra letra por letra | 120 | Medio |
-| Memory Cards | Encontrar pares en tablero | 120 | Difícil |
-
-Todos los juegos guardan progreso en el backend via `POST /api/progress/`
+| 1 | AuthApi | 4 | Login, Register, Logout, Refresh Token |
+| 2 | CourseApi | 6 | CRUD Cursos + Join Class |
+| 3 | ModuleApi | 6 | CRUD Modulos por curso |
+| 4 | LessonApi | 5 | CRUD Lecciones |
+| 5 | ExerciseApi | 6 | CRUD Ejercicios por modulo |
+| 6 | GamificationApi | 5 | Stats, Progress, Achievements |
+| 7 | HomeApi | 3 | Stats del home, logros, progreso |
+| 8 | LanguageApi | 4 | CRUD Idiomas |
+| 9 | OrderApi | 8 | Ordenes, items, confirmacion, stats |
+| 10 | SubscriptionApi | 4 | Planes, suscripciones, pagos |
+| 11 | AdminConsoleApi | 3 | Roles, Audit Logs |
+| 12 | AdminUsersApi | 3 | CRUD Usuarios |
+| 13 | TeacherClassroomApi | 8 | Classrooms CRUD, Enrollments, Stats |
+| 14 | TeacherExamApi | 6 | CRUD Examenes + Resultados |
+| 15 | TeacherResourceApi | 5 | CRUD Recursos educativos |
+| 16 | ClassroomApi | 4 | Mis clases (student), recursos |
+| 17 | CertificateApi | 5 | Crear, listar, emitir, verificar |
+| 18 | TutorApi | 1 | IA Tutor |
 
 ---
 
-## 📂 Estructura del Proyecto
+## Filtros, Busqueda y Paginacion
+
+| Funcionalidad | Implementacion | Archivo |
+|---|---|---|
+| Busqueda con ?search= | Catalogo de cursos con debounce 400ms | CatalogViewModel.kt |
+| Paginacion ?page= y ?page_size= | Cursos, ordenes, clases, progreso | Todos los repositorios |
+| Scroll infinito | Carga siguiente pagina al llegar al final | CatalogViewModel.loadNextPage() |
+| Estado vacio | Composable reutilizable EmptyState | Todas las pantallas |
+| Indicador de carga | CircularProgressIndicator | Todas las pantallas |
+| Filtros por rol/estado | Chips de filtro en Users y Orders | AdminUsersSection.kt |
+
+Ejemplo de consumo con busqueda:
+```kotlin
+courseRepository.getCourses(CourseFilters(search = "A1", page = 1, pageSize = 12))
+// Genera: GET /api/courses/?search=A1&page=1&page_size=12
+```
+
+---
+
+## Autenticacion y Seguridad
+
+### Flujo completo:
+
+```
+1. Usuario ingresa email + contrasena en LoginScreen
+2. POST /api/auth/login/ -> recibe { access, refresh }
+3. JWT se decodifica -> se extrae el campo "role"
+4. Token se guarda en DataStore (persistencia segura)
+5. AuthInterceptor inyecta "Authorization: Bearer <token>" en CADA request
+6. NavGraph navega automaticamente segun el rol:
+   - role = "admin"   -> AdminDashboard
+   - role = "teacher" -> TeacherDashboard
+   - role = "student" -> Home
+7. Al cerrar sesion: POST /api/auth/logout/ + se limpia DataStore
+```
+
+### Archivos clave:
+- `data/remote/interceptors/AuthInterceptor.kt` - Inyecta token automaticamente
+- `data/local/TokenDataStore.kt` - Guarda tokens y datos del usuario
+- `util/JwtDecoder.kt` - Decodifica claims del JWT (role, user_id)
+- `ui/viewmodel/AuthViewModel.kt` - Controla login/logout/restore session
+- `ui/navigation/NavGraph.kt` - Proteccion de rutas por rol
+
+### Ejemplo de peticion autenticada:
+```
+GET /api/classrooms/
+Headers:
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+  Content-Type: application/json
+```
+
+### Diferenciacion de permisos:
+
+| Rol | Consultar | Crear | Editar | Eliminar |
+|---|---|---|---|---|
+| Student | Si (cursos, clases, progreso) | Si (unirse a clases) | No | No |
+| Teacher | Si (todo lo suyo) | Si (clases, examenes, recursos) | Si (sus clases) | Si (sus clases) |
+| Admin | Si (todo) | Si (todo) | Si (todo) | Si (todo) |
+
+---
+
+## Manejo de Errores
+
+| Codigo HTTP | Mensaje mostrado | Donde se maneja |
+|---|---|---|
+| 400 | Datos invalidos + detalle del backend | apiError() en repositorios |
+| 401 | Credenciales invalidas / redireccion a login | AuthInterceptor + AuthViewModel |
+| 403 | No tienes permisos | Banner de error en pantalla |
+| 404 | No encontrado + fallback | OrderRepositoryImpl |
+| 500 | Error del servidor | Todos los runCatching |
+| Sin internet | Error de conexion | IOException capturada |
+| Token vencido | Refresh automatico o redireccion a login | AuthInterceptor |
+
+Ejemplo en codigo:
+```kotlin
+override suspend fun getClassrooms(): Result<List<Classroom>> = runCatching {
+    val response = api.getClassrooms()
+    if (response.isSuccessful) {
+        response.body()?.results?.map { it.toDomain() } ?: emptyList()
+    } else {
+        throw Exception("Error ${response.code()}: ${response.errorBody()?.string()}")
+    }
+}
+```
+
+---
+
+## Capturas de Pantalla
+
+Las capturas de pantalla se encuentran en la carpeta `/capturas` del proyecto.
+
+---
+
+## Listado de Pantallas (40+)
+
+### Autenticacion
+| Pantalla | Archivo | Descripcion |
+|---|---|---|
+| Login | ui/auth/LoginScreen.kt | Email + contrasena con JWT |
+| Registro | ui/auth/RegisterScreen.kt | Crear cuenta nueva |
+
+### Panel Estudiante
+| Pantalla | Archivo | Descripcion |
+|---|---|---|
+| Home | ui/home/HomeScreen.kt | XP, racha, cursos, accesos rapidos |
+| Catalogo | ui/home/CatalogScreen.kt | Busqueda + paginacion de cursos |
+| Detalle Curso | ui/home/CourseDetailScreen.kt | Info del curso + inscripcion |
+| Ruta de Aprendizaje | ui/course/LearningPathScreen.kt | Modulos + ejercicios tipo Duolingo |
+| Ejercicios | ui/course/ExerciseScreen.kt | Multiple choice, traduccion, listening |
+| Unirse a Clase | ui/course/JoinClassScreen.kt | Codigo de acceso |
+| Mis Clases | ui/student/MyClassesScreen.kt | Clases inscritas |
+| Mis Certificados | ui/student/MyCertificatesScreen.kt | Certificados obtenidos |
+| Logros | ui/student/AchievementsScreen.kt | Achievements desbloqueados |
+| Ranking | ui/student/LeaderboardScreen.kt | Top estudiantes por XP |
+| Centro de Juegos | ui/games/GameCenterScreen.kt | 6 juegos interactivos |
+| Word Match | ui/games/WordMatchScreen.kt | Emparejar palabras |
+| Flashcards | ui/games/FlashcardsScreen.kt | Tarjetas de vocabulario |
+| Constructor | ui/games/SentenceBuilderScreen.kt | Ordenar oraciones |
+| Vocab Quiz | ui/games/VocabQuizScreen.kt | Quiz con temporizador |
+| Ahorcado | ui/games/HangmanScreen.kt | Adivinar palabra |
+| Memory Cards | ui/games/MemoryCardsScreen.kt | Encontrar pares |
+| Perfil | ui/profile/ProfileScreen.kt | Datos + stats + logros |
+| Premium | ui/profile/PremiumScreen.kt | Suscripciones + pagos |
+| Ajustes | ui/settings/SettingsScreen.kt | Tema oscuro, notificaciones |
+| Ordenes | ui/orders/OrdersScreen.kt | Historial de compras |
+
+### Panel Profesor
+| Pantalla | Archivo | Descripcion |
+|---|---|---|
+| Dashboard | ui/teacher/TeacherDashboardScreen.kt | Stats + navegacion interna |
+| Mis Clases | ui/teacher/screens/TeacherClassesSection.kt | CRUD clases + codigo acceso |
+| Estudiantes | ui/teacher/screens/TeacherStudentsSection.kt | Lista por clase + XP |
+| Examenes | ui/teacher/screens/TeacherExamsSection.kt | CRUD + resultados |
+| Recursos | ui/teacher/screens/TeacherResourcesSection.kt | PDF, Video, Audio, Links |
+
+### Panel Administrador
+| Pantalla | Archivo | Descripcion |
+|---|---|---|
+| Dashboard | ui/admin/AdminDashboardScreen.kt | NavigationDrawer + metricas |
+| Usuarios | ui/admin/sections/AdminUsersSection.kt | CRUD + cambio de rol |
+| Cursos | ui/admin/sections/AdminCoursesSection.kt | Gestion academica |
+| Ordenes | ui/admin/sections/AdminOrdersSection.kt | Aprobar/filtrar |
+| Suscripciones | ui/admin/sections/AdminRemainingSection.kt | Ingresos |
+| Roles | ui/admin/sections/AdminRemainingSection.kt | CRUD permisos |
+| Auditoria | ui/admin/sections/AdminRemainingSection.kt | Bitacora del sistema |
+| Gestion Cursos | ui/admin/CourseManagementScreen.kt | CRUD con modulos |
+| Form Curso | ui/admin/CourseFormScreen.kt | Crear/editar curso |
+| Gestion Modulos | ui/admin/ModuleManagementScreen.kt | Lista + CRUD |
+| Form Modulo | ui/admin/ModuleFormScreen.kt | Crear/editar modulo |
+
+---
+
+## Estructura del Proyecto
 
 ```
 app/src/main/java/com/ute/guamanidiomas/
-├── data/
-│   ├── local/                  → TokenDataStore (JWT persistence)
-│   ├── remote/
-│   │   ├── api/                → 18 interfaces Retrofit
-│   │   ├── dto/                → DTOs con serialización Gson
-│   │   └── interceptors/       → AuthInterceptor (JWT auto-inject)
-│   └── repository/             → 15 implementaciones de repositorios
-├── di/
-│   ├── NetworkModule.kt        → OkHttp + Retrofit + providers de APIs
-│   └── RepositoryModule.kt     → Bindings Hilt (interface → impl)
-├── domain/
-│   ├── model/                  → 13 modelos de dominio
-│   │   └── teacher/            → Modelos del profesor (Classroom, Exam, etc)
-│   └── repository/             → 15 interfaces de repositorios
-├── navigation/
-│   └── Screen.kt               → Sealed class con todas las rutas
-├── ui/
-│   ├── admin/                  → Panel administrador (8 secciones + NavigationDrawer)
-│   │   ├── components/         → AdminDrawerContent, AdminStatCard, etc
-│   │   └── sections/           → Overview, Users, Courses, Orders, Roles, Audit
-│   ├── auth/                   → Login + Register
-│   ├── certificate/            → Pantalla de certificado PDF
-│   ├── components/             → CartBottomSheet, LoadingScreen, campos
-│   ├── course/                 → LearningPath, Exercise, JoinClass
-│   ├── games/                  → 6 juegos con ViewModels
-│   ├── home/                   → HomeScreen + Catalog + CourseDetail
-│   ├── navigation/             → NavGraph + BottomNavBar
-│   ├── orders/                 → Pantalla de órdenes
-│   ├── profile/                → ProfileScreen + PremiumScreen
-│   ├── settings/               → Settings + EditProfile
-│   ├── student/                → MyClasses, MyCertificates, Achievements, Leaderboard
-│   ├── teacher/                → Panel profesor (5 secciones + BottomNav)
-│   │   ├── components/         → TeacherTopBar, TeacherBottomNav, StatCard
-│   │   └── screens/            → Home, Classes, Students, Exams, Resources
-│   ├── theme/                  → Color.kt, Theme.kt, Type.kt
-│   ├── tutor/                  → IA Tutor Screen
-│   └── viewmodel/              → ViewModels compartidos (Auth, Home, Cart, etc)
-└── util/
-    └── JwtDecoder.kt           → Decodificación de claims del JWT
+|-- data/
+|   |-- local/                  -> TokenDataStore (JWT + preferencias)
+|   |-- remote/
+|   |   |-- api/                -> 18 interfaces Retrofit
+|   |   |-- dto/                -> DTOs con serializacion Gson
+|   |   +-- interceptors/       -> AuthInterceptor (Bearer auto)
+|   +-- repository/             -> 15 implementaciones
+|-- di/
+|   |-- NetworkModule.kt        -> OkHttp + Retrofit + API providers
+|   +-- RepositoryModule.kt     -> Bindings Hilt
+|-- domain/
+|   |-- model/                  -> 13 modelos de dominio
+|   +-- repository/             -> 15 interfaces
+|-- navigation/
+|   +-- Screen.kt               -> Sealed class con rutas
+|-- ui/
+|   |-- admin/                  -> Panel admin (8 secciones)
+|   |-- auth/                   -> Login + Register
+|   |-- course/                 -> LearningPath + Exercises + JoinClass
+|   |-- games/                  -> 6 juegos
+|   |-- home/                   -> Home + Catalog + CourseDetail
+|   |-- navigation/             -> NavGraph + BottomNav
+|   |-- profile/                -> Profile + Premium
+|   |-- settings/               -> Ajustes + tema oscuro
+|   |-- student/                -> MyClasses + Certificates + Achievements
+|   |-- teacher/                -> Panel profesor (5 secciones)
+|   +-- viewmodel/              -> ViewModels compartidos
++-- util/
+    +-- JwtDecoder.kt           -> Decodificacion JWT
 ```
 
 ---
 
-## 🔐 Autenticación
+## Como Ejecutar la Aplicacion
 
-- JWT (JSON Web Token) con access + refresh token
-- `AuthInterceptor` inyecta automáticamente el token en cada request
-- El rol del usuario se lee directamente del JWT (`claims.role`)
-- `TokenDataStore` persiste sesión con DataStore Preferences
-- Navegación automática según rol al login
+### Requisitos:
+- Android Studio Hedgehog (2023.1) o superior
+- JDK 17
+- Dispositivo o emulador Android con API 26+ (Android 8.0)
 
----
-
-## 📊 Repositorios (15 implementaciones)
-
-| Repositorio | Interfaz | Implementación |
-|---|---|---|
-| Auth | `AuthRepository` | `AuthRepositoryImpl` |
-| Course | `CourseRepository` | `CourseRepositoryImpl` |
-| Module | `ModuleRepository` | `ModuleRepositoryImpl` |
-| Lesson | `LessonRepository` | `LessonRepositoryImpl` |
-| Exercise | `ExerciseRepository` | `ExerciseRepositoryImpl` |
-| Gamification | `GamificationRepository` | `GamificationRepositoryImpl` |
-| Home | `HomeRepository` | `HomeRepositoryImpl` |
-| Language | `LanguageRepository` | `LanguageRepositoryImpl` |
-| Order | `OrderRepository` | `OrderRepositoryImpl` |
-| Subscription | `SubscriptionRepository` | `SubscriptionRepositoryImpl` |
-| AdminConsole | `AdminConsoleRepository` | `AdminConsoleRepositoryImpl` |
-| AdminUsers | `AdminUsersRepository` | `AdminUsersRepositoryImpl` |
-| Teacher | `TeacherRepository` | `TeacherRepositoryImpl` |
-| StudentClassroom | `StudentClassroomRepository` | `StudentClassroomRepositoryImpl` |
-| Certificate | `CertificateRepository` | `CertificateRepositoryImpl` |
-
----
-
-## 📱 Pantallas (40+)
-
-### Estudiante
-- Home (stats reales, cursos, idiomas, accesos rápidos)
-- Catálogo de cursos
-- Detalle de curso
-- Learning Path (ruta de aprendizaje tipo Duolingo)
-- Ejercicios interactivos
-- Mis Clases (consumo de `/classrooms/mine/`)
-- Unirse a Clase (código de acceso)
-- 6 Juegos interactivos
-- Logros (achievements API)
-- Ranking / Leaderboard (stats API)
-- Mis Certificados (certificates API)
-- Perfil con XP, racha y nivel
-- Premium / Suscripciones
-- Órdenes de compra
-- IA Tutor
-- Configuración
-
-### Profesor
-- Dashboard con stats reales
-- Gestión de Clases (CRUD + código de acceso)
-- Gestión de Estudiantes (XP, racha, módulos)
-- Gestión de Exámenes (CRUD + resultados)
-- Gestión de Recursos (PDF, Word, Video, YouTube, Audio)
-
-### Administrador
-- Dashboard General (métricas globales, ingresos, actividad)
-- Gestión de Usuarios (crear, editar, activar/desactivar, cambiar rol)
-- Gestión de Cursos (CRUD + estadísticas por nivel)
-- Gestión de Órdenes (aprobar, filtrar por estado)
-- Suscripciones y Pagos (ingresos totales, planes activos)
-- Gamificación (logros, XP)
-- Roles y Permisos (CRUD)
-- Auditoría del Sistema (bitácora)
-
----
-
-## ▶️ Cómo ejecutar
-
-1. Clonar el repositorio
-2. Abrir en Android Studio (Hedgehog o superior)
-3. Crear archivo `local.properties` en la raíz (si no existe):
+### Pasos:
+1. Clonar el repositorio:
+   ```bash
+   git clone https://github.com/Axel-25-dg/front_idiomas_danny.git
+   ```
+2. Abrir en Android Studio
+3. Verificar que existe `local.properties` con:
    ```properties
    API_BASE_URL=https://guaman-idiomas-ute.online/api/
    ```
-4. Sync Gradle
-5. Ejecutar en emulador o dispositivo (minSdk 26 / Android 8.0+)
+4. Sync Gradle (automatico al abrir)
+5. Ejecutar en emulador o dispositivo fisico
+6. Usar las credenciales de prueba para ingresar
+
+### Probar cada rol:
+- Admin: Login con alexander18br17@gmail.com -> Panel con NavigationDrawer
+- Teacher: Login con profe1@gmail.com -> Panel con BottomNav propio
+- Student: Login con alex1234@gmail.com -> Home con juegos y clases
 
 ---
 
-## 📋 Configuración del proyecto
+## Configuracion del Proyecto
 
 | Propiedad | Valor |
 |---|---|
-| `compileSdk` | 35 |
-| `minSdk` | 26 |
-| `targetSdk` | 35 |
-| `applicationId` | `com.ute.guamanidiomas` |
-| `versionName` | 1.0 |
+| compileSdk | 35 |
+| minSdk | 26 |
+| targetSdk | 35 |
+| applicationId | com.ute.guamanidiomas |
+| versionName | 1.0 |
 | JDK | 17 |
-| Kotlin | 2.0+ |
 
 ---
 
-## 👨‍💻 Autor
+## Informacion Academica
 
-**Danny Guamán** — Universidad Tecnológica Equinoccial (UTE)
-
-Proyecto de Idiomas — Plataforma LMS de Aprendizaje de Inglés
+**Proyecto:** Plataforma de Aprendizaje de Ingles - JumpUp UTE  
+**Universidad:** Universidad Tecnologica Equinoccial (UTE)  
+**Facultad:** Ciencias de la Ingenieria e Industrias  
+**Carrera:** Software  
+**Estudiante:** Danny Guaman  
+**Backend:** Django REST Framework + PostgreSQL  
+**Frontend:** Kotlin + Jetpack Compose  
+**Despliegue API:** https://guaman-idiomas-ute.online/api/

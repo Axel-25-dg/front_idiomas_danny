@@ -50,6 +50,7 @@ import com.ute.guamanidiomas.ui.student.MyClassesScreen
 import com.ute.guamanidiomas.ui.student.MyCertificatesScreen
 import com.ute.guamanidiomas.ui.student.AchievementsScreen
 import com.ute.guamanidiomas.ui.student.LeaderboardScreen
+import com.ute.guamanidiomas.ui.student.ClassroomDetailScreen
 import com.ute.guamanidiomas.ui.theme.SurfaceColor
 
 @Composable
@@ -349,8 +350,9 @@ private fun NavGraphContent(
             composable(Screen.JoinClass.route) {
                 JoinClassScreen(
                     onBack = { navController.popBackStack() },
-                    onJoinSuccess = { courseId ->
-                        navController.navigate(Screen.LearningPath.createRoute(courseId)) {
+                    onJoinSuccess = { _ ->
+                        // Despues de unirse, ir a Mis Clases para ver la clase nueva
+                        navController.navigate(Screen.MyClasses.route) {
                             popUpTo(Screen.JoinClass.route) { inclusive = true }
                         }
                     }
@@ -393,12 +395,9 @@ private fun NavGraphContent(
                 arguments = listOf(navArgument("classroomId") { type = NavType.IntType })
             ) { backStackEntry ->
                 val classroomId = backStackEntry.arguments?.getInt("classroomId") ?: 0
-                // Reutiliza la misma pantalla de detalle que podría implementarse
-                // Por ahora redirige a recursos de clase
-                MyClassesScreen(
-                    onBack       = { navController.popBackStack() },
-                    onClassDetail = {},
-                    onJoinClass  = { navController.navigate(Screen.JoinClass.route) }
+                ClassroomDetailScreen(
+                    classroomId = classroomId,
+                    onBack = { navController.popBackStack() }
                 )
             }
 

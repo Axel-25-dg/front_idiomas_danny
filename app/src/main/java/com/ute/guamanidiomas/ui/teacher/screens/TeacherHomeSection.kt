@@ -100,9 +100,9 @@ fun TeacherHomeSection(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     TeacherStatCard(
-                        label    = "Exámenes Activos",
+                        label    = "Examenes",
                         value    = state.stats.activeExams.toString(),
-                        icon     = Icons.Default.Assignment,
+                        icon     = Icons.Default.Quiz,
                         color    = Warning,
                         modifier = Modifier.weight(1f)
                     )
@@ -252,13 +252,6 @@ private fun QuickActionsRow(onSectionClick: (TeacherSection) -> Unit) {
             label   = "Nueva Clase",
             color   = PrimaryBlue,
             onClick = { onSectionClick(TeacherSection.CLASSES) },
-            modifier = Modifier.weight(1f)
-        )
-        QuickActionItem(
-            icon    = Icons.Default.Assignment,
-            label   = "Examen",
-            color   = Warning,
-            onClick = { onSectionClick(TeacherSection.EXAMS) },
             modifier = Modifier.weight(1f)
         )
         QuickActionItem(

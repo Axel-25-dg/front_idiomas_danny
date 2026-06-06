@@ -12,6 +12,13 @@ class LessonRepositoryImpl @Inject constructor(
     private val api: LessonApi
 ) : LessonRepository {
 
+    override suspend fun getAllLessons(): Result<List<Lesson>> = runCatching {
+        val response = api.getLessons(moduleId = null, pageSize = 200)
+        if (response.isSuccessful) {
+            response.body()?.results?.map { it.toDomain() } ?: emptyList()
+        } else throw Exception("Error ${response.code()}")
+    }
+
     override suspend fun getLessonsByModule(moduleId: Int): Result<List<Lesson>> = runCatching {
         val response = api.getLessons(moduleId = moduleId)
         if (response.isSuccessful) {
@@ -31,6 +38,7 @@ class LessonRepositoryImpl @Inject constructor(
             "module" to payload.moduleId,
             "title" to payload.title,
             "content" to payload.content,
+            "content_type" to payload.contentType,
             "order" to payload.order,
             "xp_reward" to payload.xpReward,
             "is_active" to payload.isActive

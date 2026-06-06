@@ -8,7 +8,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -35,7 +34,7 @@ enum class TeacherSection(
 ) {
     HOME("Inicio", Icons.Default.Home, Icons.Default.Home),
     CLASSES("Clases", Icons.Default.Class, Icons.Default.Class),
-    EXAMS("Exámenes", Icons.AutoMirrored.Filled.Assignment, Icons.AutoMirrored.Filled.Assignment),
+    EXAMS("Examenes", Icons.Default.Quiz, Icons.Default.Quiz),
     RESOURCES("Recursos", Icons.Default.Folder, Icons.Default.Folder),
     STUDENTS("Estudiantes", Icons.Default.Group, Icons.Default.Group)
 }

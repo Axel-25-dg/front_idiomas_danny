@@ -24,6 +24,6 @@ interface CourseApi {
     @DELETE("courses/{id}/")
     suspend fun deleteCourse(@Path("id") id: Int): Response<Unit>
 
-    @POST("courses/join/")
-    suspend fun joinClass(@Body payload: Map<String, String>): Response<Course>
+    @POST("classrooms/join/")
+    suspend fun joinClass(@Body payload: Map<String, String>): Response<Map<String, @JvmSuppressWildcards Any>>
 }

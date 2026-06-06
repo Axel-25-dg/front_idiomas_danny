@@ -72,6 +72,8 @@ data class TeacherResourcesUiState(
 class TeacherMainViewModel @Inject constructor(
     private val teacherRepository: TeacherRepository,
     private val courseRepository: CourseRepository,
+    private val lessonRepository: com.ute.guamanidiomas.domain.repository.LessonRepository,
+    private val exerciseRepository: com.ute.guamanidiomas.domain.repository.ExerciseRepository,
     private val tokenDataStore: TokenDataStore
 ) : ViewModel() {
 
@@ -310,14 +312,33 @@ class TeacherMainViewModel @Inject constructor(
         viewModelScope.launch {
             _examsState.value = _examsState.value.copy(isLoading = true, error = null)
 
-            val examsDeferred      = async { teacherRepository.getExams(classroomId) }
-            val classroomsDeferred = async { teacherRepository.getClassrooms() }
+            // Los "examenes" son Lessons con content_type = "interactive"
+            val lessonsResult      = lessonRepository.getAllLessons()
+            val classroomsResult   = teacherRepository.getClassrooms()
+            val classrooms         = classroomsResult.getOrElse { emptyList() }
 
-            val examsResult = examsDeferred.await()
-            val classrooms  = classroomsDeferred.await().getOrElse { emptyList() }
-
-            examsResult
-                .onSuccess { exams ->
+            lessonsResult
+                .onSuccess { allLessons ->
+                    // Filtrar solo las interactivas (examenes)
+                    val examLessons = allLessons.filter { it.isExam }
+                    // Convertir a Exam para compatibilidad con la UI
+                    val exams = examLessons.map { lesson ->
+                        Exam(
+                            id               = lesson.id,
+                            classroomId      = 0,
+                            classroomName    = lesson.moduleTitle,
+                            title            = lesson.title,
+                            description      = lesson.content,
+                            timeLimitMinutes = 60,
+                            passingScore     = 70,
+                            autoGrade        = true,
+                            startDate        = null,
+                            endDate          = null,
+                            isActive         = lesson.isActive,
+                            createdAt        = "",
+                            submissionCount  = 0
+                        )
+                    }
                     _examsState.value = _examsState.value.copy(
                         isLoading  = false,
                         exams      = exams,
@@ -329,7 +350,7 @@ class TeacherMainViewModel @Inject constructor(
                         isLoading  = false,
                         exams      = emptyList(),
                         classrooms = classrooms,
-                        error      = e.message ?: "Error al cargar exámenes"
+                        error      = e.message ?: "Error al cargar examenes"
                     )
                 }
         }
@@ -363,31 +384,31 @@ class TeacherMainViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             _examsState.value = _examsState.value.copy(isLoading = true)
-            teacherRepository.createExam(
-                ExamPayload(
-                    classroomId      = classroomId,
-                    title            = title,
-                    description      = description,
-                    timeLimitMinutes = timeLimitMinutes,
-                    passingScore     = passingScore,
-                    autoGrade        = autoGrade,
-                    startDate        = startDate,
-                    endDate          = endDate,
-                    isActive         = true
-                )
-            ).onSuccess {
-                loadExams()
-                loadHome()
-                _examsState.value = _examsState.value.copy(
-                    showCreateDialog = false,
-                    successMessage   = "Examen «$title» creado correctamente"
-                )
-            }.onFailure { e ->
-                _examsState.value = _examsState.value.copy(
-                    isLoading = false,
-                    error     = e.message ?: "Error al crear el examen"
-                )
-            }
+            // Crear examen como Lesson con content_type = "interactive"
+            // classroomId aqui se usa como moduleId (el formulario selecciona un modulo)
+            val payload = com.ute.guamanidiomas.domain.model.LessonPayload(
+                moduleId    = classroomId,  // reutilizamos el parametro como moduleId
+                title       = title,
+                content     = description,
+                contentType = "interactive",
+                order       = 99,
+                xpReward    = passingScore,  // usamos passingScore como XP reward
+                isActive    = true
+            )
+            lessonRepository.createLesson(payload)
+                .onSuccess {
+                    loadExams()
+                    _examsState.value = _examsState.value.copy(
+                        showCreateDialog = false,
+                        successMessage   = "Examen «$title» creado correctamente"
+                    )
+                }
+                .onFailure { e ->
+                    _examsState.value = _examsState.value.copy(
+                        isLoading = false,
+                        error     = e.message ?: "Error al crear el examen"
+                    )
+                }
         }
     }
 
@@ -399,6 +420,56 @@ class TeacherMainViewModel @Inject constructor(
                 _examsState.value = _examsState.value.copy(successMessage = "Examen eliminado")
             }.onFailure { e ->
                 _examsState.value = _examsState.value.copy(error = e.message ?: "Error al eliminar")
+            }
+        }
+    }
+
+    fun loadExamQuestions(lessonId: Int) {
+        viewModelScope.launch {
+            exerciseRepository.getExercisesByLesson(lessonId)
+                .onSuccess { exercises ->
+                    val results = exercises.map { ex ->
+                        ExamResult(
+                            id           = ex.id,
+                            examId       = lessonId,
+                            examTitle    = ex.question,
+                            studentId    = 0,
+                            studentEmail = ex.type.value,
+                            studentName  = ex.correctAnswer,
+                            score        = ex.xpReward,
+                            passed       = ex.isActive,
+                            submittedAt  = ""
+                        )
+                    }
+                    _examsState.value = _examsState.value.copy(
+                        examResults    = results,
+                        selectedExamId = lessonId
+                    )
+                }
+        }
+    }
+
+    fun addQuestionToExam(lessonId: Int, questionText: String, exerciseType: String, correctAnswer: String) {
+        viewModelScope.launch {
+            _examsState.value = _examsState.value.copy(isLoading = true)
+            exerciseRepository.createExercise(
+                com.ute.guamanidiomas.domain.model.ExercisePayload(
+                    lessonId      = lessonId,
+                    questionText  = questionText,
+                    exerciseType  = exerciseType,
+                    correctAnswer = correctAnswer
+                )
+            ).onSuccess {
+                _examsState.value = _examsState.value.copy(
+                    isLoading      = false,
+                    successMessage = "Pregunta agregada correctamente"
+                )
+                loadExamQuestions(lessonId)
+            }.onFailure { e ->
+                _examsState.value = _examsState.value.copy(
+                    isLoading = false,
+                    error     = e.message ?: "Error al agregar pregunta"
+                )
             }
         }
     }
@@ -454,12 +525,13 @@ class TeacherMainViewModel @Inject constructor(
             _resourcesState.value = _resourcesState.value.copy(isLoading = true)
             teacherRepository.createResource(
                 TeacherResourcePayload(
-                    classroomId  = classroomId,
                     title        = title,
                     description  = description,
                     resourceType = resourceType,
-                    url          = url,
-                    isActive     = true
+                    fileUrl      = url,
+                    courseId     = null,
+                    lessonId    = null,
+                    isPublic     = true
                 )
             ).onSuccess {
                 loadResources()

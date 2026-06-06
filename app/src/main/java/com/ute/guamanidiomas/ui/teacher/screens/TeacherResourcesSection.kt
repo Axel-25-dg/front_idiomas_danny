@@ -234,28 +234,24 @@ private fun ResourceFormDialog(
     onDismiss: () -> Unit,
     onConfirm: (Int, String, String, String, String) -> Unit
 ) {
-    var title            by remember { mutableStateOf("") }
-    var description      by remember { mutableStateOf("") }
-    var url              by remember { mutableStateOf("") }
-    var selectedType     by remember { mutableStateOf(ResourceType.LINK) }
-    var selectedClassroom by remember { mutableStateOf(classrooms.firstOrNull()) }
-    var expandedClass    by remember { mutableStateOf(false) }
-    var expandedType     by remember { mutableStateOf(false) }
+    var title        by remember { mutableStateOf("") }
+    var description  by remember { mutableStateOf("") }
+    var fileUrl      by remember { mutableStateOf("") }
+    var selectedType by remember { mutableStateOf(ResourceType.LINK) }
+    var expandedType by remember { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Nuevo Recurso", fontWeight = FontWeight.Bold) },
         text = {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(max = 460.dp),
+                modifier = Modifier.fillMaxWidth().heightIn(max = 400.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 OutlinedTextField(
                     value         = title,
                     onValueChange = { title = it },
-                    label         = { Text("Título") },
+                    label         = { Text("Titulo") },
                     leadingIcon   = { Icon(Icons.Default.Title, null) },
                     singleLine    = true,
                     modifier      = Modifier.fillMaxWidth()
@@ -264,14 +260,14 @@ private fun ResourceFormDialog(
                 OutlinedTextField(
                     value         = description,
                     onValueChange = { description = it },
-                    label         = { Text("Descripción (opcional)") },
+                    label         = { Text("Descripcion (opcional)") },
                     maxLines      = 2,
                     modifier      = Modifier.fillMaxWidth()
                 )
 
                 // Tipo de recurso
                 ExposedDropdownMenuBox(
-                    expanded        = expandedType,
+                    expanded         = expandedType,
                     onExpandedChange = { expandedType = it }
                 ) {
                     OutlinedTextField(
@@ -284,7 +280,7 @@ private fun ResourceFormDialog(
                         modifier     = Modifier.fillMaxWidth().menuAnchor()
                     )
                     ExposedDropdownMenu(
-                        expanded        = expandedType,
+                        expanded         = expandedType,
                         onDismissRequest = { expandedType = false }
                     ) {
                         ResourceType.entries.forEach { type ->
@@ -298,52 +294,25 @@ private fun ResourceFormDialog(
                 }
 
                 OutlinedTextField(
-                    value         = url,
-                    onValueChange = { url = it },
-                    label         = { Text("URL / Enlace") },
+                    value         = fileUrl,
+                    onValueChange = { fileUrl = it },
+                    label         = { Text("URL del archivo o enlace") },
                     leadingIcon   = { Icon(Icons.Default.Link, null) },
                     singleLine    = true,
-                    modifier      = Modifier.fillMaxWidth()
+                    modifier      = Modifier.fillMaxWidth(),
+                    placeholder   = { Text("https://drive.google.com/...") }
                 )
-
-                if (classrooms.isNotEmpty()) {
-                    ExposedDropdownMenuBox(
-                        expanded        = expandedClass,
-                        onExpandedChange = { expandedClass = it }
-                    ) {
-                        OutlinedTextField(
-                            value        = selectedClassroom?.name ?: "Seleccionar clase",
-                            onValueChange = {},
-                            readOnly     = true,
-                            label        = { Text("Clase") },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expandedClass) },
-                            modifier     = Modifier.fillMaxWidth().menuAnchor()
-                        )
-                        ExposedDropdownMenu(
-                            expanded        = expandedClass,
-                            onDismissRequest = { expandedClass = false }
-                        ) {
-                            classrooms.forEach { c ->
-                                DropdownMenuItem(
-                                    text    = { Text(c.name) },
-                                    onClick = { selectedClassroom = c; expandedClass = false }
-                                )
-                            }
-                        }
-                    }
-                }
             }
         },
         confirmButton = {
             Button(
-                onClick  = {
-                    val classId = selectedClassroom?.id ?: return@Button
+                onClick = {
                     if (title.isNotBlank()) {
-                        onConfirm(classId, title.trim(), description.trim(), selectedType.value, url.trim())
+                        onConfirm(0, title.trim(), description.trim(), selectedType.value, fileUrl.trim())
                     }
                 },
-                enabled  = title.isNotBlank() && selectedClassroom != null,
-                colors   = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B5CF6))
+                enabled = title.isNotBlank() && fileUrl.isNotBlank(),
+                colors  = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B5CF6))
             ) { Text("Agregar") }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } }
@@ -351,21 +320,21 @@ private fun ResourceFormDialog(
 }
 
 private fun resourceTypeIcon(type: ResourceType): ImageVector = when (type) {
-    ResourceType.PDF         -> Icons.Default.PictureAsPdf
-    ResourceType.WORD        -> Icons.Default.Description
-    ResourceType.POWERPOINT  -> Icons.Default.Slideshow
-    ResourceType.AUDIO       -> Icons.Default.MusicNote
-    ResourceType.VIDEO       -> Icons.Default.Videocam
-    ResourceType.YOUTUBE     -> Icons.Default.PlayCircle
-    ResourceType.LINK        -> Icons.Default.Link
+    ResourceType.PDF   -> Icons.Default.PictureAsPdf
+    ResourceType.WORD  -> Icons.Default.Description
+    ResourceType.AUDIO -> Icons.Default.MusicNote
+    ResourceType.VIDEO -> Icons.Default.Videocam
+    ResourceType.IMAGE -> Icons.Default.Image
+    ResourceType.LINK  -> Icons.Default.Link
+    ResourceType.OTHER -> Icons.Default.InsertDriveFile
 }
 
 private fun resourceTypeColor(type: ResourceType): Color = when (type) {
-    ResourceType.PDF        -> Color(0xFFEF4444)
-    ResourceType.WORD       -> Color(0xFF2563EB)
-    ResourceType.POWERPOINT -> Color(0xFFEA580C)
-    ResourceType.AUDIO      -> Color(0xFF7C3AED)
-    ResourceType.VIDEO      -> Color(0xFF0891B2)
-    ResourceType.YOUTUBE    -> Color(0xFFDC2626)
-    ResourceType.LINK       -> Color(0xFF059669)
+    ResourceType.PDF   -> Color(0xFFEF4444)
+    ResourceType.WORD  -> Color(0xFF2563EB)
+    ResourceType.AUDIO -> Color(0xFF7C3AED)
+    ResourceType.VIDEO -> Color(0xFF0891B2)
+    ResourceType.IMAGE -> Color(0xFFEA580C)
+    ResourceType.LINK  -> Color(0xFF059669)
+    ResourceType.OTHER -> Color(0xFF6B7280)
 }

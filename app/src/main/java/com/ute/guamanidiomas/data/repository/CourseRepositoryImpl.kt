@@ -55,8 +55,27 @@ class CourseRepositoryImpl @Inject constructor(
 
     override suspend fun joinClass(accessCode: String): Result<Course> = runCatching {
         val response = api.joinClass(mapOf("access_code" to accessCode))
-        if (response.isSuccessful) response.body()!!
-        else throw Exception(courseError(response.code(), response.errorBody()?.string()))
+        if (response.isSuccessful) {
+            val body = response.body() ?: emptyMap()
+            // El backend devuelve el classroom al que se unio. Extraemos el id.
+            val id = (body["id"] as? Number)?.toInt()
+                ?: (body["classroom"] as? Number)?.toInt()
+                ?: 0
+            val name = (body["name"] as? String)
+                ?: (body["message"] as? String)
+                ?: "Clase"
+            Course(
+                id = id,
+                languageId = null,
+                title = name,
+                description = "",
+                level = "",
+                isActive = true
+            )
+        } else {
+            val errorBody = response.errorBody()?.string() ?: ""
+            throw Exception(courseError(response.code(), errorBody))
+        }
     }
 
     private fun courseError(code: Int, body: String?): String {

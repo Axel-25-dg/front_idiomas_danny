@@ -2,7 +2,6 @@ package com.ute.guamanidiomas.data.repository
 
 import com.ute.guamanidiomas.data.remote.api.ClassroomApi
 import com.ute.guamanidiomas.domain.model.teacher.Classroom
-import com.ute.guamanidiomas.domain.model.teacher.ResourceType
 import com.ute.guamanidiomas.domain.model.teacher.TeacherResource
 import com.ute.guamanidiomas.domain.repository.StudentClassroomRepository
 import javax.inject.Inject
@@ -31,20 +30,7 @@ class StudentClassroomRepositoryImpl @Inject constructor(
         val response = api.getClassroomResources(classroomId)
         if (response.isSuccessful) {
             // El backend devuelve { count, next, previous, results:[...] }
-            response.body()?.results?.map { dto ->
-                TeacherResource(
-                    id            = dto.id,
-                    classroomId   = dto.classroomId,
-                    classroomName = dto.classroomName,
-                    title         = dto.title,
-                    description   = dto.description,
-                    resourceType  = ResourceType.fromString(dto.resourceType),
-                    url           = dto.url,
-                    fileUrl       = dto.fileUrl,
-                    isActive      = dto.isActive,
-                    createdAt     = dto.createdAt
-                )
-            } ?: emptyList()
+            response.body()?.results?.map { it.toDomain() } ?: emptyList()
         } else throw Exception(apiError(response.code(), response.errorBody()?.string()))
     }
 

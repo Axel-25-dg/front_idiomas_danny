@@ -85,13 +85,13 @@ data class ExamResult(
 // ─── TeacherResource ──────────────────────────────────────────────────────────
 
 enum class ResourceType(val value: String, val label: String) {
-    LINK("link", "Enlace"),
     PDF("pdf", "PDF"),
-    WORD("word", "Word"),
-    POWERPOINT("powerpoint", "PowerPoint"),
-    AUDIO("audio", "Audio MP3"),
+    AUDIO("audio", "Audio"),
     VIDEO("video", "Video"),
-    YOUTUBE("youtube", "YouTube");
+    WORD("word", "Word"),
+    IMAGE("image", "Imagen"),
+    LINK("link", "Enlace"),
+    OTHER("other", "Otro");
 
     companion object {
         fun fromString(value: String): ResourceType =
@@ -113,12 +113,13 @@ data class TeacherResource(
 )
 
 data class TeacherResourcePayload(
-    val classroomId: Int,
     val title: String,
     val description: String,
     val resourceType: String,
-    val url: String,
-    val isActive: Boolean
+    val fileUrl: String,
+    val courseId: Int? = null,
+    val lessonId: Int? = null,
+    val isPublic: Boolean = true
 )
 
 // ─── Teacher Stats ────────────────────────────────────────────────────────────

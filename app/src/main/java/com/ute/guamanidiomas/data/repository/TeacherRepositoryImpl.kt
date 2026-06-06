@@ -28,9 +28,9 @@ class TeacherRepositoryImpl @Inject constructor(
         } else {
             // Fallback: construir stats desde classrooms si teacher/stats/ no existe
             try {
-                val classrooms = classroomApi.getClassrooms().body()?.results ?: emptyList()
-                val exams      = try { examApi.getExams().body()?.results ?: emptyList() } catch (_: Exception) { emptyList() }
-                val resources  = try { resourceApi.getResources().body()?.results ?: emptyList() } catch (_: Exception) { emptyList() }
+                val classrooms = classroomApi.getClassrooms().body()?.results?.map { it.toDomain() } ?: emptyList()
+                val exams      = try { examApi.getExams().body()?.results?.map { it.toDomain() } ?: emptyList() } catch (_: Exception) { emptyList() }
+                val resources  = try { resourceApi.getResources().body()?.results?.map { it.toDomain() } ?: emptyList() } catch (_: Exception) { emptyList() }
                 val totalStudents = classrooms.sumOf { it.studentCount }
                 val activeExams   = exams.count { it.isActive }
                 TeacherStats(
@@ -116,7 +116,10 @@ class TeacherRepositoryImpl @Inject constructor(
         val response = examApi.getExams(classroomId = classroomId)
         if (response.isSuccessful) {
             response.body()?.results?.map { it.toDomain() } ?: emptyList()
-        } else throw Exception(apiError(response.code(), response.errorBody()?.string()))
+        } else {
+            // Si /api/exams/ no existe (404), devolver lista vacia
+            emptyList()
+        }
     }
 
     override suspend fun getExamById(id: Int): Result<Exam> = runCatching {
@@ -139,7 +142,7 @@ class TeacherRepositoryImpl @Inject constructor(
         )
         val response = examApi.createExam(request)
         if (response.isSuccessful) response.body()!!.toDomain()
-        else throw Exception(apiError(response.code(), response.errorBody()?.string()))
+        else throw Exception("El modulo de examenes no esta disponible en el backend (${response.code()})")
     }
 
     override suspend fun updateExam(id: Int, payload: ExamPayload): Result<Exam> = runCatching {
@@ -185,12 +188,13 @@ class TeacherRepositoryImpl @Inject constructor(
 
     override suspend fun createResource(payload: TeacherResourcePayload): Result<TeacherResource> = runCatching {
         val request = TeacherResourceRequest(
-            classroomId  = payload.classroomId,
             title        = payload.title,
             description  = payload.description,
             resourceType = payload.resourceType,
-            url          = payload.url,
-            isActive     = payload.isActive
+            fileUrl      = payload.fileUrl,
+            course       = payload.courseId,
+            lesson       = payload.lessonId,
+            isPublic     = payload.isPublic
         )
         val response = resourceApi.createResource(request)
         if (response.isSuccessful) response.body()!!.toDomain()
@@ -199,12 +203,13 @@ class TeacherRepositoryImpl @Inject constructor(
 
     override suspend fun updateResource(id: Int, payload: TeacherResourcePayload): Result<TeacherResource> = runCatching {
         val request = TeacherResourceRequest(
-            classroomId  = payload.classroomId,
             title        = payload.title,
             description  = payload.description,
             resourceType = payload.resourceType,
-            url          = payload.url,
-            isActive     = payload.isActive
+            fileUrl      = payload.fileUrl,
+            course       = payload.courseId,
+            lesson       = payload.lessonId,
+            isPublic     = payload.isPublic
         )
         val response = resourceApi.updateResource(id, request)
         if (response.isSuccessful) response.body()!!.toDomain()
