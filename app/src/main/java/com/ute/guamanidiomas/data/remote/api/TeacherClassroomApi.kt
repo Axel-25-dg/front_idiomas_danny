@@ -27,7 +27,7 @@ interface TeacherClassroomApi {
     @POST("classrooms/")
     suspend fun createClassroom(@Body request: ClassroomRequest): Response<ClassroomDto>
 
-    @PUT("classrooms/{id}/")
+    @PATCH("classrooms/{id}/")
     suspend fun updateClassroom(
         @Path("id") id: Int,
         @Body request: ClassroomRequest
@@ -37,11 +37,15 @@ interface TeacherClassroomApi {
     suspend fun deleteClassroom(@Path("id") id: Int): Response<Unit>
 
     // Enrollments / students of a classroom
-    // Django REST puede devolver objeto paginado { count, next, previous, results:[...] }
-    // o lista directa según la configuración del ViewSet.
-    // Usamos EnrollmentPage para cubrir el caso paginado.
     @GET("classrooms/{id}/enrollments/")
     suspend fun getEnrollments(@Path("id") classroomId: Int): Response<EnrollmentPage>
+
+    // Remover estudiante de la clase
+    @POST("classrooms/{id}/remove-student/")
+    suspend fun removeStudent(
+        @Path("id") classroomId: Int,
+        @Body request: Map<String, Int>
+    ): Response<Unit>
 }
 
 /** Wrapper paginado para enrollments (por si el ViewSet aplica paginación) */

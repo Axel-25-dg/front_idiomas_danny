@@ -26,19 +26,23 @@ class TeacherRepositoryImpl @Inject constructor(
         if (response.isSuccessful) {
             response.body()?.toDomain() ?: TeacherStats(0, 0, 0, 0, 0.0)
         } else {
-            // Fallback: construir stats desde classrooms si el endpoint no existe
-            val classrooms = classroomApi.getClassrooms().body()?.results ?: emptyList()
-            val exams      = examApi.getExams().body()?.results ?: emptyList()
-            val resources  = resourceApi.getResources().body()?.results ?: emptyList()
-            val totalStudents = classrooms.sumOf { it.studentCount }
-            val activeExams   = exams.count { it.isActive }
-            TeacherStats(
-                totalClassrooms = classrooms.size,
-                totalStudents   = totalStudents,
-                activeExams     = activeExams,
-                totalResources  = resources.size,
-                averageScore    = 0.0
-            )
+            // Fallback: construir stats desde classrooms si teacher/stats/ no existe
+            try {
+                val classrooms = classroomApi.getClassrooms().body()?.results ?: emptyList()
+                val exams      = try { examApi.getExams().body()?.results ?: emptyList() } catch (_: Exception) { emptyList() }
+                val resources  = try { resourceApi.getResources().body()?.results ?: emptyList() } catch (_: Exception) { emptyList() }
+                val totalStudents = classrooms.sumOf { it.studentCount }
+                val activeExams   = exams.count { it.isActive }
+                TeacherStats(
+                    totalClassrooms = classrooms.size,
+                    totalStudents   = totalStudents,
+                    activeExams     = activeExams,
+                    totalResources  = resources.size,
+                    averageScore    = 0.0
+                )
+            } catch (_: Exception) {
+                TeacherStats(0, 0, 0, 0, 0.0)
+            }
         }
     }
 
@@ -91,9 +95,16 @@ class TeacherRepositoryImpl @Inject constructor(
     override suspend fun getEnrollments(classroomId: Int): Result<List<Enrollment>> = runCatching {
         val response = classroomApi.getEnrollments(classroomId)
         if (response.isSuccessful) {
-            // El backend puede devolver { count, next, previous, results:[...] }
             response.body()?.results?.map { it.toDomain() } ?: emptyList()
-        } else throw Exception(apiError(response.code(), response.errorBody()?.string()))
+        } else {
+            // Fallback: si /enrollments/ no existe, devolver lista vacía sin crashear
+            emptyList()
+        }
+    }
+
+    override suspend fun removeStudent(classroomId: Int, studentId: Int): Result<Unit> = runCatching {
+        val response = classroomApi.removeStudent(classroomId, mapOf("student_id" to studentId))
+        if (!response.isSuccessful) throw Exception(apiError(response.code(), response.errorBody()?.string()))
     }
 
     // ── Exams ─────────────────────────────────────────────────────────────────
@@ -162,9 +173,11 @@ class TeacherRepositoryImpl @Inject constructor(
     override suspend fun getResources(classroomId: Int?): Result<List<TeacherResource>> = runCatching {
         val response = resourceApi.getResources(classroomId)
         if (response.isSuccessful) {
-            // El backend devuelve { count, next, previous, results:[...] }
             response.body()?.results?.map { it.toDomain() } ?: emptyList()
-        } else throw Exception(apiError(response.code(), response.errorBody()?.string()))
+        } else {
+            // Si el endpoint no existe en el backend, devolver lista vacía sin crashear
+            emptyList()
+        }
     }
 
     override suspend fun createResource(payload: TeacherResourcePayload): Result<TeacherResource> = runCatching {

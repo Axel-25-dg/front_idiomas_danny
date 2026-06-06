@@ -133,7 +133,12 @@ class TeacherMainViewModel @Inject constructor(
             _classroomsState.value = _classroomsState.value.copy(isLoading = true, error = null)
 
             val classroomsDeferred = async { teacherRepository.getClassrooms() }
-            val coursesDeferred    = async { courseRepository.getCourses() }
+            // Cargar TODOS los cursos disponibles (sin límite de página)
+            val coursesDeferred    = async {
+                courseRepository.getCourses(
+                    com.ute.guamanidiomas.domain.repository.CourseFilters(pageSize = 100)
+                )
+            }
 
             val classrooms = classroomsDeferred.await().getOrElse { emptyList() }
             val courses    = coursesDeferred.await().getOrElse { Pair(emptyList(), 0) }.first
@@ -169,16 +174,21 @@ class TeacherMainViewModel @Inject constructor(
 
     fun createClassroom(courseId: Int, name: String, description: String) {
         viewModelScope.launch {
-            _classroomsState.value = _classroomsState.value.copy(isLoading = true)
+            _classroomsState.value = _classroomsState.value.copy(isLoading = true, error = null)
             teacherRepository.createClassroom(
                 ClassroomPayload(courseId = courseId, name = name, description = description)
-            ).onSuccess {
+            ).onSuccess { createdClassroom ->
+                // Agregar inmediatamente a la lista local para feedback instantáneo
+                val currentList = _classroomsState.value.classrooms
+                _classroomsState.value = _classroomsState.value.copy(
+                    isLoading        = false,
+                    showCreateDialog = false,
+                    classrooms       = currentList + createdClassroom,
+                    successMessage   = "Clase «${createdClassroom.name}» creada — Código: ${createdClassroom.accessCode}"
+                )
+                // Recargar desde el backend en background para sincronizar
                 loadClassrooms()
                 loadHome()
-                _classroomsState.value = _classroomsState.value.copy(
-                    showCreateDialog = false,
-                    successMessage   = "Clase «$name» creada correctamente"
-                )
             }.onFailure { e ->
                 _classroomsState.value = _classroomsState.value.copy(
                     isLoading = false,
@@ -190,17 +200,22 @@ class TeacherMainViewModel @Inject constructor(
 
     fun updateClassroom(id: Int, courseId: Int, name: String, description: String) {
         viewModelScope.launch {
-            _classroomsState.value = _classroomsState.value.copy(isLoading = true)
+            _classroomsState.value = _classroomsState.value.copy(isLoading = true, error = null)
             teacherRepository.updateClassroom(
                 id,
                 ClassroomPayload(courseId = courseId, name = name, description = description)
-            ).onSuccess {
-                loadClassrooms()
+            ).onSuccess { updatedClassroom ->
+                val currentList = _classroomsState.value.classrooms.map {
+                    if (it.id == id) updatedClassroom else it
+                }
                 _classroomsState.value = _classroomsState.value.copy(
+                    isLoading        = false,
                     showCreateDialog = false,
                     editingClassroom = null,
+                    classrooms       = currentList,
                     successMessage   = "Clase actualizada correctamente"
                 )
+                loadClassrooms()
             }.onFailure { e ->
                 _classroomsState.value = _classroomsState.value.copy(
                     isLoading = false,
@@ -261,6 +276,21 @@ class TeacherMainViewModel @Inject constructor(
     fun selectClassroomForStudents(classroomId: Int) {
         _studentsState.value = _studentsState.value.copy(selectedClassroomId = classroomId)
         loadStudents(classroomId)
+    }
+
+    fun removeStudent(classroomId: Int, studentId: Int) {
+        viewModelScope.launch {
+            teacherRepository.removeStudent(classroomId, studentId)
+                .onSuccess {
+                    // Recargar lista de estudiantes
+                    loadStudents(classroomId)
+                }
+                .onFailure { e ->
+                    _studentsState.value = _studentsState.value.copy(
+                        error = e.message ?: "Error al eliminar estudiante"
+                    )
+                }
+        }
     }
 
     // ─── EXAMS ───────────────────────────────────────────────────────────────

@@ -16,6 +16,7 @@ interface TeacherRepository {
 
     // ── Enrollments ───────────────────────────────────────────────────────────
     suspend fun getEnrollments(classroomId: Int): Result<List<Enrollment>>
+    suspend fun removeStudent(classroomId: Int, studentId: Int): Result<Unit>
 
     // ── Exams ─────────────────────────────────────────────────────────────────
     suspend fun getExams(classroomId: Int? = null): Result<List<Exam>>
