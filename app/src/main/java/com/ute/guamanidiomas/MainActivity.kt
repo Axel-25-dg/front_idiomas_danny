@@ -6,8 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.*import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -42,7 +41,10 @@ class MainActivity : ComponentActivity() {
         )
 
         setContent {
-            GuamanIdiomasTheme {
+            val settingsViewModel: com.ute.guamanidiomas.ui.viewmodel.SettingsViewModel = androidx.hilt.navigation.compose.hiltViewModel()
+            val isDarkMode by settingsViewModel.isDarkMode.collectAsState()
+
+            GuamanIdiomasTheme(darkTheme = isDarkMode) {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     val authViewModel: AuthViewModel = hiltViewModel()
                     NavGraph(authViewModel = authViewModel)

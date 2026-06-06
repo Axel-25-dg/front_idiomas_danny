@@ -204,33 +204,50 @@ private fun ClassroomCard(
             HorizontalDivider(color = Border)
             Spacer(Modifier.height(10.dp))
 
+            // Código de acceso prominente
+            if (classroom.accessCode.isNotBlank()) {
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    color    = LightBlue,
+                    shape    = RoundedCornerShape(12.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.Key, null, tint = PrimaryBlue, modifier = Modifier.size(20.dp))
+                        Spacer(Modifier.width(10.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text("Código de acceso", style = MaterialTheme.typography.labelSmall, color = TextSecondary)
+                            Text(
+                                classroom.accessCode,
+                                fontSize   = 20.sp,
+                                fontWeight = FontWeight.Black,
+                                color      = PrimaryBlue,
+                                letterSpacing = 2.sp
+                            )
+                        }
+                        IconButton(onClick = onCopyCode, modifier = Modifier.size(36.dp)) {
+                            Icon(Icons.Default.ContentCopy, "Copiar", tint = PrimaryBlue, modifier = Modifier.size(20.dp))
+                        }
+                        IconButton(onClick = onCopyCode, modifier = Modifier.size(36.dp)) {
+                            Icon(Icons.Default.Share, "Compartir", tint = PrimaryBlue, modifier = Modifier.size(20.dp))
+                        }
+                    }
+                }
+                Spacer(Modifier.height(10.dp))
+            }
+
             Row(
                 modifier          = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                // Código de acceso
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Key, null, tint = PrimaryBlue, modifier = Modifier.size(16.dp))
-                    Spacer(Modifier.width(4.dp))
-                    Text(
-                        classroom.accessCode.ifBlank { "—" },
-                        fontSize  = 13.sp,
-                        fontWeight = FontWeight.Bold,
-                        color     = PrimaryBlue
-                    )
-                    if (classroom.accessCode.isNotBlank()) {
-                        IconButton(onClick = onCopyCode, modifier = Modifier.size(28.dp)) {
-                            Icon(Icons.Default.ContentCopy, null, tint = TextSecondary, modifier = Modifier.size(16.dp))
-                        }
-                    }
-                }
-
                 // Estudiantes
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.Group, null, tint = Success, modifier = Modifier.size(16.dp))
                     Spacer(Modifier.width(4.dp))
-                    Text("${classroom.studentCount}", fontSize = 13.sp, color = TextSecondary)
+                    Text("${classroom.studentCount} estudiantes", fontSize = 13.sp, color = TextSecondary)
                 }
 
                 // Acciones

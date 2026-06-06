@@ -250,15 +250,16 @@ fun JoinClassScreen(
                     Spacer(Modifier.height(16.dp))
 
                     OutlinedButton(
-                        onClick = { /* TODO: Implementar Escaneo QR */ },
+                        onClick = { /* El escáner QR requiere librería CameraX — 
+                                      El estudiante puede escribir el código directamente arriba */ },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp),
                         shape = RoundedCornerShape(20.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = PrimaryRed
+                            contentColor = TextSecondary
                         ),
-                        border = BorderStroke(1.5.dp, PrimaryRed.copy(alpha = 0.4f))
+                        border = BorderStroke(1.5.dp, Border)
                     ) {
                         Icon(
                             Icons.Filled.QrCodeScanner,
@@ -267,9 +268,10 @@ fun JoinClassScreen(
                         )
                         Spacer(Modifier.width(10.dp))
                         Text(
-                            "Escanear codigo QR",
+                            "Escanear QR (próximamente)",
                             fontWeight = FontWeight.SemiBold,
-                            fontSize = 15.sp
+                            fontSize = 15.sp,
+                            color = TextSecondary
                         )
                     }
                 }

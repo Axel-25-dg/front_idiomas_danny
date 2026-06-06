@@ -24,6 +24,7 @@ class TokenDataStore @Inject constructor(
         private val EMAIL = stringPreferencesKey("email")
         private val IS_STAFF = booleanPreferencesKey("is_staff")
         private val USER_ROLE = stringPreferencesKey("user_role")
+        private val DARK_MODE = booleanPreferencesKey("dark_mode")
     }
 
     val userSnapshot: Flow<UserSnapshot?> = context.dataStore.data.map { prefs ->
@@ -37,6 +38,16 @@ class TokenDataStore @Inject constructor(
             UserSnapshot(id, username, email, isStaff, role)
         } else {
             null
+        }
+    }
+
+    val isDarkMode: Flow<Boolean> = context.dataStore.data.map { prefs ->
+        prefs[DARK_MODE] ?: false
+    }
+
+    suspend fun setDarkMode(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[DARK_MODE] = enabled
         }
     }
 
