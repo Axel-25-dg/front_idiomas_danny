@@ -48,13 +48,31 @@ fun TeacherClassesSection(viewModel: TeacherMainViewModel) {
 
     Box(Modifier.fillMaxSize()) {
         if (state.classrooms.isEmpty() && !state.isLoading) {
-            EmptyState(
-                icon     = Icons.Default.Class,
-                title    = "Sin clases",
-                subtitle = "Crea tu primera clase y comparte el código con tus estudiantes",
-                action   = "Crear clase",
-                onAction = { viewModel.showCreateClassroomDialog() }
-            )
+            if (state.error != null) {
+                // Mostrar error con botón reintentar
+                Column(
+                    Modifier.fillMaxSize().padding(32.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Icon(Icons.Default.Warning, null, tint = ErrorColor, modifier = Modifier.size(48.dp))
+                    Spacer(Modifier.height(12.dp))
+                    Text(state.error!!, color = ErrorColor, style = MaterialTheme.typography.bodyMedium, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+                    Spacer(Modifier.height(16.dp))
+                    Button(
+                        onClick = { viewModel.loadClassrooms() },
+                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue)
+                    ) { Text("Reintentar") }
+                }
+            } else {
+                EmptyState(
+                    icon     = Icons.Default.Class,
+                    title    = "Sin clases",
+                    subtitle = "Crea tu primera clase y comparte el código con tus estudiantes",
+                    action   = "Crear clase",
+                    onAction = { viewModel.showCreateClassroomDialog() }
+                )
+            }
         } else {
             LazyColumn(
                 modifier        = Modifier.fillMaxSize(),

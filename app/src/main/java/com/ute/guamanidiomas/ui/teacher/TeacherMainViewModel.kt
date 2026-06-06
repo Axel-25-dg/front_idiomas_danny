@@ -140,14 +140,25 @@ class TeacherMainViewModel @Inject constructor(
                 )
             }
 
-            val classrooms = classroomsDeferred.await().getOrElse { emptyList() }
-            val courses    = coursesDeferred.await().getOrElse { Pair(emptyList(), 0) }.first
+            val classroomsResult = classroomsDeferred.await()
+            val courses = coursesDeferred.await().getOrElse { Pair(emptyList(), 0) }.first
 
-            _classroomsState.value = _classroomsState.value.copy(
-                isLoading  = false,
-                classrooms = classrooms,
-                courses    = courses
-            )
+            classroomsResult
+                .onSuccess { classrooms ->
+                    _classroomsState.value = _classroomsState.value.copy(
+                        isLoading  = false,
+                        classrooms = classrooms,
+                        courses    = courses
+                    )
+                }
+                .onFailure { e ->
+                    _classroomsState.value = _classroomsState.value.copy(
+                        isLoading  = false,
+                        classrooms = emptyList(),
+                        courses    = courses,
+                        error      = e.message ?: "Error al cargar clases"
+                    )
+                }
         }
     }
 
@@ -302,14 +313,25 @@ class TeacherMainViewModel @Inject constructor(
             val examsDeferred      = async { teacherRepository.getExams(classroomId) }
             val classroomsDeferred = async { teacherRepository.getClassrooms() }
 
-            val exams      = examsDeferred.await().getOrElse { emptyList() }
-            val classrooms = classroomsDeferred.await().getOrElse { emptyList() }
+            val examsResult = examsDeferred.await()
+            val classrooms  = classroomsDeferred.await().getOrElse { emptyList() }
 
-            _examsState.value = _examsState.value.copy(
-                isLoading  = false,
-                exams      = exams,
-                classrooms = classrooms
-            )
+            examsResult
+                .onSuccess { exams ->
+                    _examsState.value = _examsState.value.copy(
+                        isLoading  = false,
+                        exams      = exams,
+                        classrooms = classrooms
+                    )
+                }
+                .onFailure { e ->
+                    _examsState.value = _examsState.value.copy(
+                        isLoading  = false,
+                        exams      = emptyList(),
+                        classrooms = classrooms,
+                        error      = e.message ?: "Error al cargar exámenes"
+                    )
+                }
         }
     }
 
@@ -394,14 +416,25 @@ class TeacherMainViewModel @Inject constructor(
             val resourcesDeferred  = async { teacherRepository.getResources(classroomId) }
             val classroomsDeferred = async { teacherRepository.getClassrooms() }
 
-            val resources  = resourcesDeferred.await().getOrElse { emptyList() }
-            val classrooms = classroomsDeferred.await().getOrElse { emptyList() }
+            val resourcesResult = resourcesDeferred.await()
+            val classrooms      = classroomsDeferred.await().getOrElse { emptyList() }
 
-            _resourcesState.value = _resourcesState.value.copy(
-                isLoading  = false,
-                resources  = resources,
-                classrooms = classrooms
-            )
+            resourcesResult
+                .onSuccess { resources ->
+                    _resourcesState.value = _resourcesState.value.copy(
+                        isLoading  = false,
+                        resources  = resources,
+                        classrooms = classrooms
+                    )
+                }
+                .onFailure { e ->
+                    _resourcesState.value = _resourcesState.value.copy(
+                        isLoading  = false,
+                        resources  = emptyList(),
+                        classrooms = classrooms,
+                        error      = e.message ?: "Error al cargar recursos"
+                    )
+                }
         }
     }
 

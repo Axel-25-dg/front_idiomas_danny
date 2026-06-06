@@ -45,13 +45,30 @@ fun TeacherExamsSection(viewModel: TeacherMainViewModel) {
 
     Box(Modifier.fillMaxSize()) {
         if (state.exams.isEmpty() && !state.isLoading) {
-            EmptyState(
-                icon     = Icons.Default.Assignment,
-                title    = "Sin exámenes",
-                subtitle = "Crea un examen para evaluar a tus estudiantes",
-                action   = "Crear examen",
-                onAction = { viewModel.showCreateExamDialog() }
-            )
+            if (state.error != null) {
+                Column(
+                    Modifier.fillMaxSize().padding(32.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Icon(Icons.Default.Warning, null, tint = ErrorColor, modifier = Modifier.size(48.dp))
+                    Spacer(Modifier.height(12.dp))
+                    Text(state.error!!, color = ErrorColor, style = MaterialTheme.typography.bodyMedium)
+                    Spacer(Modifier.height(16.dp))
+                    Button(
+                        onClick = { viewModel.loadExams() },
+                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue)
+                    ) { Text("Reintentar") }
+                }
+            } else {
+                EmptyState(
+                    icon     = Icons.Default.Assignment,
+                    title    = "Sin exámenes",
+                    subtitle = "Crea un examen para evaluar a tus estudiantes",
+                    action   = "Crear examen",
+                    onAction = { viewModel.showCreateExamDialog() }
+                )
+            }
         } else {
             LazyColumn(
                 contentPadding = PaddingValues(16.dp),

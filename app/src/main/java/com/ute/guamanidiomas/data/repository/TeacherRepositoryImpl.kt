@@ -52,7 +52,10 @@ class TeacherRepositoryImpl @Inject constructor(
         val response = classroomApi.getClassrooms()
         if (response.isSuccessful) {
             response.body()?.results?.map { it.toDomain() } ?: emptyList()
-        } else throw Exception(apiError(response.code(), response.errorBody()?.string()))
+        } else {
+            val errorBody = response.errorBody()?.string()
+            throw Exception(apiError(response.code(), errorBody))
+        }
     }
 
     override suspend fun getClassroomById(id: Int): Result<Classroom> = runCatching {
