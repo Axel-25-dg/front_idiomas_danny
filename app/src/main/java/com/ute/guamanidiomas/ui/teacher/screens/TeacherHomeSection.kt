@@ -339,7 +339,7 @@ private fun ClassroomSummaryCard(classroom: Classroom) {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    classroom.courseLevel.ifBlank { "??" },
+                    classroom.courseTitle.take(3).ifBlank { "EN" },
                     fontWeight = FontWeight.Black,
                     color      = PrimaryBlue,
                     fontSize   = 13.sp

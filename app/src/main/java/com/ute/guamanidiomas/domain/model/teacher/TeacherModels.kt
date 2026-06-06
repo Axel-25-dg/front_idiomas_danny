@@ -6,7 +6,6 @@ data class Classroom(
     val id: Int,
     val courseId: Int,
     val courseTitle: String,
-    val courseLevel: String,
     val name: String,
     val description: String,
     val accessCode: String,

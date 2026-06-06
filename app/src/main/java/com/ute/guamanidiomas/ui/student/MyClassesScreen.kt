@@ -154,7 +154,7 @@ private fun StudentClassCard(classroom: Classroom, onClick: () -> Unit) {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    classroom.courseLevel.ifBlank { "EN" },
+                    classroom.courseTitle.take(3).ifBlank { "EN" },
                     fontWeight = FontWeight.Black,
                     color      = PrimaryBlue,
                     fontSize   = 14.sp
@@ -181,7 +181,7 @@ private fun StudentClassCard(classroom: Classroom, onClick: () -> Unit) {
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     Surface(color = LightBlue, shape = RoundedCornerShape(6.dp)) {
                         Text(
-                            classroom.courseLevel.ifBlank { "N/A" },
+                            classroom.courseTitle.ifBlank { "N/A" },
                             modifier  = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                             fontSize  = 11.sp,
                             fontWeight = FontWeight.Bold,

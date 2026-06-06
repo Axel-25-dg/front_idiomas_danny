@@ -180,7 +180,7 @@ private fun ClassroomCard(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        classroom.courseLevel.ifBlank { "??" },
+                        classroom.courseTitle.take(4).ifBlank { "EN" },
                         fontWeight = FontWeight.Black,
                         color      = PrimaryBlue,
                         fontSize   = 14.sp
@@ -204,7 +204,19 @@ private fun ClassroomCard(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-                LevelBadge(classroom.courseLevel)
+                // Badge activo/inactivo
+                Surface(
+                    color = if (classroom.isActive) Success.copy(alpha = 0.12f) else ErrorColor.copy(alpha = 0.12f),
+                    shape = RoundedCornerShape(6.dp)
+                ) {
+                    Text(
+                        if (classroom.isActive) "Activo" else "Inactivo",
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (classroom.isActive) Success else ErrorColor
+                    )
+                }
             }
 
             if (classroom.description.isNotBlank()) {

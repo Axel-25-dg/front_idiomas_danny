@@ -9,27 +9,27 @@ data class ClassroomDto(
     val id: Int,
     @SerializedName("course") val courseId: Int,
     @SerializedName("course_title") val courseTitle: String = "",
-    @SerializedName("course_level") val courseLevel: String = "",
     val name: String,
     val description: String = "",
     @SerializedName("access_code") val accessCode: String = "",
     @SerializedName("teacher") val teacherId: Int,
+    @SerializedName("teacher_email") val teacherEmail: String = "",
     @SerializedName("teacher_name") val teacherName: String = "",
+    @SerializedName("total_students") val totalStudents: Int = 0,
     @SerializedName("student_count") val studentCount: Int = 0,
     @SerializedName("is_active") val isActive: Boolean = true,
     @SerializedName("created_at") val createdAt: String = ""
 ) {
     fun toDomain() = Classroom(
         id           = id,
-        courseId     = courseId,
-        courseTitle  = courseTitle,
-        courseLevel  = courseLevel,
+        courseId      = courseId,
+        courseTitle   = courseTitle,
         name         = name,
         description  = description,
         accessCode   = accessCode,
         teacherId    = teacherId,
-        teacherName  = teacherName,
-        studentCount = studentCount,
+        teacherName  = teacherName.ifBlank { teacherEmail },
+        studentCount = if (totalStudents > 0) totalStudents else studentCount,
         isActive     = isActive,
         createdAt    = createdAt
     )
