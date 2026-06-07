@@ -29,7 +29,8 @@ data class SentenceBuilderUiState(
 
 @HiltViewModel
 class SentenceBuilderViewModel @Inject constructor(
-    private val gamificationRepository: GamificationRepository
+    private val gamificationRepository: GamificationRepository,
+    private val progressManager: com.ute.guamanidiomas.data.local.GameProgressManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SentenceBuilderUiState())
@@ -110,13 +111,10 @@ class SentenceBuilderViewModel @Inject constructor(
     private fun completeGame() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
+            progressManager.recordGameCompleted("sentence_builder", _uiState.value.score)
             gamificationRepository.postProgress(lessonId = 3, score = _uiState.value.score)
-                .onSuccess {
-                    _uiState.update { it.copy(isLoading = false, isCompleted = true) }
-                }
-                .onFailure {
-                    _uiState.update { it.copy(isLoading = false, isCompleted = true) }
-                }
+                .onSuccess { _uiState.update { it.copy(isLoading = false, isCompleted = true) } }
+                .onFailure { _uiState.update { it.copy(isLoading = false, isCompleted = true) } }
         }
     }
 }

@@ -32,7 +32,8 @@ data class HangmanUiState(
 
 @HiltViewModel
 class HangmanViewModel @Inject constructor(
-    private val gamificationRepository: GamificationRepository
+    private val gamificationRepository: GamificationRepository,
+    private val progressManager: com.ute.guamanidiomas.data.local.GameProgressManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HangmanUiState())
@@ -102,6 +103,7 @@ class HangmanViewModel @Inject constructor(
             val isLastRound = st.round >= st.totalRounds
             if (isLastRound) {
                 viewModelScope.launch {
+                    progressManager.recordGameCompleted("hangman", newScore)
                     gamificationRepository.postProgress(lessonId = 5, score = newScore)
                 }
             }

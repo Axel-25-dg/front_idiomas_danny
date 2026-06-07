@@ -32,7 +32,8 @@ data class VocabQuizUiState(
 
 @HiltViewModel
 class VocabQuizViewModel @Inject constructor(
-    private val gamificationRepository: GamificationRepository
+    private val gamificationRepository: GamificationRepository,
+    private val progressManager: com.ute.guamanidiomas.data.local.GameProgressManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(VocabQuizUiState())
@@ -135,6 +136,7 @@ class VocabQuizViewModel @Inject constructor(
     private fun finishQuiz(finalScore: Int) {
         viewModelScope.launch {
             _uiState.update { it.copy(isCompleted = true, isLoading = true, isTimerRunning = false) }
+            progressManager.recordGameCompleted("vocab_quiz", finalScore)
             gamificationRepository.postProgress(lessonId = 4, score = finalScore)
             _uiState.update { it.copy(isLoading = false) }
         }

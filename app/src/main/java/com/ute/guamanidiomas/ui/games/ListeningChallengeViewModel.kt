@@ -29,7 +29,8 @@ data class ListeningUiState(
 
 @HiltViewModel
 class ListeningChallengeViewModel @Inject constructor(
-    private val gamificationRepository: GamificationRepository
+    private val gamificationRepository: GamificationRepository,
+    private val progressManager: com.ute.guamanidiomas.data.local.GameProgressManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ListeningUiState())
@@ -76,6 +77,7 @@ class ListeningChallengeViewModel @Inject constructor(
         val st = _uiState.value
         if (st.currentIndex + 1 >= st.questions.size) {
             viewModelScope.launch {
+                progressManager.recordGameCompleted("listening_challenge", st.score)
                 gamificationRepository.postProgress(lessonId = 7, score = st.score)
             }
             _uiState.update { it.copy(isCompleted = true) }

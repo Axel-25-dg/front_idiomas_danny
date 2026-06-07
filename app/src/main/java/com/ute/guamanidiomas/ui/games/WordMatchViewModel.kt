@@ -2,6 +2,7 @@ package com.ute.guamanidiomas.ui.games
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ute.guamanidiomas.data.local.GameProgressManager
 import com.ute.guamanidiomas.domain.repository.GamificationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -10,11 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class WordPair(
-    val english: String,
-    val spanish: String,
-    var isMatched: Boolean = false
-)
+data class WordPair(val english: String, val spanish: String)
 
 data class WordMatchUiState(
     val wordsEnglish: List<String> = emptyList(),
@@ -26,48 +23,45 @@ data class WordMatchUiState(
     val score: Int = 0,
     val isGameOver: Boolean = false,
     val isSavingProgress: Boolean = false,
-    val message: String? = null
+    val message: String? = null,
+    val level: Int = 1
 )
 
 @HiltViewModel
 class WordMatchViewModel @Inject constructor(
-    private val gamificationRepository: GamificationRepository
+    private val gamificationRepository: GamificationRepository,
+    private val progressManager: GameProgressManager
 ) : ViewModel() {
 
-    private val allPairs = listOf(
-        WordPair("Apple", "Manzana"),
-        WordPair("House", "Casa"),
-        WordPair("Book", "Libro"),
-        WordPair("Water", "Agua"),
-        WordPair("School", "Escuela"),
-        WordPair("Teacher", "Profesor"),
-        WordPair("Student", "Estudiante"),
-        WordPair("Table", "Mesa"),
-        WordPair("Computer", "Computadora"),
-        WordPair("Phone", "Teléfono"),
-        WordPair("Friend", "Amigo"),
-        WordPair("Family", "Familia"),
-        WordPair("Bread", "Pan"),
-        WordPair("Milk", "Leche"),
-        WordPair("Coffee", "Café")
+    // Palabras por nivel — cada nivel agrega vocabulario mas dificil
+    private val levelWords = mapOf(
+        1 to listOf(WordPair("Dog", "Perro"), WordPair("Cat", "Gato"), WordPair("House", "Casa"), WordPair("Book", "Libro"), WordPair("Water", "Agua"), WordPair("Sun", "Sol"), WordPair("Moon", "Luna"), WordPair("Tree", "Arbol")),
+        2 to listOf(WordPair("Apple", "Manzana"), WordPair("School", "Escuela"), WordPair("Teacher", "Profesor"), WordPair("Student", "Estudiante"), WordPair("Computer", "Computadora"), WordPair("Phone", "Telefono"), WordPair("Friend", "Amigo"), WordPair("Family", "Familia")),
+        3 to listOf(WordPair("Knowledge", "Conocimiento"), WordPair("Success", "Exito"), WordPair("Challenge", "Desafio"), WordPair("Development", "Desarrollo"), WordPair("Environment", "Medio ambiente"), WordPair("Relationship", "Relacion"), WordPair("Achievement", "Logro"), WordPair("Opportunity", "Oportunidad")),
+        4 to listOf(WordPair("Ambitious", "Ambicioso"), WordPair("Perseverance", "Perseverancia"), WordPair("Overwhelmed", "Abrumado"), WordPair("Entrepreneur", "Emprendedor"), WordPair("Consciousness", "Conciencia"), WordPair("Nevertheless", "Sin embargo"), WordPair("Sophisticated", "Sofisticado"), WordPair("Accountability", "Responsabilidad")),
+        5 to listOf(WordPair("Serendipity", "Serendipia"), WordPair("Ubiquitous", "Omnipresente"), WordPair("Resilience", "Resiliencia"), WordPair("Paradigm", "Paradigma"), WordPair("Ephemeral", "Efimero"), WordPair("Benevolent", "Benevolente"), WordPair("Quintessential", "Esencial"), WordPair("Unprecedented", "Sin precedentes"))
     )
 
     private val _uiState = MutableStateFlow(WordMatchUiState())
     val uiState = _uiState.asStateFlow()
 
-    init {
-        startGame()
+    init { loadLevel() }
+
+    private fun loadLevel() {
+        viewModelScope.launch {
+            val level = progressManager.getLevel("word_match").coerceIn(1, 5)
+            startGame(level)
+        }
     }
 
-    fun startGame() {
-        val gamePairs = allPairs.shuffled().take(6)
+    fun startGame(level: Int = _uiState.value.level) {
+        val words = levelWords[level.coerceIn(1, 5)] ?: levelWords[1]!!
+        val pairsCount = (4 + level).coerceAtMost(8) // nivel 1 = 5 parejas, nivel 5 = 8
+        val gamePairs = words.shuffled().take(pairsCount)
         _uiState.value = WordMatchUiState(
             wordsEnglish = gamePairs.map { it.english }.shuffled(),
             wordsSpanish = gamePairs.map { it.spanish }.shuffled(),
-            matchedPairs = emptySet(),
-            matchedSpanish = emptySet(),
-            score = 0,
-            isGameOver = false
+            level = level
         )
     }
 
@@ -79,45 +73,40 @@ class WordMatchViewModel @Inject constructor(
 
     fun selectSpanish(word: String) {
         if (_uiState.value.matchedSpanish.contains(word)) return
-        
         _uiState.value = _uiState.value.copy(selectedSpanish = word)
         checkMatch()
     }
 
     private fun checkMatch() {
         val state = _uiState.value
-        val eng = state.selectedEnglish
-        val spa = state.selectedSpanish
+        val eng = state.selectedEnglish ?: return
+        val spa = state.selectedSpanish ?: return
 
-        if (eng != null && spa != null) {
-            val pair = allPairs.find { it.english == eng && it.spanish == spa }
-            if (pair != null) {
-                // Correct match
-                val newMatchedEng = state.matchedPairs + eng
-                val newMatchedSpa = state.matchedSpanish + spa
-                val newScore = state.score + 15
-                _uiState.value = state.copy(
-                    matchedPairs = newMatchedEng,
-                    matchedSpanish = newMatchedSpa,
-                    selectedEnglish = null,
-                    selectedSpanish = null,
-                    score = newScore,
-                    message = "¡Correcto! +15 XP"
-                )
-                if (newMatchedEng.size == state.wordsEnglish.size) {
-                    completeGame(newScore)
-                }
-            } else {
-                // Wrong match
-                viewModelScope.launch {
-                    _uiState.value = state.copy(message = "Inténtalo de nuevo")
-                    delay(800)
-                    _uiState.value = _uiState.value.copy(
-                        selectedEnglish = null,
-                        selectedSpanish = null,
-                        message = null
-                    )
-                }
+        val level = state.level.coerceIn(1, 5)
+        val allPairs = levelWords[level] ?: levelWords[1]!!
+        val pair = allPairs.find { it.english == eng && it.spanish == spa }
+
+        if (pair != null) {
+            val newMatchedEng = state.matchedPairs + eng
+            val newMatchedSpa = state.matchedSpanish + spa
+            val xpPerMatch = 10 + (level * 3) // mas XP en niveles altos
+            val newScore = state.score + xpPerMatch
+            _uiState.value = state.copy(
+                matchedPairs = newMatchedEng,
+                matchedSpanish = newMatchedSpa,
+                selectedEnglish = null,
+                selectedSpanish = null,
+                score = newScore,
+                message = "+$xpPerMatch XP"
+            )
+            if (newMatchedEng.size == state.wordsEnglish.size) {
+                completeGame(newScore)
+            }
+        } else {
+            viewModelScope.launch {
+                _uiState.value = state.copy(message = "Incorrecto")
+                delay(700)
+                _uiState.value = _uiState.value.copy(selectedEnglish = null, selectedSpanish = null, message = null)
             }
         }
     }
@@ -125,24 +114,9 @@ class WordMatchViewModel @Inject constructor(
     private fun completeGame(finalScore: Int) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isSavingProgress = true)
-            // Aquí simulamos el guardado en el backend usando el lessonId 1 (esto debería ser dinámico)
-            // En un futuro el backend debería tener un endpoint específico para juegos o usar el de progreso.
+            progressManager.recordGameCompleted("word_match", finalScore)
             gamificationRepository.postProgress(lessonId = 1, score = finalScore)
-                .onSuccess {
-                    _uiState.value = _uiState.value.copy(
-                        isGameOver = true,
-                        isSavingProgress = false,
-                        message = "¡Felicidades! Progreso guardado."
-                    )
-                }
-                .onFailure { e ->
-                    _uiState.value = _uiState.value.copy(
-                        isGameOver = true,
-                        isSavingProgress = false,
-                        message = "Juego terminado (Error al sincronizar)"
-                    )
-                }
+            _uiState.value = _uiState.value.copy(isGameOver = true, isSavingProgress = false, message = "Nivel ${_uiState.value.level} completado")
         }
     }
 }
-

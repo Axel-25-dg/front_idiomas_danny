@@ -21,7 +21,8 @@ class HomeViewModel @Inject constructor(
     private val courseRepository: CourseRepository,
     private val languageRepository: LanguageRepository,
     private val homeRepository: HomeRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val gameProgressManager: com.ute.guamanidiomas.data.local.GameProgressManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -70,6 +71,21 @@ class HomeViewModel @Inject constructor(
                             totalXp = dto.totalXp,
                             currentStreak = dto.currentStreak,
                             longestStreak = dto.longestStreak
+                        )
+                        // Sincronizar con datos locales de juegos
+                        gameProgressManager.syncWithBackend(dto.totalXp, dto.currentStreak, dto.longestStreak)
+                    }
+                }
+
+                // Si el backend no devolvio stats, usar datos locales de juegos
+                if (stats == null) {
+                    val local = gameProgressManager.getSnapshot()
+                    if (local.totalXp > 0 || local.currentStreak > 0) {
+                        stats = com.ute.guamanidiomas.ui.home.UserStats(
+                            id = 0, user = 0, userEmail = "",
+                            totalXp = local.totalXp,
+                            currentStreak = local.currentStreak,
+                            longestStreak = local.longestStreak
                         )
                     }
                 }
