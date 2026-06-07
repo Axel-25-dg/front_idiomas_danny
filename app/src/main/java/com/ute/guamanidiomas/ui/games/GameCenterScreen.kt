@@ -43,11 +43,11 @@ fun GameCenterScreen(
         GameInfo(
             id          = "word_match",
             title       = "Word Match",
-            description = "Une palabras con su traducción",
+            description = "Une palabras con su traduccion",
             icon        = Icons.Default.Translate,
             color       = PrimaryBlue,
             xpReward    = 90,
-            difficulty  = "Fácil"
+            difficulty  = "Facil"
         ),
         GameInfo(
             id          = "flashcards",
@@ -56,7 +56,7 @@ fun GameCenterScreen(
             icon        = Icons.Default.Style,
             color       = PrimaryRed,
             xpReward    = 160,
-            difficulty  = "Fácil"
+            difficulty  = "Facil"
         ),
         GameInfo(
             id          = "sentence_builder",
@@ -86,13 +86,22 @@ fun GameCenterScreen(
             difficulty  = "Medio"
         ),
         GameInfo(
-            id          = "memory_cards",
-            title       = "Memory",
-            description = "Encuentra los pares en el tablero",
-            icon        = Icons.Default.GridView,
+            id          = "listening_challenge",
+            title       = "Listening",
+            description = "Escucha y selecciona la respuesta",
+            icon        = Icons.Default.Hearing,
             color       = Color(0xFF059669),
-            xpReward    = 120,
-            difficulty  = "Difícil"
+            xpReward    = 130,
+            difficulty  = "Dificil"
+        ),
+        GameInfo(
+            id          = "verb_conjugation",
+            title       = "Verbos",
+            description = "Conjuga verbos en el tiempo correcto",
+            icon        = Icons.Default.Spellcheck,
+            color       = Color(0xFFDC2626),
+            xpReward    = 140,
+            difficulty  = "Dificil"
         )
     )
 

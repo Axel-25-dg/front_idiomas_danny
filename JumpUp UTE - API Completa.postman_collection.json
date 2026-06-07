@@ -1,0 +1,1915 @@
+{
+  "info": {
+    "_postman_id": "74063260-acfa-4957-8106-8983f77a6be9",
+    "name": "JumpUp UTE - API Completa",
+    "description": "Colección completa de la API de aprendizaje de idiomas.\n\nPasos:\n1. Ejecuta 'Register' o 'Login' primero\n2. Copia el access token de la respuesta\n3. Pégalo en la variable {{token}} de la colección\n\nO configura la variable base_url si usas servidor remoto.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "44963018"
+  },
+  "item": [
+    {
+      "name": "Autenticación",
+      "item": [
+        {
+          "name": "Register (Estudiante)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"test@email.com\",\n  \"password\": \"TestPass123!\",\n  \"password2\": \"TestPass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var data = pm.response.json();",
+                  "    pm.collectionVariables.set(\"token\", data.access);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"alex1234@gmail.com\",\n  \"password\": \"principe123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/token/refresh/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "token",
+                "refresh",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Me (Mi perfil)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/me/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "me",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Gestión Usuarios (Solo Admin)",
+      "item": [
+        {
+          "name": "Listar Staff",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Teacher",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"profesor1\",\n  \"email\": \"profe1@email.com\",\n  \"first_name\": \"Carlos\",\n  \"last_name\": \"García\",\n  \"password\": \"ProfePass123!\",\n  \"role_id\": 2\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Usuario",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Carlos Actualizado\",\n  \"role_id\": 2\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/1/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "1",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar Usuario",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/1/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "1",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Idiomas",
+      "item": [
+        {
+          "name": "Listar Idiomas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/languages/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "languages",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Idioma (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Inglés\",\n  \"code\": \"EN\",\n  \"flag_icon_url\": \"https://flagcdn.com/w80/gb.png\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/languages/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "languages",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Detalle Idioma",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/languages/1/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "languages",
+                "1",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Idioma (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Inglés\",\n  \"code\": \"EN\",\n  \"flag_icon_url\": \"https://flagcdn.com/w80/gb.png\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/languages/1/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "languages",
+                "1",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar Idioma (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/languages/1/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "languages",
+                "1",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Cursos",
+      "item": [
+        {
+          "name": "Listar Cursos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/courses/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "courses",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Cursos (filtro idioma+nivel)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/courses/?language=1&difficulty_level=A1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "courses",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "language",
+                  "value": "1"
+                },
+                {
+                  "key": "difficulty_level",
+                  "value": "A1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Curso (Teacher/Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"language\": 1,\n  \"title\": \"Inglés para principiantes\",\n  \"description\": \"Curso completo de inglés nivel A1\",\n  \"difficulty_level\": \"A1\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/courses/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "courses",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Detalle Curso",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/courses/1/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "courses",
+                "1",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar Curso (Teacher/Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/courses/1/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "courses",
+                "1",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Módulos",
+      "item": [
+        {
+          "name": "Listar Módulos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/modules/?course=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "modules",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "course",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Módulo (Teacher/Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"course\": 1,\n  \"title\": \"Saludos y presentaciones\",\n  \"order\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/modules/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "modules",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Lecciones",
+      "item": [
+        {
+          "name": "Listar Lecciones",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/lessons/?module=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "lessons",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "module",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Lección (Teacher/Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"module\": 1,\n  \"title\": \"Hello & Goodbye\",\n  \"content_type\": \"video\",\n  \"order\": 1,\n  \"xp_reward\": 15\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/lessons/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "lessons",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Examen (Lección interactiva)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"module\": 1,\n  \"title\": \"Examen Final - Saludos\",\n  \"content_type\": \"interactive\",\n  \"order\": 10,\n  \"xp_reward\": 100\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/lessons/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "lessons",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Ejercicios",
+      "item": [
+        {
+          "name": "Listar Ejercicios de una Lección",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/exercises/?lesson=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "exercises",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "lesson",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Ejercicio - Opción Múltiple",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lesson\": 1,\n  \"question_text\": \"¿Cómo se dice 'Hola' en inglés?\",\n  \"exercise_type\": \"multiple_choice\",\n  \"correct_answer\": \"Hello\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/exercises/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "exercises",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Ejercicio - Traducir",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lesson\": 1,\n  \"question_text\": \"Traduce: Good morning\",\n  \"exercise_type\": \"translate\",\n  \"correct_answer\": \"Buenos días\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/exercises/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "exercises",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Ejercicio - Completar",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lesson\": 1,\n  \"question_text\": \"She ___ a teacher. (is/are/am)\",\n  \"exercise_type\": \"fill_blank\",\n  \"correct_answer\": \"is\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/exercises/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "exercises",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Ejercicio - Escuchar",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lesson\": 1,\n  \"question_text\": \"Escucha y selecciona la palabra correcta\",\n  \"exercise_type\": \"listen\",\n  \"correct_answer\": \"Goodbye\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/exercises/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "exercises",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Ejercicio - Emparejar",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lesson\": 1,\n  \"question_text\": \"Empareja: Cat = ?\",\n  \"exercise_type\": \"match\",\n  \"correct_answer\": \"Gato\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/exercises/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "exercises",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Progreso",
+      "item": [
+        {
+          "name": "Mi Progreso",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/progress/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "progress",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mi Progreso (solo completados)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/progress/?status=completed",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "progress",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "completed"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Registrar Progreso (completar lección)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lesson\": 1,\n  \"status\": \"completed\",\n  \"score\": 90\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/progress/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "progress",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Stats (XP + Racha)",
+      "item": [
+        {
+          "name": "Mis Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/stats/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "stats",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Logros",
+      "item": [
+        {
+          "name": "Catálogo de Logros",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/achievements/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "achievements",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mis Logros Desbloqueados",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/my-achievements/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "my-achievements",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Classrooms (Clases)",
+      "item": [
+        {
+          "name": "Listar Mis Clases (Teacher)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/classrooms/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "classrooms",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Clase (Teacher/Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Inglés A1 - Grupo Tarde\",\n  \"description\": \"Clases lunes y miércoles 14:00-16:00\",\n  \"course\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/classrooms/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "classrooms",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Detalle Clase (con alumnos)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/classrooms/1/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "classrooms",
+                "1",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Unirse a Clase (Student - con código)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"access_code\": \"A3FX9K2T\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/classrooms/join/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "classrooms",
+                "join",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mis Clases (Student)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/classrooms/mine/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "classrooms",
+                "mine",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Expulsar Estudiante (Teacher)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"student_id\": 3\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/classrooms/1/remove-student/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "classrooms",
+                "1",
+                "remove-student",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Recursos (Teacher)",
+      "item": [
+        {
+          "name": "Listar Recursos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/resources/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "resources",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Recursos (filtro tipo)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/resources/?resource_type=pdf&course=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "resources",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "resource_type",
+                  "value": "pdf"
+                },
+                {
+                  "key": "course",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Recurso PDF",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Gramática A1 - Verbos regulares\",\n  \"description\": \"PDF con conjugaciones en presente y pasado\",\n  \"resource_type\": \"pdf\",\n  \"file_url\": \"https://drive.google.com/file/d/1ABC123/view\",\n  \"course\": 1,\n  \"lesson\": null,\n  \"is_public\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/resources/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "resources",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Recurso Audio",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Pronunciación - Vocales\",\n  \"description\": \"Audio con ejemplos de pronunciación\",\n  \"resource_type\": \"audio\",\n  \"file_url\": \"https://drive.google.com/file/d/audio123/view\",\n  \"course\": 1,\n  \"lesson\": 1,\n  \"is_public\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/resources/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "resources",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Recurso Video",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Clase grabada - Saludos\",\n  \"description\": \"Video de la clase del lunes\",\n  \"resource_type\": \"video\",\n  \"file_url\": \"https://www.youtube.com/watch?v=abc123\",\n  \"course\": 1,\n  \"lesson\": null,\n  \"is_public\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/resources/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "resources",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Recurso Word",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Tarea semana 3\",\n  \"description\": \"Documento Word con ejercicios de tarea\",\n  \"resource_type\": \"word\",\n  \"file_url\": \"https://drive.google.com/file/d/word456/view\",\n  \"course\": 1,\n  \"lesson\": null,\n  \"is_public\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/resources/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "resources",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Recurso Enlace",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Cambridge Dictionary Online\",\n  \"description\": \"Diccionario para consultas\",\n  \"resource_type\": \"link\",\n  \"file_url\": \"https://dictionary.cambridge.org/\",\n  \"course\": null,\n  \"lesson\": null,\n  \"is_public\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/resources/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "resources",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Recurso",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Gramática A1 - Actualizado\",\n  \"description\": \"Versión actualizada\",\n  \"resource_type\": \"pdf\",\n  \"file_url\": \"https://drive.google.com/file/d/nuevo/view\",\n  \"course\": 1,\n  \"lesson\": null,\n  \"is_public\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/resources/1/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "resources",
+                "1",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar Recurso",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/resources/1/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "resources",
+                "1",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Certificados",
+      "item": [
+        {
+          "name": "Listar Certificados",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/certificates/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "certificates",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Certificado (Teacher/Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"student\": 3,\n  \"level\": \"A1\",\n  \"title\": \"Certificado de Inglés A1 - JumpUp UTE\",\n  \"description\": \"Aprobó satisfactoriamente el nivel A1\",\n  \"status\": \"pending\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/certificates/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "certificates",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Emitir Certificado (aprobar)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/certificates/1/issue/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "certificates",
+                "1",
+                "issue",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Revocar Certificado",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/certificates/1/revoke/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "certificates",
+                "1",
+                "revoke",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verificar Certificado (PÚBLICO)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/certificates/verify/CERT-A3FX9K2T/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "certificates",
+                "verify",
+                "CERT-A3FX9K2T",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Suscripciones",
+      "item": [
+        {
+          "name": "Listar Planes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/subscriptions/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "subscriptions",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Plan (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Premium Mensual\",\n  \"price\": \"9.99\",\n  \"duration_days\": 30,\n  \"features\": \"Acceso ilimitado, sin anuncios, contenido exclusivo\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/subscriptions/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "subscriptions",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mis Suscripciones",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/my-subscriptions/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "my-subscriptions",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Suscribirse a un Plan",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subscription\": 1,\n  \"start_date\": \"2026-06-01\",\n  \"end_date\": \"2026-07-01\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/my-subscriptions/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "my-subscriptions",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Pagos y Órdenes",
+      "item": [
+        {
+          "name": "Mis Pagos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/payments/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payments",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Registrar Pago",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": \"9.99\",\n  \"payment_method\": \"credit_card\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/payments/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payments",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mis Órdenes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Orden",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subscription\": 1,\n  \"total_amount\": \"9.99\",\n  \"payment_method\": \"credit_card\",\n  \"notes\": \"Primer pago\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/orders/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Estadísticas de Ventas (Solo Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/stats/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "stats",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000/api"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "refresh_token",
+      "value": ""
+    }
+  ]
+}

@@ -33,6 +33,8 @@ sealed class Screen(val route: String) {
     data object VocabQuiz : Screen("games/vocab_quiz")
     data object Hangman : Screen("games/hangman")
     data object MemoryCards : Screen("games/memory_cards")
+    data object ListeningChallenge : Screen("games/listening_challenge")
+    data object VerbConjugation : Screen("games/verb_conjugation")
     data object JoinClass : Screen("join_class")
     data object IATutor   : Screen("ia_tutor")
     data object Certificate : Screen("certificate/{courseId}") {

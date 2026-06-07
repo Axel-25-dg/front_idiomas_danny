@@ -107,21 +107,48 @@ class StudentViewModel @Inject constructor(
         viewModelScope.launch {
             _classDetailState.value = _classDetailState.value.copy(isLoading = true, error = null)
 
-            val classDeferred    = async { classroomRepository.getClassroomById(classroomId) }
-            val resourcesDeferred = async { classroomRepository.getClassroomResources(classroomId) }
+            // El backend tiene un bug: GET /api/classrooms/{id}/ devuelve 404 para estudiantes
+            // Workaround: buscar la clase en /classrooms/mine/ y cargar recursos aparte
+            val classroomsResult = classroomRepository.getMyClassrooms()
+            val classroom = classroomsResult.getOrNull()?.find { it.id == classroomId }
 
-            val classroom = classDeferred.await().getOrNull()
-            val resources = resourcesDeferred.await().getOrElse { emptyList() }
+            if (classroom != null) {
+                // Cargar recursos asociados
+                val resources = classroomRepository.getClassroomResources(classroomId)
+                    .getOrElse { emptyList() }
 
-            _classDetailState.value = _classDetailState.value.copy(
-                isLoading = false,
-                classroom = classroom,
-                resources = resources,
-                error     = if (classroom == null) "No se pudo cargar la clase" else null
-            )
+                _classDetailState.value = _classDetailState.value.copy(
+                    isLoading = false,
+                    classroom = classroom,
+                    resources = resources
+                )
+            } else {
+                // Fallback: intentar el endpoint directo (por si se corrige el backend)
+                val directResult = classroomRepository.getClassroomById(classroomId)
+                directResult
+                    .onSuccess { cls ->
+                        val resources = classroomRepository.getClassroomResources(classroomId)
+                            .getOrElse { emptyList() }
+                        _classDetailState.value = _classDetailState.value.copy(
+                            isLoading = false,
+                            classroom = cls,
+                            resources = resources
+                        )
+                    }
+                    .onFailure { e ->
+                        _classDetailState.value = _classDetailState.value.copy(
+                            isLoading = false,
+                            error     = when {
+                                e.message?.contains("401") == true -> "La sesion ha expirado. Inicia sesion nuevamente."
+                                e.message?.contains("404") == true -> "No se encontro la clase. Es posible que el acceso este restringido."
+                                e.message?.contains("500") == true -> "Error interno del servidor."
+                                else -> e.message ?: "Error al cargar la clase"
+                            }
+                        )
+                    }
+            }
         }
     }
-
     fun leaveClassroom(classroomId: Int) {
         viewModelScope.launch {
             classroomRepository.leaveClassroom(classroomId)
@@ -200,16 +227,24 @@ class StudentViewModel @Inject constructor(
             _leaderboardState.value = _leaderboardState.value.copy(isLoading = true, error = null)
             gamificationRepository.getMyStats()
                 .onSuccess { stats ->
-                    val sorted = stats.sortedByDescending { it.totalXp }
-                    _leaderboardState.value = _leaderboardState.value.copy(
-                        isLoading = false,
-                        students  = sorted
-                    )
+                    if (stats.isEmpty()) {
+                        _leaderboardState.value = _leaderboardState.value.copy(
+                            isLoading = false,
+                            students  = emptyList()
+                        )
+                    } else {
+                        val sorted = stats.sortedByDescending { it.totalXp }
+                        _leaderboardState.value = _leaderboardState.value.copy(
+                            isLoading = false,
+                            students  = sorted
+                        )
+                    }
                 }
                 .onFailure { e ->
+                    // Si el endpoint no existe o falla, mostrar vacio sin error critico
                     _leaderboardState.value = _leaderboardState.value.copy(
                         isLoading = false,
-                        error     = e.message ?: "Error al cargar ranking"
+                        students  = emptyList()
                     )
                 }
         }

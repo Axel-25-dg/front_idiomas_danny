@@ -26,6 +26,8 @@ import com.ute.guamanidiomas.ui.games.SentenceBuilderScreen
 import com.ute.guamanidiomas.ui.games.VocabQuizScreen
 import com.ute.guamanidiomas.ui.games.HangmanScreen
 import com.ute.guamanidiomas.ui.games.MemoryCardsScreen
+import com.ute.guamanidiomas.ui.games.ListeningChallengeScreen
+import com.ute.guamanidiomas.ui.games.VerbConjugationScreen
 import com.ute.guamanidiomas.ui.orders.OrdersScreen
 import com.ute.guamanidiomas.ui.admin.AdminDashboardScreen
 import com.ute.guamanidiomas.ui.admin.CourseManagementScreen
@@ -312,12 +314,14 @@ private fun NavGraphContent(
                 GameCenterScreen(
                     onNavigateToGame = { gameId ->
                         when (gameId) {
-                            "word_match"       -> navController.navigate(Screen.WordMatch.route)
-                            "flashcards"       -> navController.navigate(Screen.Flashcards.route)
-                            "sentence_builder" -> navController.navigate(Screen.SentenceBuilder.route)
-                            "vocab_quiz"       -> navController.navigate(Screen.VocabQuiz.route)
-                            "hangman"          -> navController.navigate(Screen.Hangman.route)
-                            "memory_cards"     -> navController.navigate(Screen.MemoryCards.route)
+                            "word_match"          -> navController.navigate(Screen.WordMatch.route)
+                            "flashcards"          -> navController.navigate(Screen.Flashcards.route)
+                            "sentence_builder"    -> navController.navigate(Screen.SentenceBuilder.route)
+                            "vocab_quiz"          -> navController.navigate(Screen.VocabQuiz.route)
+                            "hangman"             -> navController.navigate(Screen.Hangman.route)
+                            "memory_cards"        -> navController.navigate(Screen.MemoryCards.route)
+                            "listening_challenge" -> navController.navigate(Screen.ListeningChallenge.route)
+                            "verb_conjugation"    -> navController.navigate(Screen.VerbConjugation.route)
                         }
                     }
                 )
@@ -345,6 +349,14 @@ private fun NavGraphContent(
 
             composable(Screen.MemoryCards.route) {
                 MemoryCardsScreen(onBack = { navController.popBackStack() })
+            }
+
+            composable(Screen.ListeningChallenge.route) {
+                ListeningChallengeScreen(onBack = { navController.popBackStack() })
+            }
+
+            composable(Screen.VerbConjugation.route) {
+                VerbConjugationScreen(onBack = { navController.popBackStack() })
             }
 
             composable(Screen.JoinClass.route) {
