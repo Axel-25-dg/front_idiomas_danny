@@ -27,7 +27,7 @@ interface TeacherRepository {
     suspend fun getExamResults(examId: Int): Result<List<ExamResult>>
 
     // ── Resources ─────────────────────────────────────────────────────────────
-    suspend fun getResources(classroomId: Int? = null): Result<List<TeacherResource>>
+    suspend fun getResources(courseId: Int? = null): Result<List<TeacherResource>>
     suspend fun createResource(payload: TeacherResourcePayload): Result<TeacherResource>
     suspend fun updateResource(id: Int, payload: TeacherResourcePayload): Result<TeacherResource>
     suspend fun deleteResource(id: Int): Result<Unit>

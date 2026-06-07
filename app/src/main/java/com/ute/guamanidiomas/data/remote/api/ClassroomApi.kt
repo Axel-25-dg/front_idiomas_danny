@@ -21,10 +21,10 @@ interface ClassroomApi {
     @GET("classrooms/{id}/")
     suspend fun getClassroomById(@Path("id") id: Int): Response<ClassroomDto>
 
-    /** Obtener recursos de una clase — responde con objeto paginado */
+    /** Obtener recursos — filtrado por curso */
     @GET("resources/")
     suspend fun getClassroomResources(
-        @Query("classroom") classroomId: Int? = null
+        @Query("course") courseId: Int? = null
     ): Response<ResourcePage>
 
     /** Remover al estudiante autenticado de una clase */

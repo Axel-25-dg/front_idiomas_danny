@@ -7,26 +7,29 @@ import com.ute.guamanidiomas.domain.model.StudentStats
 import com.ute.guamanidiomas.domain.model.UserAchievement
 
 data class DjangoPage<T>(
-    val count: Int,
-    val next: String?,
-    val previous: String?,
-    val results: List<T>
+    val count: Int = 0,
+    val next: String? = null,
+    val previous: String? = null,
+    val results: List<T> = emptyList()
 )
 
 data class StudentStatsDto(
-    val id: Int,
-    @SerializedName("user") val userId: Int,
-    @SerializedName("user_email") val userEmail: String,
-    @SerializedName("total_xp") val totalXp: Int,
-    @SerializedName("current_streak") val currentStreak: Int,
-    @SerializedName("longest_streak") val longestStreak: Int,
+    val id: Int = 0,
+    @SerializedName("user") val userId: Int = 0,
+    @SerializedName("user_email") val userEmail: String? = null,
+    @SerializedName("total_xp") val totalXp: Int = 0,
+    @SerializedName("current_streak") val currentStreak: Int = 0,
+    @SerializedName("longest_streak") val longestStreak: Int = 0,
     @SerializedName("last_active_date") val lastActiveDate: String? = null,
-    @SerializedName("modules_completed") val modulesCompleted: Int = 0
+    @SerializedName("modules_completed") val modulesCompleted: Int = 0,
+    val level: Int? = null,
+    @SerializedName("xp_for_next_level") val xpForNextLevel: Int? = null,
+    @SerializedName("xp_progress") val xpProgress: Int? = null
 ) {
     fun toDomain() = StudentStats(
         id               = id,
         userId           = userId,
-        userEmail        = userEmail,
+        userEmail        = userEmail.orEmpty(),
         totalXp          = totalXp,
         currentStreak    = currentStreak,
         longestStreak    = longestStreak,
@@ -36,22 +39,22 @@ data class StudentStatsDto(
 }
 
 data class LessonProgressDto(
-    val id: Int,
-    @SerializedName("user") val userId: Int,
-    @SerializedName("user_email") val userEmail: String,
-    @SerializedName("lesson") val lessonId: Int,
-    @SerializedName("lesson_title") val lessonTitle: String,
-    val status: String,
+    val id: Int = 0,
+    @SerializedName("user") val userId: Int = 0,
+    @SerializedName("user_email") val userEmail: String? = null,
+    @SerializedName("lesson") val lessonId: Int = 0,
+    @SerializedName("lesson_title") val lessonTitle: String? = null,
+    val status: String? = null,
     val score: Int = 0,
     @SerializedName("completed_at") val completedAt: String? = null
 ) {
     fun toDomain() = LessonProgress(
         id          = id,
         userId      = userId,
-        userEmail   = userEmail,
+        userEmail   = userEmail.orEmpty(),
         lessonId    = lessonId,
-        lessonTitle = lessonTitle,
-        status      = status,
+        lessonTitle = lessonTitle.orEmpty(),
+        status      = status.orEmpty(),
         score       = score,
         completedAt = completedAt
     )
@@ -64,38 +67,53 @@ data class PostProgressRequestDto(
 )
 
 data class AchievementDetailDto(
-    val id: Int,
-    val title: String,
-    val description: String,
+    val id: Int = 0,
+    val name: String? = null,
+    val title: String? = null,
+    val description: String? = null,
     val icon: String? = null,
+    @SerializedName("icon_url") val iconUrl: String? = null,
     @SerializedName("xp_required") val xpRequired: Int = 0,
+    @SerializedName("required_xp") val requiredXp: Int = 0,
     @SerializedName("streak_required") val streakRequired: Int = 0
 ) {
     fun toDomain() = Achievement(
         id             = id,
-        title          = title,
-        description    = description,
-        icon           = icon.orEmpty(),
-        xpRequired     = xpRequired,
+        title          = name ?: title.orEmpty(),
+        description    = description.orEmpty(),
+        icon           = iconUrl ?: icon.orEmpty(),
+        xpRequired     = if (requiredXp > 0) requiredXp else xpRequired,
         streakRequired = streakRequired
     )
 }
 
 data class UserAchievementDto(
-    val id: Int,
-    @SerializedName("user") val userId: Int,
-    val achievement: AchievementDetailDto?,
+    val id: Int = 0,
+    @SerializedName("user") val userId: Int = 0,
+    val achievement: AchievementDetailDto? = null,
+    // Fallback fields - el backend puede enviar estos campos directamente
+    @SerializedName("achievement_name") val achievementName: String? = null,
     val title: String? = null,
+    val name: String? = null,
     val description: String? = null,
+    @SerializedName("icon_url") val iconUrl: String? = null,
     val unlocked: Boolean? = null,
     @SerializedName("unlocked_at") val unlockedAt: String? = null
 ) {
     fun toDomain() = UserAchievement(
         id          = id,
         userId      = userId,
-        title       = achievement?.title ?: title.orEmpty(),
-        description = achievement?.description ?: description.orEmpty(),
-        icon        = achievement?.icon.orEmpty(),
+        title       = achievement?.toDomain()?.title
+            ?: achievementName
+            ?: name
+            ?: title
+            ?: "Logro #$id",
+        description = achievement?.toDomain()?.description
+            ?: description
+            ?: "",
+        icon        = achievement?.toDomain()?.icon
+            ?: iconUrl
+            ?: "",
         unlockedAt  = unlockedAt.orEmpty()
     )
 }

@@ -53,6 +53,8 @@ data class TeacherExamsUiState(
     val showCreateDialog: Boolean = false,
     val editingExam: Exam? = null,
     val classrooms: List<Classroom> = emptyList(),
+    val courses: List<com.ute.guamanidiomas.domain.model.Course> = emptyList(),
+    val modules: List<com.ute.guamanidiomas.domain.model.Module> = emptyList(),
     val error: String? = null,
     val successMessage: String? = null
 )
@@ -74,6 +76,7 @@ class TeacherMainViewModel @Inject constructor(
     private val courseRepository: CourseRepository,
     private val lessonRepository: com.ute.guamanidiomas.domain.repository.LessonRepository,
     private val exerciseRepository: com.ute.guamanidiomas.domain.repository.ExerciseRepository,
+    private val moduleRepository: com.ute.guamanidiomas.domain.repository.ModuleRepository,
     private val tokenDataStore: TokenDataStore
 ) : ViewModel() {
 
@@ -313,15 +316,16 @@ class TeacherMainViewModel @Inject constructor(
             _examsState.value = _examsState.value.copy(isLoading = true, error = null)
 
             // Los "examenes" son Lessons con content_type = "interactive"
-            val lessonsResult      = lessonRepository.getAllLessons()
-            val classroomsResult   = teacherRepository.getClassrooms()
-            val classrooms         = classroomsResult.getOrElse { emptyList() }
+            val lessonsResult = lessonRepository.getAllLessons()
+            val coursesResult = courseRepository.getCourses(
+                com.ute.guamanidiomas.domain.repository.CourseFilters(pageSize = 100)
+            )
+
+            val courses = coursesResult.getOrElse { Pair(emptyList(), 0) }.first
 
             lessonsResult
                 .onSuccess { allLessons ->
-                    // Filtrar solo las interactivas (examenes)
                     val examLessons = allLessons.filter { it.isExam }
-                    // Convertir a Exam para compatibilidad con la UI
                     val exams = examLessons.map { lesson ->
                         Exam(
                             id               = lesson.id,
@@ -330,7 +334,7 @@ class TeacherMainViewModel @Inject constructor(
                             title            = lesson.title,
                             description      = lesson.content,
                             timeLimitMinutes = 60,
-                            passingScore     = 70,
+                            passingScore     = lesson.xpReward,
                             autoGrade        = true,
                             startDate        = null,
                             endDate          = null,
@@ -340,18 +344,27 @@ class TeacherMainViewModel @Inject constructor(
                         )
                     }
                     _examsState.value = _examsState.value.copy(
-                        isLoading  = false,
-                        exams      = exams,
-                        classrooms = classrooms
+                        isLoading = false,
+                        exams     = exams,
+                        courses   = courses
                     )
                 }
                 .onFailure { e ->
                     _examsState.value = _examsState.value.copy(
-                        isLoading  = false,
-                        exams      = emptyList(),
-                        classrooms = classrooms,
-                        error      = e.message ?: "Error al cargar examenes"
+                        isLoading = false,
+                        exams     = emptyList(),
+                        courses   = courses,
+                        error     = e.message ?: "Error al cargar lecciones"
                     )
+                }
+        }
+    }
+
+    fun loadModulesForCourse(courseId: Int) {
+        viewModelScope.launch {
+            moduleRepository.getModulesByCourse(courseId)
+                .onSuccess { modules ->
+                    _examsState.value = _examsState.value.copy(modules = modules)
                 }
         }
     }
@@ -384,29 +397,29 @@ class TeacherMainViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             _examsState.value = _examsState.value.copy(isLoading = true)
-            // Crear examen como Lesson con content_type = "interactive"
-            // classroomId aqui se usa como moduleId (el formulario selecciona un modulo)
+            // classroomId aqui se usa como moduleId
             val payload = com.ute.guamanidiomas.domain.model.LessonPayload(
-                moduleId    = classroomId,  // reutilizamos el parametro como moduleId
+                moduleId    = classroomId,
                 title       = title,
                 content     = description,
                 contentType = "interactive",
                 order       = 99,
-                xpReward    = passingScore,  // usamos passingScore como XP reward
+                xpReward    = passingScore,
                 isActive    = true
             )
             lessonRepository.createLesson(payload)
                 .onSuccess {
-                    loadExams()
                     _examsState.value = _examsState.value.copy(
+                        isLoading      = false,
                         showCreateDialog = false,
-                        successMessage   = "Examen «$title» creado correctamente"
+                        successMessage = "Leccion «$title» creada"
                     )
+                    loadExams() // Refrescar lista automaticamente
                 }
                 .onFailure { e ->
                     _examsState.value = _examsState.value.copy(
                         isLoading = false,
-                        error     = e.message ?: "Error al crear el examen"
+                        error     = e.message ?: "Error al crear la leccion"
                     )
                 }
         }
@@ -462,7 +475,7 @@ class TeacherMainViewModel @Inject constructor(
             ).onSuccess {
                 _examsState.value = _examsState.value.copy(
                     isLoading      = false,
-                    successMessage = "Pregunta agregada correctamente"
+                    successMessage = "Pregunta agregada"
                 )
                 loadExamQuestions(lessonId)
             }.onFailure { e ->

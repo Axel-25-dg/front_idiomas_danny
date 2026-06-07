@@ -31,15 +31,21 @@ class AdminUsersRepositoryImpl @Inject constructor(
         role: String,
         passwordProvisional: String
     ): Result<User> = runCatching {
+        // Mapear nombre de rol a role_id
+        val roleId = when (role.lowercase()) {
+            "admin", "administrador" -> 1
+            "teacher", "profesor"    -> 2
+            "student", "estudiante"  -> 3
+            else -> 3 // default student
+        }
         val request = UserCreateRequest(
-            username = username,
-            email = email,
+            username  = username,
+            email     = email,
             firstName = firstName,
-            lastName = lastName,
-            isStaff = true,
-            isActive = true,
-            role = role,
-            password = passwordProvisional
+            lastName  = lastName,
+            isActive  = true,
+            roleId    = roleId,
+            password  = passwordProvisional
         )
         val response = api.createUser(request)
         if (response.isSuccessful) {
@@ -54,9 +60,17 @@ class AdminUsersRepositoryImpl @Inject constructor(
         isActive: Boolean?,
         role: String?
     ): Result<User> = runCatching {
+        // Mapear nombre de rol a role_id si se envía
+        val roleId = when (role?.lowercase()) {
+            "admin", "administrador" -> 1
+            "teacher", "profesor"    -> 2
+            "student", "estudiante"  -> 3
+            null -> null
+            else -> null
+        }
         val request = UserUpdateRequest(
             isActive = isActive,
-            role = role
+            roleId   = roleId
         )
         val response = api.updateUser(id, request)
         if (response.isSuccessful) {

@@ -5,12 +5,17 @@ import com.ute.guamanidiomas.data.remote.dto.ClassroomPage
 import com.ute.guamanidiomas.data.remote.dto.ClassroomRequest
 import com.ute.guamanidiomas.data.remote.dto.EnrollmentDto
 import com.ute.guamanidiomas.data.remote.dto.TeacherStatsDto
+import com.ute.guamanidiomas.data.remote.dto.TeacherDashboardDto
 import retrofit2.Response
 import retrofit2.http.*
 
 interface TeacherClassroomApi {
 
-    // Stats del profesor autenticado
+    // Dashboard consolidado del profesor
+    @GET("dashboard/teacher/")
+    suspend fun getTeacherDashboard(): Response<TeacherDashboardDto>
+
+    // Legacy stats (fallback)
     @GET("teacher/stats/")
     suspend fun getTeacherStats(): Response<TeacherStatsDto>
 

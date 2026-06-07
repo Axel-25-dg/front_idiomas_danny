@@ -100,7 +100,7 @@ fun TeacherHomeSection(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     TeacherStatCard(
-                        label    = "Examenes",
+                        label    = "Lecciones",
                         value    = state.stats.activeExams.toString(),
                         icon     = Icons.Default.Quiz,
                         color    = Warning,

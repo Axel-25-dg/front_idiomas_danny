@@ -29,13 +29,21 @@ data class RegisterResponse(
 )
 
 data class RegisteredUserDto(
-    val id: Int,
-    val username: String,
-    val email: String,
-    val role: String? = null,
+    val id: Int = 0,
+    val username: String? = null,
+    val email: String? = null,
+    val role: RoleResponseDto? = null,
     val profile: ProfileDto? = null,
+    @SerializedName("is_staff") val isStaff: Boolean = false,
+    @SerializedName("is_superuser") val isSuperuser: Boolean = false,
     @SerializedName("is_active") val isActive: Boolean = true,
     @SerializedName("created_at") val createdAt: String? = null
+)
+
+/** El backend devuelve role como objeto { id, name } */
+data class RoleResponseDto(
+    val id: Int = 0,
+    val name: String? = null
 )
 
 data class ProfileDto(
@@ -76,17 +84,14 @@ data class UserCreateRequest(
     val email: String,
     @SerializedName("first_name") val firstName: String,
     @SerializedName("last_name") val lastName: String,
-    @SerializedName("is_staff") val isStaff: Boolean = true,
     @SerializedName("is_active") val isActive: Boolean = true,
-    @SerializedName("role_id") val roleId: Int? = null,
-    val role: String? = null,
+    @SerializedName("role_id") val roleId: Int,
     val password: String
 )
 
 data class UserUpdateRequest(
     @SerializedName("is_active") val isActive: Boolean? = null,
-    @SerializedName("role_id") val roleId: Int? = null,
-    val role: String? = null
+    @SerializedName("role_id") val roleId: Int? = null
 )
 
 fun UserDto.toDomain() = com.ute.guamanidiomas.domain.model.User(

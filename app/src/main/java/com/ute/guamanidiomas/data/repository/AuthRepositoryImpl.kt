@@ -96,7 +96,7 @@ class AuthRepositoryImpl @Inject constructor(
             ?.optString("role", "student")
             ?.lowercase()
             ?.trim()
-            ?: registeredUser?.role?.lowercase()?.trim()
+            ?: registeredUser?.role?.name?.lowercase()?.trim()
             ?: "student"
 
         val isStaff    = claims?.optBoolean("is_staff", false) ?: false

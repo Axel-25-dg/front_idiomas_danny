@@ -33,7 +33,13 @@ class AdminConsoleRepositoryImpl @Inject constructor(
     }
 
     override suspend fun assignRoleToUser(userId: Int, role: String): Result<Unit> = runCatching {
-        val response = adminUsersApi.updateUser(userId, UserUpdateRequest(role = role))
+        val roleId = when (role.lowercase()) {
+            "admin", "administrador" -> 1
+            "teacher", "profesor"    -> 2
+            "student", "estudiante"  -> 3
+            else -> 3
+        }
+        val response = adminUsersApi.updateUser(userId, UserUpdateRequest(roleId = roleId))
         if (!response.isSuccessful) {
             error(apiError("users/$userId/", response.code(), response.errorBody()?.string()))
         }

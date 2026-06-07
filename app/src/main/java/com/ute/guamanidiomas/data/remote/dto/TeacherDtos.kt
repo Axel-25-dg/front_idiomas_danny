@@ -18,7 +18,9 @@ data class ClassroomDto(
     @SerializedName("total_students") val totalStudents: Int? = null,
     @SerializedName("student_count") val studentCount: Int? = null,
     @SerializedName("is_active") val isActive: Boolean? = null,
-    @SerializedName("created_at") val createdAt: String? = null
+    @SerializedName("created_at") val createdAt: String? = null,
+    // Enrollments inline — el backend los incluye en el detalle de la clase
+    val enrollments: List<EnrollmentInlineDto>? = null
 ) {
     fun toDomain() = Classroom(
         id           = id,
@@ -29,11 +31,20 @@ data class ClassroomDto(
         accessCode   = accessCode.orEmpty(),
         teacherId    = teacherId ?: 0,
         teacherName  = (teacherName ?: teacherEmail).orEmpty(),
-        studentCount = (totalStudents ?: studentCount) ?: 0,
+        studentCount = (totalStudents ?: studentCount) ?: enrollments?.size ?: 0,
         isActive     = isActive ?: true,
         createdAt    = createdAt.orEmpty()
     )
 }
+
+/** Enrollment que viene inline dentro del ClassroomDetailSerializer */
+data class EnrollmentInlineDto(
+    val id: Int = 0,
+    val student: Int? = null,
+    @SerializedName("student_email") val studentEmail: String? = null,
+    @SerializedName("enrolled_at") val enrolledAt: String? = null,
+    @SerializedName("is_active") val isActive: Boolean? = null
+)
 
 data class ClassroomRequest(
     @SerializedName("course") val courseId: Int,
@@ -216,3 +227,13 @@ data class TeacherStatsDto(
         averageScore    = averageScore
     )
 }
+
+// ─── Teacher Dashboard (nuevo endpoint /api/dashboard/teacher/) ───────────────
+
+data class TeacherDashboardDto(
+    val classrooms: Int = 0,
+    val students: Int = 0,
+    val resources: Int = 0,
+    val lessons: Int = 0,
+    val certificates: Int = 0
+)

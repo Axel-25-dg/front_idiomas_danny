@@ -205,7 +205,7 @@ private fun NavGraphContent(
             composable(Screen.Home.route) {
                 HomeScreen(
                     onLogout       = { authViewModel.logout() },
-                    onCourseClick  = { id -> navController.navigate("course/$id") },
+                    onCourseClick  = { id -> if (id > 0) navController.navigate("course/$id") },
                     onCatalogClick = {
                         navController.navigate(Screen.Catalog.route) {
                             popUpTo(Screen.Home.route) { saveState = true }
@@ -226,7 +226,7 @@ private fun NavGraphContent(
 
             composable(Screen.Catalog.route) {
                 CatalogScreen(
-                    onCourseClick = { id -> navController.navigate("course/$id") },
+                    onCourseClick = { id -> if (id > 0) navController.navigate("course/$id") },
                     onOpenCart = { showCart = true },
                     cartViewModel = cartViewModel
                 )

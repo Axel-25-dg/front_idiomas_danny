@@ -34,7 +34,7 @@ enum class TeacherSection(
 ) {
     HOME("Inicio", Icons.Default.Home, Icons.Default.Home),
     CLASSES("Clases", Icons.Default.Class, Icons.Default.Class),
-    EXAMS("Examenes", Icons.Default.Quiz, Icons.Default.Quiz),
+    EXAMS("Lecciones", Icons.Default.Quiz, Icons.Default.Quiz),
     RESOURCES("Recursos", Icons.Default.Folder, Icons.Default.Folder),
     STUDENTS("Estudiantes", Icons.Default.Group, Icons.Default.Group)
 }

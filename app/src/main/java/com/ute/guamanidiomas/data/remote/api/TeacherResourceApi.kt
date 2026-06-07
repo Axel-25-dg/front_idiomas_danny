@@ -9,7 +9,7 @@ interface TeacherResourceApi {
 
     @GET("resources/")
     suspend fun getResources(
-        @Query("classroom") classroomId: Int? = null
+        @Query("course") courseId: Int? = null
     ): Response<TeacherResourcePage>
 
     @GET("resources/{id}/")

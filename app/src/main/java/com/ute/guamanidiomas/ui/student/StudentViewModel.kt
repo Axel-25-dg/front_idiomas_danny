@@ -57,7 +57,8 @@ data class LeaderboardUiState(
 class StudentViewModel @Inject constructor(
     private val classroomRepository: StudentClassroomRepository,
     private val certificateRepository: CertificateRepository,
-    private val gamificationRepository: GamificationRepository
+    private val gamificationRepository: GamificationRepository,
+    private val homeRepository: com.ute.guamanidiomas.domain.repository.HomeRepository
 ) : ViewModel() {
 
     // ── My Classes ────────────────────────────────────────────────────────────
@@ -113,8 +114,8 @@ class StudentViewModel @Inject constructor(
             val classroom = classroomsResult.getOrNull()?.find { it.id == classroomId }
 
             if (classroom != null) {
-                // Cargar recursos asociados
-                val resources = classroomRepository.getClassroomResources(classroomId)
+                // Cargar recursos asociados por course_id
+                val resources = classroomRepository.getClassroomResources(classroom.courseId)
                     .getOrElse { emptyList() }
 
                 _classDetailState.value = _classDetailState.value.copy(
@@ -123,11 +124,11 @@ class StudentViewModel @Inject constructor(
                     resources = resources
                 )
             } else {
-                // Fallback: intentar el endpoint directo (por si se corrige el backend)
+                // Fallback: intentar el endpoint directo
                 val directResult = classroomRepository.getClassroomById(classroomId)
                 directResult
                     .onSuccess { cls ->
-                        val resources = classroomRepository.getClassroomResources(classroomId)
+                        val resources = classroomRepository.getClassroomResources(cls.courseId)
                             .getOrElse { emptyList() }
                         _classDetailState.value = _classDetailState.value.copy(
                             isLoading = false,
@@ -225,27 +226,41 @@ class StudentViewModel @Inject constructor(
     fun loadLeaderboard() {
         viewModelScope.launch {
             _leaderboardState.value = _leaderboardState.value.copy(isLoading = true, error = null)
-            gamificationRepository.getMyStats()
-                .onSuccess { stats ->
-                    if (stats.isEmpty()) {
-                        _leaderboardState.value = _leaderboardState.value.copy(
-                            isLoading = false,
-                            students  = emptyList()
-                        )
-                    } else {
-                        val sorted = stats.sortedByDescending { it.totalXp }
-                        _leaderboardState.value = _leaderboardState.value.copy(
-                            isLoading = false,
-                            students  = sorted
+            // Usar endpoint real /api/ranking/
+            homeRepository.getRanking()
+                .onSuccess { ranking ->
+                    val stats = ranking.map { entry ->
+                        com.ute.guamanidiomas.domain.model.StudentStats(
+                            id = entry.userId,
+                            userId = entry.userId,
+                            userEmail = entry.username ?: "Usuario #${entry.position}",
+                            totalXp = entry.totalXp,
+                            currentStreak = entry.currentStreak,
+                            longestStreak = 0,
+                            lastActiveDate = "",
+                            modulesCompleted = entry.level
                         )
                     }
-                }
-                .onFailure { e ->
-                    // Si el endpoint no existe o falla, mostrar vacio sin error critico
                     _leaderboardState.value = _leaderboardState.value.copy(
                         isLoading = false,
-                        students  = emptyList()
+                        students  = stats
                     )
+                }
+                .onFailure {
+                    // Fallback: usar stats como antes
+                    gamificationRepository.getMyStats()
+                        .onSuccess { statsList ->
+                            _leaderboardState.value = _leaderboardState.value.copy(
+                                isLoading = false,
+                                students  = statsList.sortedByDescending { it.totalXp }
+                            )
+                        }
+                        .onFailure {
+                            _leaderboardState.value = _leaderboardState.value.copy(
+                                isLoading = false,
+                                students  = emptyList()
+                            )
+                        }
                 }
         }
     }

@@ -10,7 +10,11 @@ data class UserStats(
     val totalXp: Int,
     val currentStreak: Int,
     val longestStreak: Int
-)
+) {
+    val level: Int get() = (totalXp / 100) + 1
+    val xpForNextLevel: Int get() = level * 100
+    val levelProgress: Float get() = (totalXp % 100) / 100f
+}
 
 data class UserProgress(
     val id: Int,
@@ -41,5 +45,13 @@ data class HomeUiState(
     val stats: UserStats? = null,
     val unlockedAchievementsCount: Int = 0,
     val lessonProgressList: List<UserProgress> = emptyList(),
-    val teacherTasks: List<TeacherTask> = emptyList()
-)
+    val teacherTasks: List<TeacherTask> = emptyList(),
+    // Campos del dashboard real del backend
+    val completedLessonsCount: Int = 0,
+    val totalLessonsCount: Int = 0,
+    val progressPercentage: Int = 0,
+    val certificatesCount: Int = 0,
+    val activeClassrooms: Int = 0
+) {
+    val globalProgress: Float get() = progressPercentage / 100f
+}
