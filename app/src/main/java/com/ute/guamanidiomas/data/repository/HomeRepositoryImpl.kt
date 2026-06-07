@@ -13,14 +13,18 @@ class HomeRepositoryImpl @Inject constructor(
 
     override suspend fun getStats(): Result<List<com.ute.guamanidiomas.data.remote.dto.HomeStatsDto>> = runCatching {
         val response = api.getStats()
-        if (response.isSuccessful) response.body() ?: emptyList()
-        else throw Exception("Error ${response.code()}")
+        if (response.isSuccessful) {
+            // Backend devuelve { count, results: [...] }
+            response.body()?.results ?: emptyList()
+        } else throw Exception("Error ${response.code()}")
     }
 
     override suspend fun getAchievements(): Result<List<com.ute.guamanidiomas.data.remote.dto.AchievementDto>> = runCatching {
         val response = api.getUserAchievements()
-        if (response.isSuccessful) response.body() ?: emptyList()
-        else throw Exception("Error ${response.code()}")
+        if (response.isSuccessful) {
+            // Backend devuelve { count, results: [...] }
+            response.body()?.results ?: emptyList()
+        } else throw Exception("Error ${response.code()}")
     }
 
     override suspend fun getProgress(): Result<ProgressResponseDto> = runCatching {

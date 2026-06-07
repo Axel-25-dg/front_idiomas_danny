@@ -19,14 +19,15 @@ class GamificationRepositoryImpl @Inject constructor(
     override suspend fun getMyStats(): Result<List<StudentStats>> = runCatching {
         val response = api.getMyStats()
         if (response.isSuccessful) {
-            response.body()?.map { it.toDomain() } ?: emptyList()
+            // Backend devuelve { count, results: [...] }
+            response.body()?.results?.map { it.toDomain() } ?: emptyList()
         } else throw Exception("Error ${response.code()}: ${response.message()}")
     }
 
     override suspend fun postProgress(lessonId: Int, score: Int): Result<LessonProgress> = runCatching {
         val response = api.postProgress(PostProgressRequestDto(lessonId = lessonId, score = score))
         if (response.isSuccessful) {
-            response.body()?.toDomain() ?: throw Exception("Respuesta vacía")
+            response.body()?.toDomain() ?: throw Exception("Respuesta vacia")
         } else {
             val errorBody = response.errorBody()?.string() ?: ""
             throw Exception("Error ${response.code()}: $errorBody")
@@ -36,7 +37,7 @@ class GamificationRepositoryImpl @Inject constructor(
     override suspend fun getProgressHistory(page: Int): Result<DjangoPage<LessonProgress>> = runCatching {
         val response = api.getProgressHistory(page = page)
         if (response.isSuccessful) {
-            val raw = response.body() ?: throw Exception("Respuesta vacía")
+            val raw = response.body() ?: throw Exception("Respuesta vacia")
             DjangoPage(
                 count    = raw.count,
                 next     = raw.next,
@@ -49,14 +50,16 @@ class GamificationRepositoryImpl @Inject constructor(
     override suspend fun getAllAchievements(): Result<List<Achievement>> = runCatching {
         val response = api.getAllAchievements()
         if (response.isSuccessful) {
-            response.body()?.map { it.toDomain() } ?: emptyList()
+            // Backend devuelve { count, results: [...] }
+            response.body()?.results?.map { it.toDomain() } ?: emptyList()
         } else throw Exception("Error ${response.code()}")
     }
 
     override suspend fun getMyAchievements(): Result<List<UserAchievement>> = runCatching {
         val response = api.getMyAchievements()
         if (response.isSuccessful) {
-            response.body()?.map { it.toDomain() } ?: emptyList()
+            // Backend devuelve { count, results: [...] } o lista directa
+            response.body()?.results?.map { it.toDomain() } ?: emptyList()
         } else throw Exception("Error ${response.code()}")
     }
 }
