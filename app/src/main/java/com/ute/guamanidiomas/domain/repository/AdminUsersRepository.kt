@@ -4,6 +4,7 @@ import com.ute.guamanidiomas.domain.model.User
 
 interface AdminUsersRepository {
     suspend fun getUsers(): Result<List<User>>
+    suspend fun getAdminStudents(): Result<List<User>>
     suspend fun createUser(
         username: String,
         email: String,

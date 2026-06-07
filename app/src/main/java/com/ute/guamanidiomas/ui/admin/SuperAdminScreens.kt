@@ -1,5 +1,6 @@
 package com.ute.guamanidiomas.ui.admin
 
+import java.util.Locale
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -274,7 +275,7 @@ private fun OrderCard(order: OrderDto, onApprove: () -> Unit) {
         else -> Warning
     }
     val total = order.totalPrice ?: order.total ?: 0.0
-    val courseTitle = order.courseTitle ?: order.items.firstOrNull()?.courseTitle ?: "Curso"
+    val courseTitle = order.courseTitle ?: order.items?.firstOrNull()?.courseTitle ?: "Curso"
 
     AdminCardSurface {
         Row(verticalAlignment = Alignment.Top) {
@@ -291,7 +292,7 @@ private fun OrderCard(order: OrderDto, onApprove: () -> Unit) {
             Column(Modifier.weight(1f)) {
                 Text("#${order.id} - $courseTitle", color = AdminText, fontWeight = FontWeight.Bold)
                 Text(order.userEmail ?: "Usuario #${order.userId ?: 0}", color = AdminMuted, style = MaterialTheme.typography.bodySmall)
-                Text("$${"%.2f".format(total)}", color = AdminText, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                Text("$${"%.2f".format(Locale.US, total)}", color = AdminText, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
                 Surface(color = color.copy(alpha = 0.14f), shape = RoundedCornerShape(6.dp)) {
                     Text(
                         normalized,

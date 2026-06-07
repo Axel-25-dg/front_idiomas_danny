@@ -4,7 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -95,6 +97,7 @@ fun TeacherExamsSection(viewModel: TeacherMainViewModel) {
     // Dialog crear leccion interactiva
     if (showCreateDialog) {
         CreateInteractiveLessonDialog(
+            viewModel = viewModel,
             onDismiss = { showCreateDialog = false },
             onCreate  = { moduleId, title, description, xp ->
                 viewModel.createExam(moduleId, title, description, 60, xp, true, null, null)
@@ -130,8 +133,8 @@ private fun InteractiveLessonCard(lesson: Exam, onAddQuestion: () -> Unit) {
                 ) { Icon(Icons.Default.Quiz, null, tint = PrimaryBlue, modifier = Modifier.size(24.dp)) }
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
-                    Text(lesson.title, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = TextPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    Text(lesson.classroomName.ifBlank { "Leccion interactiva" }, style = MaterialTheme.typography.bodySmall, color = TextSecondary)
+                    Text(lesson.title ?: "Lección sin título", fontWeight = FontWeight.Bold, fontSize = 15.sp, color = TextPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text((lesson.classroomName ?: "").ifBlank { "Leccion interactiva" }, style = MaterialTheme.typography.bodySmall, color = TextSecondary)
                 }
                 if (lesson.isActive) {
                     Surface(color = Success.copy(alpha = 0.12f), shape = RoundedCornerShape(6.dp)) {
@@ -156,29 +159,125 @@ private fun InteractiveLessonCard(lesson: Exam, onAddQuestion: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun CreateInteractiveLessonDialog(onDismiss: () -> Unit, onCreate: (Int, String, String, Int) -> Unit) {
+private fun CreateInteractiveLessonDialog(viewModel: TeacherMainViewModel, onDismiss: () -> Unit, onCreate: (Int, String, String, Int) -> Unit) {
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
-    var moduleId by remember { mutableStateOf("1") }
     var xp by remember { mutableStateOf("50") }
+    var selectedModuleId by remember { mutableIntStateOf(0) }
+    var selectedModuleTitle by remember { mutableStateOf("") }
+
+    // Estado para los selectores dinámicos de curso y módulo
+    val examsState by viewModel.examsState.collectAsState()
+    val courses = examsState.courses
+    val modules = examsState.modules
+
+    var selectedCourseName by remember { mutableStateOf("Selecciona un Curso") }
+    var selectedModuleName by remember { mutableStateOf("Selecciona un Módulo") }
+    var expandedCourse by remember { mutableStateOf(false) }
+    var expandedModule by remember { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Nueva Leccion Interactiva", fontWeight = FontWeight.Bold) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                OutlinedTextField(value = title, onValueChange = { title = it }, label = { Text("Titulo") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("Descripcion") }, maxLines = 2, modifier = Modifier.fillMaxWidth())
-                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    OutlinedTextField(value = moduleId, onValueChange = { if (it.all { c -> c.isDigit() }) moduleId = it }, label = { Text("Modulo ID") }, singleLine = true, modifier = Modifier.weight(1f))
-                    OutlinedTextField(value = xp, onValueChange = { if (it.all { c -> c.isDigit() }) xp = it }, label = { Text("XP") }, singleLine = true, modifier = Modifier.weight(1f))
+            val dialogScrollState = rememberScrollState()
+            Column(
+                modifier = Modifier.fillMaxWidth().heightIn(max = 480.dp).verticalScroll(dialogScrollState),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                OutlinedTextField(
+                    value = title,
+                    onValueChange = { title = it },
+                    label = { Text("Titulo *") },
+                    leadingIcon = { Icon(Icons.Default.Title, null) },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = description,
+                    onValueChange = { description = it },
+                    label = { Text("Descripcion") },
+                    maxLines = 2,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                // Selector desplegable de Curso
+                ExposedDropdownMenuBox(
+                    expanded = expandedCourse,
+                    onExpandedChange = { expandedCourse = !expandedCourse }
+                ) {
+                    OutlinedTextField(
+                        value = selectedCourseName,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Curso *") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expandedCourse) },
+                        modifier = Modifier.fillMaxWidth().menuAnchor()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expandedCourse,
+                        onDismissRequest = { expandedCourse = false }
+                    ) {
+                        courses.forEach { course ->
+                            DropdownMenuItem(
+                                text = { Text(course.title ?: "Curso #${course.id}") },
+                                onClick = {
+                                    selectedCourseName = course.title ?: "Curso #${course.id}"
+                                    expandedCourse = false
+                                    // Limpiar módulo anterior y cargar módulos del curso seleccionado
+                                    selectedModuleName = "Selecciona un Módulo"
+                                    selectedModuleId = 0
+                                    viewModel.loadModulesForCourse(course.id)
+                                }
+                            )
+                        }
+                    }
                 }
+
+                // Selector desplegable de Módulo (habilitado solo si hay módulos cargados)
+                ExposedDropdownMenuBox(
+                    expanded = expandedModule,
+                    onExpandedChange = { if (modules.isNotEmpty()) expandedModule = !expandedModule }
+                ) {
+                    OutlinedTextField(
+                        value = selectedModuleName,
+                        onValueChange = {},
+                        readOnly = true,
+                        enabled = modules.isNotEmpty(),
+                        label = { Text("Módulo *") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expandedModule) },
+                        modifier = Modifier.fillMaxWidth().menuAnchor()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expandedModule,
+                        onDismissRequest = { expandedModule = false }
+                    ) {
+                        modules.forEach { module ->
+                            DropdownMenuItem(
+                                text = { Text(module.title ?: "Módulo sin título") },
+                                onClick = {
+                                    selectedModuleName = module.title ?: "Módulo sin título"
+                                    selectedModuleId = module.id
+                                    expandedModule = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                OutlinedTextField(
+                    value = xp,
+                    onValueChange = { if (it.all { c -> c.isDigit() }) xp = it },
+                    label = { Text("XP Recompensa") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         },
         confirmButton = {
             Button(
-                onClick = { if (title.isNotBlank()) onCreate(moduleId.toIntOrNull() ?: 1, title.trim(), description.trim(), xp.toIntOrNull() ?: 50) },
-                enabled = title.isNotBlank(),
+                onClick = { if (title.isNotBlank() && selectedModuleId > 0) onCreate(selectedModuleId, title.trim(), description.trim(), xp.toIntOrNull() ?: 50) },
+                enabled = title.isNotBlank() && selectedModuleId > 0,
                 colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue)
             ) { Text("Crear") }
         },
@@ -194,12 +293,16 @@ private fun AddQuestionDialog(onDismiss: () -> Unit, onAdd: (String, String, Str
     var type by remember { mutableStateOf("multiple_choice") }
     var expandedType by remember { mutableStateOf(false) }
     val types = listOf("multiple_choice" to "Opcion multiple", "translate" to "Traduccion", "fill_blank" to "Completar", "listen" to "Escuchar")
+    val scrollState = rememberScrollState()
 
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Agregar Pregunta", fontWeight = FontWeight.Bold) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(
+                modifier = Modifier.fillMaxWidth().verticalScroll(scrollState),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
                 OutlinedTextField(value = question, onValueChange = { question = it }, label = { Text("Pregunta") }, modifier = Modifier.fillMaxWidth())
                 OutlinedTextField(value = answer, onValueChange = { answer = it }, label = { Text("Respuesta correcta") }, singleLine = true, modifier = Modifier.fillMaxWidth())
                 ExposedDropdownMenuBox(expanded = expandedType, onExpandedChange = { expandedType = it }) {

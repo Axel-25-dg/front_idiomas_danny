@@ -32,6 +32,8 @@ import com.ute.guamanidiomas.ui.viewmodel.CourseDetailUiState
 import com.ute.guamanidiomas.ui.viewmodel.CourseDetailViewModel
 import kotlinx.coroutines.delay
 
+import java.util.Locale
+
 @Composable
 fun CourseDetailScreen(
     courseId: Int,
@@ -43,7 +45,11 @@ fun CourseDetailScreen(
     val state by viewModel.state.collectAsState()
     val cartCount by cartViewModel.totalItems.collectAsState()
 
-    LaunchedEffect(courseId) { viewModel.load(courseId) }
+    LaunchedEffect(courseId) { 
+        if (courseId > 0) {
+            viewModel.load(courseId) 
+        }
+    }
 
     when (val s = state) {
         is CourseDetailUiState.Loading -> LoadingScreen("Cargando detalles del curso...")
@@ -84,14 +90,14 @@ private fun ModuleItem(module: com.ute.guamanidiomas.domain.model.Module, index:
         Spacer(Modifier.width(16.dp))
         Column {
             Text(
-                text = module.title,
+                text = module.title ?: "Módulo sin título",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
                 color = TextPrimary
             )
-            if (module.description.isNotBlank()) {
+            if (!module.description.isNullOrBlank()) {
                 Text(
-                    text = module.description,
+                    text = module.description!!,
                     style = MaterialTheme.typography.bodySmall,
                     color = TextSecondary,
                     maxLines = 1
@@ -266,7 +272,7 @@ private fun CourseDetailContent(
                 Spacer(Modifier.height(14.dp))
 
                 Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Text("$${"%.2f".format(course.price)}", fontSize = 34.sp, fontWeight = FontWeight.Black, color = PrimaryBlue)
+                    Text("$${"%.2f".format(java.util.Locale.US, course.price)}", fontSize = 34.sp, fontWeight = FontWeight.Black, color = PrimaryBlue)
                     Text("+ IVA", style = MaterialTheme.typography.bodySmall, color = TextSecondary, modifier = Modifier.padding(bottom = 7.dp))
                 }
 
@@ -322,7 +328,7 @@ private fun CourseDetailContent(
                         }
                         Column(horizontalAlignment = Alignment.End) {
                             Text("Subtotal", style = MaterialTheme.typography.labelSmall, color = TextSecondary)
-                            Text("$${"%.2f".format(subtotal)}", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black, color = TextPrimary)
+                            Text("$${"%.2f".format(java.util.Locale.US, subtotal)}", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black, color = TextPrimary)
                         }
                     }
 

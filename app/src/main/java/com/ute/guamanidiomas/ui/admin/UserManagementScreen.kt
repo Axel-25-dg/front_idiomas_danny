@@ -224,9 +224,9 @@ fun StaffUserRow(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    val fullName = listOf(user.firstName, user.lastName).filter { it.isNotBlank() }.joinToString(" ")
+                    val fullName = listOf(user.firstName, user.lastName).filter { !it.isNullOrBlank() }.joinToString(" ")
                     Text(
-                        text = fullName.ifBlank { user.username },
+                        text = fullName.ifBlank { user.username.orEmpty() },
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFFF8FAFC)
@@ -250,13 +250,13 @@ fun StaffUserRow(
                 Spacer(modifier = Modifier.height(4.dp))
                 
                 Text(
-                    text = "@${user.username}",
+                    text = "@${user.username.orEmpty()}",
                     style = MaterialTheme.typography.bodySmall,
                     color = Color(0xFF94A3B8)
                 )
                 
                 Text(
-                    text = user.email,
+                    text = user.email.orEmpty(),
                     style = MaterialTheme.typography.bodySmall,
                     color = Color(0xFF64748B)
                 )

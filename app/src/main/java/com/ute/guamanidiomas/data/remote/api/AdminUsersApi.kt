@@ -9,7 +9,15 @@ import retrofit2.http.*
 
 interface AdminUsersApi {
     @GET("users/")
-    suspend fun getUsers(): Response<StaffPaginationResponse<UserDto>>
+    suspend fun getUsers(
+        @Query("page_size") pageSize: Int? = null,
+        @Query("role") role: String? = null
+    ): Response<StaffPaginationResponse<UserDto>>
+
+    @GET("admin-students/")
+    suspend fun getAdminStudents(
+        @Query("page_size") pageSize: Int? = 500
+    ): Response<StaffPaginationResponse<UserDto>>
 
     @POST("users/")
     suspend fun createUser(

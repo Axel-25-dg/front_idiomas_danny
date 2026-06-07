@@ -13,19 +13,19 @@ enum class OrderStatus(val value: String) {
 }
 
 data class Order(
-    val id: Int,
-    val userId: Int,
-    val items: List<OrderItem>,
-    val total: Double,
-    val tax: Double,
-    val status: OrderStatus,
+    val id: Int = 0,
+    val userId: Int = 0,
+    val items: List<OrderItem> = emptyList(),
+    val total: Double = 0.0,
+    val tax: Double = 0.0,
+    val status: OrderStatus = OrderStatus.PENDING,
     val createdAt: String? = null
 )
 
 data class OrderItem(
-    val id: Int,
-    val courseId: Int,
-    val courseTitle: String,
-    val price: Double,
-    val quantity: Int
+    val id: Int = 0,
+    val courseId: Int = 0,
+    val courseTitle: String? = null,
+    val price: Double = 0.0,
+    val quantity: Int = 0
 )

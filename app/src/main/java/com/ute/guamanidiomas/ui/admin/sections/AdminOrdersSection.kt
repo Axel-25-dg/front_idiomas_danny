@@ -128,7 +128,7 @@ private fun IngresosSummaryCard(
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment     = Alignment.CenterVertically
         ) {
-            SummaryItem("Ingresos", "$ ${String.format(Locale.getDefault(), "%.2f", totalRevenue)}", Success)
+            SummaryItem("Ingresos", "$ ${String.format(Locale.US, "%.2f", totalRevenue)}", Success)
             VerticalDivider(Modifier.height(40.dp))
             SummaryItem("Total", totalOrders.toString(), PrimaryBlue)
             VerticalDivider(Modifier.height(40.dp))
@@ -156,7 +156,7 @@ private fun OrderAdminCard(order: OrderDto, onApprove: () -> Unit) {
         else                              -> Warning
     }
     val total     = order.totalPrice ?: order.total ?: 0.0
-    val course    = order.courseTitle ?: order.items.firstOrNull()?.courseTitle ?: "Inscripción"
+    val course    = order.courseTitle ?: order.items?.firstOrNull()?.courseTitle ?: "Inscripción"
     val isPending = status in setOf("PENDING", "PENDIENTE")
 
     Surface(
@@ -194,7 +194,7 @@ private fun OrderAdminCard(order: OrderDto, onApprove: () -> Unit) {
                     )
                 }
                 Column(horizontalAlignment = Alignment.End) {
-                    Text("$${"%.2f".format(total)}", fontWeight = FontWeight.Bold, color = TextPrimary, fontSize = 14.sp)
+                    Text("$${"%.2f".format(Locale.US, total)}", fontWeight = FontWeight.Bold, color = TextPrimary, fontSize = 14.sp)
                     Surface(color = color.copy(alpha = 0.12f), shape = RoundedCornerShape(6.dp)) {
                         Text(
                             status,

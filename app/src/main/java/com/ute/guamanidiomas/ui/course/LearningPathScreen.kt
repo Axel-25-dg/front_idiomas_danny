@@ -153,14 +153,14 @@ private fun ModuleHeader(module: Module, index: Int) {
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                module.title,
+                module.title ?: "Módulo sin título",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Black,
                 color = TextPrimary
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                module.description,
+                module.description ?: "Sin descripción disponible",
                 style = MaterialTheme.typography.bodyMedium,
                 color = TextSecondary
             )

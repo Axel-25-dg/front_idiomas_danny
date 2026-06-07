@@ -34,6 +34,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ute.guamanidiomas.ui.viewmodel.AuthViewModel
 import com.ute.guamanidiomas.ui.theme.*
+import coil.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
 
 data class Achievement(
     val id: String,
@@ -173,9 +175,9 @@ fun ProfileScreen(
                                 AchievementCard(
                                     achievement = Achievement(
                                         id = userAchievement.id.toString(),
-                                        title = userAchievement.title,
-                                        description = userAchievement.description,
-                                        icon = userAchievement.icon.ifBlank { "🏆" },
+                                        title = userAchievement.title.orEmpty(),
+                                        description = userAchievement.description.orEmpty(),
+                                        icon = userAchievement.icon.orEmpty().ifBlank { "🏆" },
                                         isUnlocked = true
                                     ),
                                     modifier = Modifier.weight(1f)
@@ -209,13 +211,14 @@ fun ProfileScreen(
 
 @Composable
 private fun ProfileTopBar(onNavigateToSettings: () -> Unit) {
+    val borderColor = Border
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .drawBehind {
                 val strokeWidth = 1.dp.toPx()
                 drawLine(
-                    color = Border.copy(alpha = 0.3f),
+                    color = borderColor.copy(alpha = 0.3f),
                     start = Offset(0f, size.height),
                     end = Offset(size.width, size.height),
                     strokeWidth = strokeWidth
@@ -491,11 +494,24 @@ private fun AchievementCard(achievement: Achievement, modifier: Modifier = Modif
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = achievement.icon,
-                    fontSize = 24.sp,
-                    modifier = Modifier.alpha(if (unlocked) 1f else 0.3f)
-                )
+                val iconValue = achievement.icon
+                if (iconValue.startsWith("http://") || iconValue.startsWith("https://")) {
+                    AsyncImage(
+                        model = iconValue,
+                        contentDescription = "Logro: ${achievement.title}",
+                        modifier = Modifier
+                            .size(42.dp)
+                            .clip(CircleShape)
+                            .alpha(if (unlocked) 1f else 0.3f),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Text(
+                        text = iconValue.ifBlank { "🏆" },
+                        fontSize = 24.sp,
+                        modifier = Modifier.alpha(if (unlocked) 1f else 0.3f)
+                    )
+                }
             }
 
             Spacer(Modifier.height(12.dp))
@@ -506,8 +522,10 @@ private fun AchievementCard(achievement: Achievement, modifier: Modifier = Modif
                 fontWeight = FontWeight.Black,
                 color = if (unlocked) TextPrimary else TextSecondary.copy(alpha = 0.6f),
                 textAlign = TextAlign.Center,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                maxLines = 2,
+                minLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                lineHeight = 14.sp
             )
             Spacer(Modifier.height(2.dp))
             Text(

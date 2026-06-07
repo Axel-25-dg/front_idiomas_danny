@@ -144,7 +144,10 @@ class AdminMainViewModel @Inject constructor(
             val auditLogs = auditDeferred.await().getOrElse { emptyList() }
 
             val teachers  = users.filter { it.role?.lowercase() in setOf("teacher", "profesor", "docente") }
-            val students  = users.filter { it.role?.lowercase() in setOf("student", "user", "estudiante") || !it.isStaff }
+            val students  = users.filter { user ->
+                val role = user.role?.lowercase()
+                role in setOf("student", "user", "estudiante") || (role.isNullOrBlank() && !user.isStaff)
+            }
 
             val totalRevenue = (stats["total_revenue"] as? Number)?.toDouble() ?: 0.0
             val totalOrders  = (stats["total_orders"] as? Number)?.toInt() ?: 0
@@ -180,13 +183,23 @@ class AdminMainViewModel @Inject constructor(
     fun loadUsers() {
         viewModelScope.launch {
             _usersState.value = _usersState.value.copy(isLoading = true, error = null)
-            usersRepository.getUsers()
+
+            val usersDeferred    = async { usersRepository.getUsers() }
+            val studentsDeferred = async { usersRepository.getAdminStudents() }
+
+            val usersResult    = usersDeferred.await()
+            val studentsResult = studentsDeferred.await()
+
+            usersResult
                 .onSuccess { users ->
                     val teachers = users.filter { it.role?.lowercase() in setOf("teacher", "profesor", "docente", "instructor") }
-                    val students = users.filter { it.role?.lowercase() in setOf("student", "user", "estudiante") || !it.isStaff }
+                    val students = studentsResult.getOrElse { 
+                        // Fallback: filtrar localmente si el endpoint no existe
+                        users.filter { it.role?.lowercase() in setOf("student", "user", "estudiante") || (!it.isStaff && it.role.isNullOrBlank()) }
+                    }
                     _usersState.value = _usersState.value.copy(
                         isLoading  = false,
-                        allUsers   = users,
+                        allUsers   = users + students.filter { s -> users.none { u -> u.id == s.id } },
                         teachers   = teachers,
                         students   = students
                     )
@@ -213,9 +226,9 @@ class AdminMainViewModel @Inject constructor(
             val state = _usersState.value
             return state.allUsers.filter { user ->
                 val matchesSearch = state.searchQuery.isBlank() ||
-                    user.username.contains(state.searchQuery, ignoreCase = true) ||
-                    user.email.contains(state.searchQuery, ignoreCase = true) ||
-                    (user.firstName + " " + user.lastName).contains(state.searchQuery, ignoreCase = true)
+                    (user.username ?: "").contains(state.searchQuery, ignoreCase = true) ||
+                    (user.email ?: "").contains(state.searchQuery, ignoreCase = true) ||
+                    ((user.firstName ?: "") + " " + (user.lastName ?: "")).contains(state.searchQuery, ignoreCase = true)
                 val matchesRole = state.filterRole.isBlank() ||
                     user.role?.lowercase() == state.filterRole.lowercase()
                 matchesSearch && matchesRole

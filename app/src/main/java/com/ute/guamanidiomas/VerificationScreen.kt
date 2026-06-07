@@ -34,7 +34,7 @@ fun VerificationScreen() {
                 text = "JumpUp UTE App",
                 fontSize = 36.sp,
                 fontWeight = FontWeight.Bold,
-                color = GoldPrimary,
+                color = AccentBlue,
                 modifier = Modifier.padding(bottom = 8.dp),
             )
 
@@ -91,7 +91,7 @@ fun VerificationScreen() {
                     modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    Text(text = "domain/model/$file.kt", style = MaterialTheme.typography.bodySmall, color = GoldPrimary)
+                    Text(text = "domain/model/$file.kt", style = MaterialTheme.typography.bodySmall, color = AccentBlue)
                     Text(text = "✓", color = Success, style = MaterialTheme.typography.bodySmall)
                 }
             }

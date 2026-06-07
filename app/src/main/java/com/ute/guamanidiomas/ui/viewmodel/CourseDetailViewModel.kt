@@ -12,18 +12,14 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 sealed interface CourseDetailUiState {
-    data object Loading : CourseDetailUiState
-    data class Success(
-        val course: Course,
-        val modules: List<Module>
-    ) : CourseDetailUiState
-
-    data class Error(val message: String) : CourseDetailUiState
+    data object Loading                                                 : CourseDetailUiState
+    data class  Success(val course: Course, val modules: List<Module>) : CourseDetailUiState
+    data class  Error(val message: String)                              : CourseDetailUiState
 }
 
 @HiltViewModel
 class CourseDetailViewModel @Inject constructor(
-    private val repository: CourseRepository,
+    private val courseRepository: CourseRepository,
     private val moduleRepository: ModuleRepository,
 ) : ViewModel() {
 
@@ -34,19 +30,19 @@ class CourseDetailViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = CourseDetailUiState.Loading
             
-            val courseResult = repository.getCourseById(id)
+            val courseResult = courseRepository.getCourseById(id)
             val modulesResult = moduleRepository.getModulesByCourse(id)
-
-            if (courseResult.isSuccess && modulesResult.isSuccess) {
+            
+            val course = courseResult.getOrNull()
+            if (courseResult.isSuccess && course != null) {
                 _state.value = CourseDetailUiState.Success(
-                    course = courseResult.getOrThrow(),
-                    modules = modulesResult.getOrThrow()
+                    course = course,
+                    modules = modulesResult.getOrDefault(emptyList())
                 )
             } else {
-                val error = courseResult.exceptionOrNull()?.message 
-                    ?: modulesResult.exceptionOrNull()?.message 
-                    ?: "Error al cargar el curso"
-                _state.value = CourseDetailUiState.Error(error)
+                _state.value = CourseDetailUiState.Error(
+                    courseResult.exceptionOrNull()?.message ?: "No se encontró el curso solicitado"
+                )
             }
         }
     }

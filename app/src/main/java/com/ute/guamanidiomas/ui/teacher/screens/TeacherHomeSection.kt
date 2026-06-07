@@ -332,7 +332,7 @@ private fun ClassroomSummaryCard(classroom: Classroom) {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    classroom.courseTitle.take(3).ifBlank { "EN" },
+                    classroom.courseTitle?.take(3)?.ifBlank { "EN" } ?: "EN",
                     fontWeight = FontWeight.Black,
                     color      = PrimaryBlue,
                     fontSize   = 13.sp
@@ -341,7 +341,7 @@ private fun ClassroomSummaryCard(classroom: Classroom) {
             Spacer(Modifier.width(14.dp))
             Column(Modifier.weight(1f)) {
                 Text(
-                    classroom.name,
+                    classroom.name.orEmpty(),
                     fontWeight = FontWeight.Bold,
                     fontSize   = 15.sp,
                     color      = TextPrimary,
@@ -349,14 +349,14 @@ private fun ClassroomSummaryCard(classroom: Classroom) {
                     overflow   = TextOverflow.Ellipsis
                 )
                 Text(
-                    "${classroom.studentCount} estudiantes • ${classroom.courseTitle}",
+                    "${classroom.studentCount} estudiantes • ${classroom.courseTitle.orEmpty()}",
                     style  = MaterialTheme.typography.bodySmall,
                     color  = TextSecondary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            if (classroom.accessCode.isNotBlank()) {
+            if (classroom.accessCode?.isNotBlank() == true) {
                 Surface(
                     color = LightBlue,
                     shape = RoundedCornerShape(8.dp)

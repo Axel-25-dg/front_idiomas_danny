@@ -73,5 +73,5 @@ data class PaymentDto(
 }
 
 data class SubscribeRequestDto(
-    @SerializedName("plan_id") val planId: Int
+    @SerializedName("subscription") val planId: Int
 )

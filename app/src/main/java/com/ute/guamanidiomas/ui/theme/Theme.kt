@@ -4,7 +4,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
+
+/** Indica si estamos en modo oscuro — para que los colores globales se adapten */
+val LocalIsDarkTheme = compositionLocalOf { false }
 
 private val LightColorScheme = lightColorScheme(
     primary = PrimaryBlue,
@@ -17,21 +22,21 @@ private val LightColorScheme = lightColorScheme(
     secondaryContainer = LightBlue,
     onSecondaryContainer = DarkBlue,
 
-    tertiary = TextSecondary,
+    tertiary = Color(0xFF475569),
     onTertiary = Color.White,
     tertiaryContainer = SoftBlue,
     onTertiaryContainer = PrimaryBlue,
 
-    background = BackgroundColor,
-    onBackground = TextPrimary,
+    background = Color(0xFFF8FAFC),
+    onBackground = Color(0xFF0F172A),
 
-    surface = SurfaceColor,
-    onSurface = TextPrimary,
-    surfaceVariant = PageBg,
-    onSurfaceVariant = TextSecondary,
+    surface = Color(0xFFFFFFFF),
+    onSurface = Color(0xFF0F172A),
+    surfaceVariant = Color(0xFFF1F5F9),
+    onSurfaceVariant = Color(0xFF475569),
 
-    outline = Border,
-    outlineVariant = Divider,
+    outline = Color(0xFFE2E8F0),
+    outlineVariant = Color(0xFFF1F5F9),
 
     error = ErrorColor,
     onError = Color.White,
@@ -79,10 +84,12 @@ fun GuamanIdiomasTheme(
 ) {
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        shapes = Shapes,
-        content = content
-    )
+    CompositionLocalProvider(LocalIsDarkTheme provides darkTheme) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            shapes = Shapes,
+            content = content
+        )
+    }
 }

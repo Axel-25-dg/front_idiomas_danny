@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ute.guamanidiomas.domain.model.Course
 import com.ute.guamanidiomas.ui.theme.*
+import java.util.Locale
 
 @Composable
 fun LanguageCard(
@@ -26,41 +27,31 @@ fun LanguageCard(
     count: Int,
     onClick: () -> Unit
 ) {
-    Surface(
+    Card(
         onClick = onClick,
         shape = RoundedCornerShape(20.dp),
-        color = SurfaceColor,
-        shadowElevation = 2.dp,
-        modifier = Modifier.width(140.dp)
+        colors = CardDefaults.cardColors(containerColor = SurfaceColor),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        modifier = Modifier
+            .width(140.dp)
+            .height(100.dp)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box(
-                modifier = Modifier
-                    .size(50.dp)
-                    .clip(CircleShape)
-                    .background(PrimaryBlue.copy(alpha = 0.1f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = name.take(1).uppercase(),
-                    style = MaterialTheme.typography.titleLarge,
-                    color = PrimaryBlue,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-            Spacer(Modifier.height(12.dp))
             Text(
                 text = name,
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = TextPrimary
             )
             Text(
                 text = "$count cursos",
-                style = MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.bodySmall,
                 color = TextSecondary
             )
         }
@@ -130,7 +121,7 @@ fun ModernCourseCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "$${course.price}",
+                        text = "$ ${"%.2f".format(Locale.US, course.price)}",
                         style = MaterialTheme.typography.titleMedium,
                         color = PrimaryBlue,
                         fontWeight = FontWeight.Black

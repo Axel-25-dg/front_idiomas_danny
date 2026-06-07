@@ -80,7 +80,7 @@ fun MyClassesScreen(
                     ) {
                         Icon(Icons.Default.Warning, null, tint = ErrorColor, modifier = Modifier.size(48.dp))
                         Spacer(Modifier.height(12.dp))
-                        Text(state.error!!, color = ErrorColor, style = MaterialTheme.typography.bodyMedium)
+                        Text(state.error.orEmpty(), color = ErrorColor, style = MaterialTheme.typography.bodyMedium)
                         Spacer(Modifier.height(16.dp))
                         Button(onClick = { viewModel.loadMyClasses() }) { Text("Reintentar") }
                     }
@@ -154,7 +154,7 @@ private fun StudentClassCard(classroom: Classroom, onClick: () -> Unit) {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    classroom.courseTitle.take(3).ifBlank { "EN" },
+                    classroom.courseTitle.orEmpty().take(3).ifBlank { "EN" },
                     fontWeight = FontWeight.Black,
                     color      = PrimaryBlue,
                     fontSize   = 14.sp
@@ -163,7 +163,7 @@ private fun StudentClassCard(classroom: Classroom, onClick: () -> Unit) {
             Spacer(Modifier.width(14.dp))
             Column(Modifier.weight(1f)) {
                 Text(
-                    classroom.name,
+                    classroom.name.orEmpty(),
                     fontWeight = FontWeight.Bold,
                     fontSize   = 16.sp,
                     color      = TextPrimary,
@@ -172,7 +172,7 @@ private fun StudentClassCard(classroom: Classroom, onClick: () -> Unit) {
                 )
                 Spacer(Modifier.height(2.dp))
                 Text(
-                    "Prof. ${classroom.teacherName.ifBlank { "—" }}",
+                    "Prof. ${classroom.teacherName.orEmpty().ifBlank { "—" }}",
                     style  = MaterialTheme.typography.bodySmall,
                     color  = TextSecondary,
                     maxLines = 1
@@ -181,7 +181,7 @@ private fun StudentClassCard(classroom: Classroom, onClick: () -> Unit) {
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     Surface(color = LightBlue, shape = RoundedCornerShape(6.dp)) {
                         Text(
-                            classroom.courseTitle.ifBlank { "N/A" },
+                            classroom.courseTitle.orEmpty().ifBlank { "N/A" },
                             modifier  = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                             fontSize  = 11.sp,
                             fontWeight = FontWeight.Bold,

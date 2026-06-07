@@ -25,6 +25,9 @@ class TokenDataStore @Inject constructor(
         private val IS_STAFF = booleanPreferencesKey("is_staff")
         private val USER_ROLE = stringPreferencesKey("user_role")
         private val DARK_MODE = booleanPreferencesKey("dark_mode")
+        private val APP_LANGUAGE = stringPreferencesKey("app_language")
+        private val SOUND_ENABLED = booleanPreferencesKey("sound_enabled")
+        private val NOTIFICATIONS_ENABLED = booleanPreferencesKey("notifications_enabled")
     }
 
     val userSnapshot: Flow<UserSnapshot?> = context.dataStore.data.map { prefs ->
@@ -45,9 +48,39 @@ class TokenDataStore @Inject constructor(
         prefs[DARK_MODE] ?: false
     }
 
+    val appLanguage: Flow<String> = context.dataStore.data.map { prefs ->
+        prefs[APP_LANGUAGE] ?: "es"
+    }
+
+    val isSoundEnabled: Flow<Boolean> = context.dataStore.data.map { prefs ->
+        prefs[SOUND_ENABLED] ?: true
+    }
+
+    val isNotificationsEnabled: Flow<Boolean> = context.dataStore.data.map { prefs ->
+        prefs[NOTIFICATIONS_ENABLED] ?: true
+    }
+
     suspend fun setDarkMode(enabled: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[DARK_MODE] = enabled
+        }
+    }
+
+    suspend fun setAppLanguage(lang: String) {
+        context.dataStore.edit { prefs ->
+            prefs[APP_LANGUAGE] = lang
+        }
+    }
+
+    suspend fun setSoundEnabled(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[SOUND_ENABLED] = enabled
+        }
+    }
+
+    suspend fun setNotificationsEnabled(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[NOTIFICATIONS_ENABLED] = enabled
         }
     }
 

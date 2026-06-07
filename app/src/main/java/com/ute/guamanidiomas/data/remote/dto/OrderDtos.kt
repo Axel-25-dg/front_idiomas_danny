@@ -16,7 +16,7 @@ data class OrderDto(
     val id: Int,
     @SerializedName("user") val userId: Int? = null,
     @SerializedName("user_email") val userEmail: String? = null,
-    val items: List<OrderItemDto> = emptyList(),
+    val items: List<OrderItemDto>? = null,
     val total: Double? = 0.0,
     @SerializedName("total_price") val totalPrice: Double? = null,
     val tax: Double? = 0.0,
@@ -42,6 +42,11 @@ data class UpdateStatusRequestDto(
     val status: String
 )
 
+data class CreateOrderRequestDto(
+    @SerializedName("total_amount") val totalAmount: Double = 0.0,
+    @SerializedName("payment_method") val paymentMethod: String = "credit_card"
+)
+
 data class OrderStatsDto(
     @SerializedName("total_orders") val totalOrders: Int,
     @SerializedName("total_revenue") val totalRevenue: Double,
@@ -51,7 +56,7 @@ data class OrderStatsDto(
 fun OrderDto.toDomain() = Order(
     id = id,
     userId = userId ?: 0,
-    items = items.map { it.toDomain() },
+    items = (items ?: emptyList()).map { it.toDomain() },
     total = totalPrice ?: total ?: 0.0,
     tax = tax ?: 0.0,
     status = OrderStatus.fromValue(status ?: ""),

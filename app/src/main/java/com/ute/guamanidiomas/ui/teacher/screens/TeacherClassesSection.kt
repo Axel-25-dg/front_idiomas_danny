@@ -91,7 +91,7 @@ fun TeacherClassesSection(viewModel: TeacherMainViewModel) {
                         onEdit    = { viewModel.showEditClassroomDialog(classroom) },
                         onDelete  = { deletingId = classroom.id },
                         onCopyCode = {
-                            clipboardManager.setText(AnnotatedString(classroom.accessCode))
+                            clipboardManager.setText(AnnotatedString(classroom.accessCode ?: ""))
                         }
                     )
                 }
@@ -180,7 +180,7 @@ private fun ClassroomCard(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        classroom.courseTitle.take(4).ifBlank { "EN" },
+                        classroom.courseTitle?.take(4)?.ifBlank { "EN" } ?: "EN",
                         fontWeight = FontWeight.Black,
                         color      = PrimaryBlue,
                         fontSize   = 14.sp
@@ -189,7 +189,7 @@ private fun ClassroomCard(
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
                     Text(
-                        classroom.name,
+                        classroom.name ?: "Sin nombre",
                         fontWeight = FontWeight.Bold,
                         fontSize   = 16.sp,
                         color      = TextPrimary,
@@ -197,7 +197,7 @@ private fun ClassroomCard(
                         overflow   = TextOverflow.Ellipsis
                     )
                     Text(
-                        classroom.courseTitle.ifBlank { "Sin curso" },
+                        (classroom.courseTitle ?: "").ifBlank { "Sin curso" },
                         style  = MaterialTheme.typography.bodySmall,
                         color  = TextSecondary,
                         maxLines = 1,
@@ -219,10 +219,10 @@ private fun ClassroomCard(
                 }
             }
 
-            if (classroom.description.isNotBlank()) {
+            if (!(classroom.description ?: "").isBlank()) {
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    classroom.description,
+                    classroom.description ?: "",
                     style  = MaterialTheme.typography.bodySmall,
                     color  = TextSecondary,
                     maxLines = 2,
@@ -235,7 +235,7 @@ private fun ClassroomCard(
             Spacer(Modifier.height(10.dp))
 
             // Código de acceso prominente
-            if (classroom.accessCode.isNotBlank()) {
+            if (!(classroom.accessCode ?: "").isBlank()) {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     color    = LightBlue,
@@ -250,7 +250,7 @@ private fun ClassroomCard(
                         Column(Modifier.weight(1f)) {
                             Text("Código de acceso", style = MaterialTheme.typography.labelSmall, color = TextSecondary)
                             Text(
-                                classroom.accessCode,
+                                classroom.accessCode ?: "---",
                                 fontSize   = 20.sp,
                                 fontWeight = FontWeight.Black,
                                 color      = PrimaryBlue,

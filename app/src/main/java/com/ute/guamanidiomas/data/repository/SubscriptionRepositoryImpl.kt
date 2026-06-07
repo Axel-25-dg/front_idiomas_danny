@@ -6,6 +6,7 @@ import com.ute.guamanidiomas.domain.model.Payment
 import com.ute.guamanidiomas.domain.model.SubscriptionPlan
 import com.ute.guamanidiomas.domain.model.UserSubscription
 import com.ute.guamanidiomas.domain.repository.SubscriptionRepository
+import com.ute.guamanidiomas.util.ErrorUtils
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,30 +19,27 @@ class SubscriptionRepositoryImpl @Inject constructor(
         val response = api.getPlans()
         if (response.isSuccessful) {
             response.body()?.map { it.toDomain() } ?: emptyList()
-        } else throw Exception("Error ${response.code()}: ${response.message()}")
+        } else throw Exception(ErrorUtils.parseErrorMessage(response.errorBody()?.string(), response.code()))
     }
 
     override suspend fun getMySubscriptions(): Result<List<UserSubscription>> = runCatching {
         val response = api.getMySubscriptions()
         if (response.isSuccessful) {
             response.body()?.map { it.toDomain() } ?: emptyList()
-        } else throw Exception("Error ${response.code()}: ${response.message()}")
+        } else throw Exception(ErrorUtils.parseErrorMessage(response.errorBody()?.string(), response.code()))
     }
 
     override suspend fun subscribe(planId: Int): Result<UserSubscription> = runCatching {
         val response = api.subscribe(SubscribeRequestDto(planId))
         if (response.isSuccessful) {
             response.body()?.toDomain() ?: throw Exception("Respuesta vacía del servidor")
-        } else {
-            val errorBody = response.errorBody()?.string() ?: ""
-            throw Exception("Error ${response.code()}: $errorBody")
-        }
+        } else throw Exception(ErrorUtils.parseErrorMessage(response.errorBody()?.string(), response.code()))
     }
 
     override suspend fun getPaymentHistory(): Result<List<Payment>> = runCatching {
         val response = api.getPaymentHistory()
         if (response.isSuccessful) {
             response.body()?.results?.map { it.toDomain() } ?: emptyList()
-        } else throw Exception("Error ${response.code()}")
+        } else throw Exception(ErrorUtils.parseErrorMessage(response.errorBody()?.string(), response.code()))
     }
 }

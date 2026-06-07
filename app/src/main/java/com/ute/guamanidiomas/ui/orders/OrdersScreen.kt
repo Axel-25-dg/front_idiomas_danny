@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import java.util.Locale
 import com.ute.guamanidiomas.domain.model.Order
 import com.ute.guamanidiomas.domain.model.OrderStatus
 import com.ute.guamanidiomas.ui.theme.*
@@ -120,7 +121,7 @@ fun OrdersScreen(
                             )
                             Spacer(Modifier.height(12.dp))
                             Text(
-                                state.error!!,
+                                state.error.orEmpty(),
                                 color = ErrorColor,
                                 fontWeight = FontWeight.Medium
                             )
@@ -285,13 +286,13 @@ private fun OrderCard(order: Order) {
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            item.courseTitle,
+                            item.courseTitle.orEmpty(),
                             style = MaterialTheme.typography.bodySmall,
                             color = TextPrimary,
                             modifier = Modifier.weight(1f)
                         )
                         Text(
-                            "$${"%.2f".format(item.price)}",
+                            "$${"%.2f".format(Locale.US, item.price)}",
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.Bold,
                             color = TextPrimary
@@ -315,7 +316,7 @@ private fun OrderCard(order: Order) {
                     fontSize = 14.sp
                 )
                 Text(
-                    "$${"%.2f".format(order.total)}",
+                    "$${"%.2f".format(Locale.US, order.total)}",
                     fontWeight = FontWeight.Black,
                     color = PrimaryBlue,
                     fontSize = 18.sp

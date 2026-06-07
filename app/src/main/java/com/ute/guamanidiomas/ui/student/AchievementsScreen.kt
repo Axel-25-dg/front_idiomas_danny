@@ -16,10 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.ute.guamanidiomas.domain.model.Achievement
 import com.ute.guamanidiomas.domain.model.UserAchievement
 import com.ute.guamanidiomas.ui.theme.*
@@ -59,7 +61,7 @@ fun AchievementsScreen(
                     }
                 }
                 else -> {
-                    val unlockedIds = state.myAchievements.map { it.title }.toSet()
+                    val unlockedTitles = state.myAchievements.mapNotNull { it.title }.toSet()
 
                     LazyColumn(
                         contentPadding = PaddingValues(16.dp),
@@ -89,7 +91,7 @@ fun AchievementsScreen(
                         }
 
                         items(state.allAchievements, key = { it.id }) { achievement ->
-                            val isUnlocked = achievement.title in unlockedIds
+                            val isUnlocked = achievement.title in unlockedTitles
                             AchievementCard(achievement = achievement, isUnlocked = isUnlocked)
                         }
                     }
@@ -134,23 +136,35 @@ private fun AchievementCard(achievement: Achievement, isUnlocked: Boolean) {
                     .background(iconColor.copy(alpha = 0.12f)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    if (isUnlocked) Icons.Default.EmojiEvents else Icons.Default.Lock,
-                    null,
-                    tint     = iconColor,
-                    modifier = Modifier.size(24.dp)
-                )
+                val icon = achievement.icon.orEmpty()
+                if (icon.isNotBlank() && icon.startsWith("http")) {
+                    AsyncImage(
+                        model = icon,
+                        contentDescription = achievement.title,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(CircleShape)
+                    )
+                } else {
+                    Icon(
+                        if (isUnlocked) Icons.Default.EmojiEvents else Icons.Default.Lock,
+                        null,
+                        tint     = iconColor,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
             }
             Spacer(Modifier.width(14.dp))
             Column(Modifier.weight(1f)) {
                 Text(
-                    achievement.title,
+                    achievement.title.orEmpty(),
                     fontWeight = FontWeight.Bold,
                     fontSize   = 15.sp,
                     color      = TextPrimary.copy(alpha = alpha)
                 )
                 Text(
-                    achievement.description,
+                    achievement.description.orEmpty(),
                     style = MaterialTheme.typography.bodySmall,
                     color = TextSecondary.copy(alpha = alpha)
                 )

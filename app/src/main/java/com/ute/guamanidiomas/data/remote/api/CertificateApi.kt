@@ -5,13 +5,24 @@ import com.ute.guamanidiomas.data.remote.dto.CertificateRequest
 import retrofit2.Response
 import retrofit2.http.*
 
+/**
+ * El backend GET /certificates/ devuelve respuesta paginada:
+ * { "count": N, "next": null, "previous": null, "results": [...] }
+ */
+data class CertificatePage(
+    val count: Int = 0,
+    val next: String? = null,
+    val previous: String? = null,
+    val results: List<CertificateDto> = emptyList()
+)
+
 interface CertificateApi {
 
     @POST("certificates/")
     suspend fun createCertificate(@Body request: CertificateRequest): Response<CertificateDto>
 
     @GET("certificates/")
-    suspend fun getMyCertificates(): Response<List<CertificateDto>>
+    suspend fun getMyCertificates(): Response<CertificatePage>
 
     @PATCH("certificates/{id}/issue/")
     suspend fun issueCertificate(@Path("id") id: Int): Response<CertificateDto>

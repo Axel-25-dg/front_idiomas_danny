@@ -38,7 +38,7 @@ class CartViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.Eagerly, 0.0)
 
     val tax: StateFlow<Double> = subtotal
-        .map { it * 0.15 } 
+        .map { it * 0.15 } // 15% IVA (JumpUp UTE)
         .stateIn(viewModelScope, SharingStarted.Eagerly, 0.0)
 
     val totalWithTax: StateFlow<Double> = combine(subtotal, tax) { s, t -> s + t }
@@ -46,6 +46,8 @@ class CartViewModel @Inject constructor(
 
     private val _checkoutState = MutableStateFlow<CheckoutState>(CheckoutState.Idle)
     val checkoutState: StateFlow<CheckoutState> = _checkoutState.asStateFlow()
+
+    // ── CRUD del carrito ──────────────────────────────────────
 
     fun addItem(course: Course, quantity: Int = 1) {
         _items.update { list ->
@@ -77,6 +79,8 @@ class CartViewModel @Inject constructor(
 
     fun resetCheckout() { _checkoutState.value = CheckoutState.Idle }
 
+    // ── Checkout — 3 pasos vinculados al Backend ────────────────
+
     fun checkout() {
         val currentItems = _items.value
         if (currentItems.isEmpty()) {
@@ -86,12 +90,14 @@ class CartViewModel @Inject constructor(
         viewModelScope.launch {
             _checkoutState.value = CheckoutState.Loading
 
+            // 1. Crear pedido vacío en Django
             val orderResult = orderRepository.createOrder()
             val order = orderResult.getOrElse {
                 _checkoutState.value = CheckoutState.Error(it.message ?: "Error al crear pedido")
                 return@launch
             }
 
+            // 2. Añadir cada curso al pedido
             for (item in currentItems) {
                 val addResult = orderRepository.addItem(order.id, item.course.id, item.quantity)
                 if (addResult.isFailure) {
@@ -100,6 +106,7 @@ class CartViewModel @Inject constructor(
                 }
             }
 
+            // 3. Confirmar inscripción
             val confirmResult = orderRepository.confirmOrder(order.id)
             val confirmed = confirmResult.getOrElse {
                 _checkoutState.value = CheckoutState.Error(it.message ?: "Error al confirmar")

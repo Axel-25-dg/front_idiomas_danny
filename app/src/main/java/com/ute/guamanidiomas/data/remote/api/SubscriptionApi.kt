@@ -19,7 +19,7 @@ interface SubscriptionApi {
     @GET("my-subscriptions/")
     suspend fun getMySubscriptions(): Response<List<UserSubscriptionDto>>
 
-    @POST("subscriptions/")
+    @POST("my-subscriptions/")
     suspend fun subscribe(
         @Body request: SubscribeRequestDto
     ): Response<UserSubscriptionDto>

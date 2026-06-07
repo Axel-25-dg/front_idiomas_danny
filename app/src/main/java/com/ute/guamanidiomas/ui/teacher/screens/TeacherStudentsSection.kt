@@ -47,7 +47,7 @@ fun TeacherStudentsSection(viewModel: TeacherMainViewModel) {
                     FilterChip(
                         selected = isSelected,
                         onClick  = { viewModel.selectClassroomForStudents(classroom.id) },
-                        label    = { Text(classroom.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                        label    = { Text(classroom.name ?: "Sin nombre", maxLines = 1, overflow = TextOverflow.Ellipsis) },
                         leadingIcon = {
                             if (isSelected) Icon(Icons.Default.Check, null, modifier = Modifier.size(16.dp))
                         },
@@ -121,8 +121,8 @@ private fun StudentCard(enrollment: Enrollment) {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    (enrollment.studentName.firstOrNull() ?: enrollment.studentEmail.firstOrNull() ?: '?')
-                        .uppercase(),
+                    (enrollment.studentName?.firstOrNull() ?: enrollment.studentEmail?.firstOrNull() ?: '?')
+                        .toString().uppercase(),
                     fontSize   = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color      = PrimaryBlue
@@ -133,7 +133,7 @@ private fun StudentCard(enrollment: Enrollment) {
 
             Column(Modifier.weight(1f)) {
                 Text(
-                    enrollment.studentName.ifBlank { enrollment.studentEmail },
+                    (enrollment.studentName ?: "").ifBlank { enrollment.studentEmail ?: "Sin email" },
                     fontWeight = FontWeight.SemiBold,
                     fontSize   = 14.sp,
                     color      = TextPrimary,
@@ -141,7 +141,7 @@ private fun StudentCard(enrollment: Enrollment) {
                     overflow   = TextOverflow.Ellipsis
                 )
                 Text(
-                    enrollment.studentEmail,
+                    enrollment.studentEmail ?: "Sin email",
                     style  = MaterialTheme.typography.bodySmall,
                     color  = TextSecondary,
                     maxLines = 1,

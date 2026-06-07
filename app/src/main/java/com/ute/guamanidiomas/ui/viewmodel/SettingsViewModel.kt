@@ -1,5 +1,7 @@
 package com.ute.guamanidiomas.ui.viewmodel
 
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ute.guamanidiomas.data.local.TokenDataStore
@@ -18,6 +20,15 @@ class SettingsViewModel @Inject constructor(
     val isDarkMode: StateFlow<Boolean> = tokenDataStore.isDarkMode
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
+    val appLanguage: StateFlow<String> = tokenDataStore.appLanguage
+        .stateIn(viewModelScope, SharingStarted.Eagerly, "es")
+
+    val isSoundEnabled: StateFlow<Boolean> = tokenDataStore.isSoundEnabled
+        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+
+    val isNotificationsEnabled: StateFlow<Boolean> = tokenDataStore.isNotificationsEnabled
+        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+
     fun toggleDarkMode() {
         viewModelScope.launch {
             tokenDataStore.setDarkMode(!isDarkMode.value)
@@ -27,6 +38,27 @@ class SettingsViewModel @Inject constructor(
     fun setDarkMode(enabled: Boolean) {
         viewModelScope.launch {
             tokenDataStore.setDarkMode(enabled)
+        }
+    }
+
+    fun setAppLanguage(lang: String) {
+        viewModelScope.launch {
+            tokenDataStore.setAppLanguage(lang)
+            // Aplicar cambio de idioma inmediatamente sin reiniciar la app
+            val localeList = LocaleListCompat.forLanguageTags(lang)
+            AppCompatDelegate.setApplicationLocales(localeList)
+        }
+    }
+
+    fun setSoundEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            tokenDataStore.setSoundEnabled(enabled)
+        }
+    }
+
+    fun setNotificationsEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            tokenDataStore.setNotificationsEnabled(enabled)
         }
     }
 }

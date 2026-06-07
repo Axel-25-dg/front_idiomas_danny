@@ -20,15 +20,15 @@ enum class ExerciseType(val value: String) {
 }
 
 data class Exercise(
-    val id: Int,
-    val moduleId: Int,
+    val id: Int = 0,
+    val moduleId: Int = 0,
     val lessonId: Int = 0,
-    val question: String,
-    val type: ExerciseType,
-    val contextData: String,
-    val correctAnswer: String,
-    val xpReward: Int,
-    val isActive: Boolean
+    val question: String? = null,
+    val type: ExerciseType = ExerciseType.MULTIPLE_CHOICE,
+    val contextData: String? = null,
+    val correctAnswer: String? = null,
+    val xpReward: Int = 0,
+    val isActive: Boolean = true
 )
 
 data class ExercisePayload(

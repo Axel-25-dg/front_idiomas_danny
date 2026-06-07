@@ -113,7 +113,7 @@ fun AdminOverviewSection(viewModel: AdminMainViewModel) {
                 ) {
                     AdminStatCard(
                         label    = "Ingresos",
-                        value    = String.format(Locale.getDefault(), "$ %.2f", state.totalRevenue),
+                        value    = String.format(Locale.US, "$ %.2f", state.totalRevenue),
                         icon     = Icons.Default.MonetizationOn,
                         color    = Success,
                         modifier = Modifier.weight(1f)
@@ -203,7 +203,7 @@ private fun WelcomeBanner(
                 Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
                     MiniStat("Usuarios", totalUsers.toString())
                     MiniStat("Cursos", totalCourses.toString())
-                    MiniStat("Ingresos", "$ ${String.format(Locale.getDefault(), "%.0f", totalRevenue)}")
+                    MiniStat("Ingresos", "$ ${String.format(Locale.US, "%.0f", totalRevenue)}")
                 }
             }
         }
@@ -227,7 +227,7 @@ private fun RecentOrderRow(order: OrderDto) {
         else                              -> Warning
     }
     val total     = order.totalPrice ?: order.total ?: 0.0
-    val course    = order.courseTitle ?: order.items.firstOrNull()?.courseTitle ?: "Inscripción"
+    val course    = order.courseTitle ?: order.items?.firstOrNull()?.courseTitle ?: "Inscripción"
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -268,7 +268,7 @@ private fun RecentOrderRow(order: OrderDto) {
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    "$${"%.2f".format(total)}",
+                    "$${"%.2f".format(Locale.US, total)}",
                     fontWeight = FontWeight.Bold,
                     color      = TextPrimary,
                     fontSize   = 13.sp

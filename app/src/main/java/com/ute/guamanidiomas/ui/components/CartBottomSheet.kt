@@ -146,14 +146,14 @@ private fun CartContent(
             modifier = Modifier.padding(horizontal = 24.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            TotalRow(label = "Subtotal", value = "$${"%.2f".format(subtotal)}", isFinal = false)
-            TotalRow(label = "IVA (15%)", value = "$${"%.2f".format(tax)}", isFinal = false)
+            TotalRow(label = "Subtotal", value = "$${"%.2f".format(java.util.Locale.US, subtotal)}", isFinal = false)
+            TotalRow(label = "IVA (15%)", value = "$${"%.2f".format(java.util.Locale.US, tax)}", isFinal = false)
             
             Spacer(Modifier.height(8.dp))
             HorizontalDivider(color = Border.copy(alpha = 0.5f))
             Spacer(Modifier.height(8.dp))
             
-            TotalRow(label = "Total", value = "$${"%.2f".format(total)}", isFinal = true)
+            TotalRow(label = "Total", value = "$${"%.2f".format(java.util.Locale.US, total)}", isFinal = true)
         }
 
         Spacer(Modifier.height(24.dp))
@@ -197,7 +197,7 @@ private fun CartContent(
             } else {
                 Icon(Icons.Default.CheckCircle, null, Modifier.size(20.dp))
                 Spacer(Modifier.width(12.dp))
-                Text("Confirmar Inscripción — $${"%.2f".format(total)}", fontWeight = FontWeight.ExtraBold)
+                Text("Confirmar Inscripción — $${"%.2f".format(java.util.Locale.US, total)}", fontWeight = FontWeight.ExtraBold)
             }
         }
     }
@@ -268,7 +268,7 @@ private fun CartItemRow(item: CartItem, viewModel: CartViewModel) {
                     maxLines = 1
                 )
                 Text(
-                    text = "$${"%.2f".format(item.course.price)} / cupo",
+                    text = "$${"%.2f".format(java.util.Locale.US, item.course.price)} / cupo",
                     style = MaterialTheme.typography.labelSmall,
                     color = TextSecondary
                 )

@@ -111,9 +111,9 @@ data class UserAchievementDto(
         description = achievement?.toDomain()?.description
             ?: description
             ?: "",
-        icon        = achievement?.toDomain()?.icon
+        icon        = (achievement?.toDomain()?.icon
             ?: iconUrl
-            ?: "",
+            ?: "").replace(" ", "").trim(),
         unlockedAt  = unlockedAt.orEmpty()
     )
 }

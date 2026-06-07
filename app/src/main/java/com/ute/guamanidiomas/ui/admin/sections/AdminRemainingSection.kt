@@ -55,7 +55,7 @@ fun AdminSubscriptionsSection(viewModel: AdminMainViewModel) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     AdminStatCard(
                         label    = "Ingresos por suscripciones",
-                        value    = "$ ${String.format(Locale.getDefault(), "%.2f", state.totalRevenue)}",
+                        value    = "$ ${String.format(Locale.US, "%.2f", state.totalRevenue)}",
                         icon     = Icons.Default.MonetizationOn,
                         color    = Success,
                         modifier = Modifier.weight(1f)

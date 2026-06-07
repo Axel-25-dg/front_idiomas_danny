@@ -66,9 +66,6 @@ fun HomeScreen(
     }
 
     val featuredCourses = remember(uiState.courses) { uiState.courses.take(6) }
-    val completedModules = remember(uiState.lessonProgressList) {
-        uiState.lessonProgressList.count { it.status == "completed" }
-    }
 
     Scaffold(
         containerColor = BackgroundColor,
@@ -228,7 +225,8 @@ fun HomeScreen(
                             username = uiState.userName,
                             xp = uiState.stats?.totalXp ?: 0,
                             streak = uiState.stats?.currentStreak ?: 0,
-                            modulesCompleted = completedModules
+                            modulesCompleted = uiState.completedLessonsCount,
+                            progressPercentage = uiState.progressPercentage
                         )
                     }
                 }
@@ -239,6 +237,7 @@ fun HomeScreen(
 
 @Composable
 private fun HomeTopBar(cartCount: Int, onOpenCart: () -> Unit, onLogout: () -> Unit) {
+    val borderColor = Border
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -246,7 +245,7 @@ private fun HomeTopBar(cartCount: Int, onOpenCart: () -> Unit, onLogout: () -> U
                 val strokeWidth = 1.dp.toPx()
                 val y = size.height - strokeWidth / 2
                 drawLine(
-                    color = Border.copy(alpha = 0.3f),
+                    color = borderColor.copy(alpha = 0.3f),
                     start = Offset(0f, y),
                     end = Offset(size.width, y),
                     strokeWidth = strokeWidth
@@ -686,8 +685,11 @@ private fun TeacherTaskCard(task: TeacherTask) {
 }
 
 @Composable
-private fun ProgressCard(username: String, xp: Int, streak: Int, modulesCompleted: Int) {
-    val progressValue = remember(modulesCompleted) { (modulesCompleted / 10f).coerceIn(0f, 1f) }
+private fun ProgressCard(username: String, xp: Int, streak: Int, modulesCompleted: Int, progressPercentage: Int = 0) {
+    val progressValue = remember(progressPercentage, modulesCompleted) {
+        if (progressPercentage > 0) (progressPercentage / 100f).coerceIn(0f, 1f)
+        else (modulesCompleted / 10f).coerceIn(0f, 1f)
+    }
     val percent = remember(progressValue) { (progressValue * 100).toInt() }
 
     Column(modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 20.dp)) {

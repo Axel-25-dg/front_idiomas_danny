@@ -48,9 +48,9 @@ fun AdminUsersSection(viewModel: AdminMainViewModel) {
     val displayUsers = remember(state.allUsers, state.searchQuery, state.filterRole) {
         state.allUsers.filter { user ->
             val matchesSearch = state.searchQuery.isBlank() ||
-                user.username.contains(state.searchQuery, ignoreCase = true) ||
-                user.email.contains(state.searchQuery, ignoreCase = true) ||
-                (user.firstName + " " + user.lastName).contains(state.searchQuery, ignoreCase = true)
+                (user.username?.contains(state.searchQuery, ignoreCase = true) == true) ||
+                (user.email?.contains(state.searchQuery, ignoreCase = true) == true) ||
+                ((user.firstName.orEmpty() + " " + user.lastName.orEmpty()).contains(state.searchQuery, ignoreCase = true))
             val matchesRole = state.filterRole.isBlank() ||
                 user.role?.lowercase() == state.filterRole.lowercase()
             matchesSearch && matchesRole
@@ -180,7 +180,7 @@ private fun UserAdminCard(
     onChangeRole: (String) -> Unit,
     onViewProfile: () -> Unit
 ) {
-    val fullName = listOf(user.firstName, user.lastName).filter { it.isNotBlank() }.joinToString(" ")
+    val fullName = listOf(user.firstName, user.lastName).filter { !it.isNullOrBlank() }.joinToString(" ")
     var showRoleMenu by remember { mutableStateOf(false) }
 
     Surface(
@@ -201,7 +201,7 @@ private fun UserAdminCard(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    (user.username.firstOrNull() ?: user.email.firstOrNull() ?: '?').uppercase(),
+                    (user.username?.firstOrNull() ?: user.email?.firstOrNull() ?: '?').toString().uppercase(),
                     fontSize   = 17.sp,
                     fontWeight = FontWeight.Bold,
                     color      = PrimaryBlue
@@ -211,7 +211,7 @@ private fun UserAdminCard(
             Column(Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text(
-                        fullName.ifBlank { user.username },
+                        fullName.ifBlank { user.username.orEmpty() },
                         fontWeight = FontWeight.SemiBold,
                         fontSize   = 14.sp,
                         color      = TextPrimary,
@@ -222,7 +222,7 @@ private fun UserAdminCard(
                     RoleBadge(role = user.role ?: "user")
                 }
                 Text(
-                    user.email,
+                    user.email.orEmpty(),
                     style    = MaterialTheme.typography.bodySmall,
                     color    = TextSecondary,
                     maxLines = 1,
@@ -339,7 +339,7 @@ private fun CreateUserDialog(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun UserDetailSheet(user: User, onDismiss: () -> Unit) {
-    val fullName = listOf(user.firstName, user.lastName).filter { it.isNotBlank() }.joinToString(" ")
+    val fullName = listOf(user.firstName, user.lastName).filter { !it.isNullOrBlank() }.joinToString(" ")
     ModalBottomSheet(onDismissRequest = onDismiss, containerColor = SurfaceColor) {
         Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -348,20 +348,20 @@ private fun UserDetailSheet(user: User, onDismiss: () -> Unit) {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        user.username.firstOrNull()?.uppercase() ?: "?",
+                        user.username?.firstOrNull()?.toString()?.uppercase() ?: "?",
                         fontSize = 22.sp, fontWeight = FontWeight.Bold, color = PrimaryBlue
                     )
                 }
                 Spacer(Modifier.width(16.dp))
                 Column {
-                    Text(fullName.ifBlank { user.username }, fontWeight = FontWeight.Bold, fontSize = 17.sp)
-                    Text(user.email, style = MaterialTheme.typography.bodySmall, color = TextSecondary)
+                    Text(fullName.ifBlank { user.username.orEmpty() }, fontWeight = FontWeight.Bold, fontSize = 17.sp)
+                    Text(user.email.orEmpty(), style = MaterialTheme.typography.bodySmall, color = TextSecondary)
                 }
             }
             HorizontalDivider()
             UserDetailRow("ID", user.id.toString())
-            UserDetailRow("Usuario", "@${user.username}")
-            UserDetailRow("Correo", user.email)
+            UserDetailRow("Usuario", "@${user.username.orEmpty()}")
+            UserDetailRow("Correo", user.email.orEmpty())
             UserDetailRow("Rol", user.role ?: "—")
             UserDetailRow("Estado", if (user.isActive) "Activo" else "Inactivo")
             Spacer(Modifier.height(24.dp))

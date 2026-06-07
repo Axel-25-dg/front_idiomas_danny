@@ -15,7 +15,7 @@ class CertificateRepositoryImpl @Inject constructor(
     override suspend fun getMyCertificates(): Result<List<Certificate>> = runCatching {
         val response = api.getMyCertificates()
         if (response.isSuccessful) {
-            response.body()?.map { it.toDomain() } ?: emptyList()
+            response.body()?.results?.map { it.toDomain() } ?: emptyList()
         } else throw Exception(apiError(response.code(), response.errorBody()?.string()))
     }
 

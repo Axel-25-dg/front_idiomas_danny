@@ -46,8 +46,8 @@ fun ModuleFormScreen(
 
     LaunchedEffect(module) {
         module?.let {
-            title = it.title
-            description = it.description
+            title = it.title ?: ""
+            description = it.description ?: ""
             order = it.order.toString()
             isActive = it.isActive
         }

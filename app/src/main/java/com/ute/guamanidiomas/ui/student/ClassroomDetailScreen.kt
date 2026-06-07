@@ -67,7 +67,7 @@ fun ClassroomDetailScreen(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(Icons.Default.Warning, null, tint = ErrorColor, modifier = Modifier.size(48.dp))
                     Spacer(Modifier.height(12.dp))
-                    Text(err, color = ErrorColor)
+                    Text(err.orEmpty(), color = ErrorColor)
                     Spacer(Modifier.height(16.dp))
                     Button(onClick = { viewModel.loadClassDetail(classroomId) }) { Text("Reintentar") }
                 }
@@ -98,7 +98,7 @@ fun ClassroomDetailScreen(
                 items(state.resources, key = { it.id }) { resource ->
                     ResourceItemCard(resource = resource, onOpen = {
                         val url = resource.fileUrl ?: resource.url
-                        if (url.isNotBlank()) {
+                        if (!url.isNullOrBlank()) {
                             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                             context.startActivity(intent)
                         }
@@ -142,8 +142,8 @@ private fun ClassInfoCard(classroom: Classroom) {
                 }
                 Spacer(Modifier.width(14.dp))
                 Column {
-                    Text(classroom.name, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = TextPrimary)
-                    Text(classroom.courseTitle, style = MaterialTheme.typography.bodySmall, color = TextSecondary)
+                    Text(classroom.name.orEmpty(), fontWeight = FontWeight.Bold, fontSize = 18.sp, color = TextPrimary)
+                    Text(classroom.courseTitle.orEmpty(), style = MaterialTheme.typography.bodySmall, color = TextSecondary)
                 }
             }
 
@@ -151,18 +151,18 @@ private fun ClassInfoCard(classroom: Classroom) {
             HorizontalDivider(color = Border)
             Spacer(Modifier.height(12.dp))
 
-            if (classroom.description.isNotBlank()) {
-                Text(classroom.description, style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
+            if (!classroom.description.isNullOrBlank()) {
+                Text(classroom.description.orEmpty(), style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
                 Spacer(Modifier.height(12.dp))
             }
 
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                InfoChip(Icons.Default.Person, "Prof. ${classroom.teacherName}")
+                InfoChip(Icons.Default.Person, "Prof. ${classroom.teacherName.orEmpty()}")
                 InfoChip(Icons.Default.Group, "${classroom.studentCount} alumnos")
             }
             Spacer(Modifier.height(8.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                InfoChip(Icons.Default.Key, classroom.accessCode)
+                InfoChip(Icons.Default.Key, classroom.accessCode.orEmpty())
                 if (classroom.isActive) {
                     Surface(color = Success.copy(alpha = 0.12f), shape = RoundedCornerShape(8.dp)) {
                         Text("Activa", Modifier.padding(horizontal = 10.dp, vertical = 4.dp), color = Success, fontSize = 12.sp, fontWeight = FontWeight.Bold)
@@ -218,9 +218,9 @@ private fun ResourceItemCard(resource: TeacherResource, onOpen: () -> Unit) {
             }
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
-                Text(resource.title, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = TextPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                if (resource.description.isNotBlank()) {
-                    Text(resource.description, style = MaterialTheme.typography.bodySmall, color = TextSecondary, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(resource.title.orEmpty(), fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = TextPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                if (!resource.description.isNullOrBlank()) {
+                    Text(resource.description.orEmpty(), style = MaterialTheme.typography.bodySmall, color = TextSecondary, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
                 Text(resource.resourceType.label, style = MaterialTheme.typography.labelSmall, color = typeColor, fontWeight = FontWeight.Bold)
             }

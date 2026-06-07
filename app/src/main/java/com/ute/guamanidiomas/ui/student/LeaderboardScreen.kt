@@ -106,7 +106,7 @@ private fun TopThreeBanner(top3: List<StudentStats>) {
                         Text(medal, fontSize = 28.sp)
                         Spacer(Modifier.height(4.dp))
                         Text(
-                            student.userEmail.substringBefore("@"),
+                            student.userEmail.orEmpty().substringBefore("@"),
                             color      = Color.White,
                             fontWeight = FontWeight.Bold,
                             fontSize   = 12.sp,
@@ -161,7 +161,7 @@ private fun LeaderboardRow(position: Int, student: StudentStats) {
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Text(
-                    student.userEmail.substringBefore("@"),
+                    student.userEmail.orEmpty().substringBefore("@"),
                     fontWeight = FontWeight.SemiBold,
                     fontSize   = 14.sp,
                     color      = TextPrimary,

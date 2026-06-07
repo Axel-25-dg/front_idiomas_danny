@@ -3,17 +3,17 @@ package com.ute.guamanidiomas.domain.model.teacher
 // ─── Classroom ────────────────────────────────────────────────────────────────
 
 data class Classroom(
-    val id: Int,
-    val courseId: Int,
-    val courseTitle: String,
-    val name: String,
-    val description: String,
-    val accessCode: String,
-    val teacherId: Int,
-    val teacherName: String,
-    val studentCount: Int,
-    val isActive: Boolean,
-    val createdAt: String
+    val id: Int = 0,
+    val courseId: Int = 0,
+    val courseTitle: String? = null,
+    val name: String? = null,
+    val description: String? = null,
+    val accessCode: String? = null,
+    val teacherId: Int = 0,
+    val teacherName: String? = null,
+    val studentCount: Int = 0,
+    val isActive: Boolean = true,
+    val createdAt: String? = null
 )
 
 data class ClassroomPayload(
@@ -26,34 +26,34 @@ data class ClassroomPayload(
 // ─── Enrollment ───────────────────────────────────────────────────────────────
 
 data class Enrollment(
-    val id: Int,
-    val classroomId: Int,
-    val classroomName: String,
-    val studentId: Int,
-    val studentEmail: String,
-    val studentName: String,
-    val totalXp: Int,
-    val currentStreak: Int,
-    val modulesCompleted: Int,
-    val enrolledAt: String
+    val id: Int = 0,
+    val classroomId: Int = 0,
+    val classroomName: String? = null,
+    val studentId: Int = 0,
+    val studentEmail: String? = null,
+    val studentName: String? = null,
+    val totalXp: Int = 0,
+    val currentStreak: Int = 0,
+    val modulesCompleted: Int = 0,
+    val enrolledAt: String? = null
 )
 
 // ─── Exam ─────────────────────────────────────────────────────────────────────
 
 data class Exam(
-    val id: Int,
-    val classroomId: Int,
-    val classroomName: String,
-    val title: String,
-    val description: String,
-    val timeLimitMinutes: Int,
-    val passingScore: Int,
-    val autoGrade: Boolean,
-    val startDate: String?,
-    val endDate: String?,
-    val isActive: Boolean,
-    val createdAt: String,
-    val submissionCount: Int
+    val id: Int = 0,
+    val classroomId: Int = 0,
+    val classroomName: String? = null,
+    val title: String? = null,
+    val description: String? = null,
+    val timeLimitMinutes: Int = 0,
+    val passingScore: Int = 0,
+    val autoGrade: Boolean = true,
+    val startDate: String? = null,
+    val endDate: String? = null,
+    val isActive: Boolean = true,
+    val createdAt: String? = null,
+    val submissionCount: Int = 0
 )
 
 data class ExamPayload(
@@ -71,15 +71,15 @@ data class ExamPayload(
 // ─── ExamResult ───────────────────────────────────────────────────────────────
 
 data class ExamResult(
-    val id: Int,
-    val examId: Int,
-    val examTitle: String,
-    val studentId: Int,
-    val studentEmail: String,
-    val studentName: String,
-    val score: Int,
-    val passed: Boolean,
-    val submittedAt: String
+    val id: Int = 0,
+    val examId: Int = 0,
+    val examTitle: String? = null,
+    val studentId: Int = 0,
+    val studentEmail: String? = null,
+    val studentName: String? = null,
+    val score: Int = 0,
+    val passed: Boolean = false,
+    val submittedAt: String? = null
 )
 
 // ─── TeacherResource ──────────────────────────────────────────────────────────
@@ -100,16 +100,16 @@ enum class ResourceType(val value: String, val label: String) {
 }
 
 data class TeacherResource(
-    val id: Int,
-    val classroomId: Int,
-    val classroomName: String,
-    val title: String,
-    val description: String,
-    val resourceType: ResourceType,
-    val url: String,
-    val fileUrl: String?,
-    val isActive: Boolean,
-    val createdAt: String
+    val id: Int = 0,
+    val classroomId: Int = 0,
+    val classroomName: String? = null,
+    val title: String? = null,
+    val description: String? = null,
+    val resourceType: ResourceType = ResourceType.LINK,
+    val url: String? = null,
+    val fileUrl: String? = null,
+    val isActive: Boolean = true,
+    val createdAt: String? = null
 )
 
 data class TeacherResourcePayload(

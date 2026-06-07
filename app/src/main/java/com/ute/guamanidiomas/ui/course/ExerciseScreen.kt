@@ -26,6 +26,9 @@ import com.ute.guamanidiomas.domain.model.Exercise
 import com.ute.guamanidiomas.domain.model.ExerciseType
 import com.ute.guamanidiomas.ui.theme.*
 import com.ute.guamanidiomas.ui.viewmodel.GamificationViewModel
+import android.media.MediaPlayer
+import androidx.compose.ui.platform.LocalContext
+import com.ute.guamanidiomas.R
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -34,9 +37,12 @@ fun ExerciseScreen(
     onClose: () -> Unit,
     onComplete: (Int) -> Unit, // Pasa el ID del ejercicio completado
     viewModel: ExerciseViewModel = hiltViewModel(),
-    gamificationViewModel: GamificationViewModel = hiltViewModel()
+    gamificationViewModel: GamificationViewModel = hiltViewModel(),
+    settingsViewModel: com.ute.guamanidiomas.ui.viewmodel.SettingsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val isSoundEnabled by settingsViewModel.isSoundEnabled.collectAsState()
+    val context = LocalContext.current
     
     LaunchedEffect(exerciseId) {
         viewModel.loadExercise(exerciseId)
@@ -67,7 +73,7 @@ fun ExerciseScreen(
             if (exercise.type == ExerciseType.TRANSLATION) {
                 try {
                     val type = object : TypeToken<List<String>>() {}.type
-                    gson.fromJson<List<String>>(exercise.contextData, type)
+                    gson.fromJson<List<String>>(exercise.contextData ?: "[]", type)
                 } catch (e: Exception) {
                     emptyList()
                 }
@@ -114,7 +120,7 @@ fun ExerciseScreen(
             fontWeight = FontWeight.Bold
         )
         Text(
-            text = exercise.question,
+            text = exercise.question ?: "¿Cuál es la respuesta correcta?",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Black,
             modifier = Modifier.padding(top = 8.dp)
@@ -129,7 +135,7 @@ fun ExerciseScreen(
                     val options = remember(exercise.contextData) {
                         try {
                             val type = object : TypeToken<List<String>>() {}.type
-                            gson.fromJson<List<String>>(exercise.contextData, type)
+                            gson.fromJson<List<String>>(exercise.contextData ?: "[]", type)
                         } catch (e: Exception) {
                             emptyList()
                         }
@@ -139,7 +145,7 @@ fun ExerciseScreen(
                             OptionButton(
                                 text = option,
                                 isSelected = selectedOption == option,
-                                isCorrect = if (isVerified) option == exercise.correctAnswer else null,
+                                isCorrect = if (isVerified) option == (exercise.correctAnswer ?: "") else null,
                                 enabled = !isVerified,
                                 onClick = { selectedOption = option }
                             )
@@ -200,11 +206,23 @@ fun ExerciseScreen(
                     }
                 } else {
                     isCorrect = when (exercise.type) {
-                        ExerciseType.MULTIPLE_CHOICE -> selectedOption == exercise.correctAnswer
-                        ExerciseType.TRANSLATION -> selectedWords.joinToString(" ").trim().lowercase() == exercise.correctAnswer.trim().lowercase()
+                        ExerciseType.MULTIPLE_CHOICE -> selectedOption == (exercise.correctAnswer ?: "")
+                        ExerciseType.TRANSLATION -> {
+                            val answer = exercise.correctAnswer?.trim()?.lowercase() ?: ""
+                            selectedWords.joinToString(" ").trim().lowercase() == answer
+                        }
                         else -> false
                     }
                     isVerified = true
+                    // Reproducir sonido de feedback si está habilitado
+                    if (isSoundEnabled) {
+                        try {
+                            val soundRes = if (isCorrect) R.raw.success_effect else R.raw.error_effect
+                            val mediaPlayer = MediaPlayer.create(context, soundRes)
+                            mediaPlayer?.start()
+                            mediaPlayer?.setOnCompletionListener { mp -> mp.release() }
+                        } catch (_: Exception) { /* Silenciar si no existe el recurso */ }
+                    }
                 }
             },
             enabled = (selectedOption != null || selectedWords.isNotEmpty()) || isVerified,

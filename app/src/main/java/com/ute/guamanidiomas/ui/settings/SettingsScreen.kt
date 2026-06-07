@@ -37,10 +37,12 @@ fun SettingsScreen(
     settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
     val isDarkMode by settingsViewModel.isDarkMode.collectAsState()
+    val appLanguage by settingsViewModel.appLanguage.collectAsState()
+    val soundEnabled by settingsViewModel.isSoundEnabled.collectAsState()
+    val notificationsEnabled by settingsViewModel.isNotificationsEnabled.collectAsState()
     val context = LocalContext.current
-    var notificationsEnabled by remember { mutableStateOf(true) }
-    var soundEnabled by remember { mutableStateOf(true) }
     var showAbout by remember { mutableStateOf(false) }
+    var showLanguageDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         containerColor = BackgroundColor,
@@ -96,13 +98,13 @@ fun SettingsScreen(
             item {
                 SettingsItem(
                     title = "Notificaciones",
-                    subtitle = "Alertas de clases y progreso",
+                    subtitle = if (notificationsEnabled) "Activadas" else "Desactivadas",
                     icon = Icons.Default.Notifications,
                     iconColor = AccentBlue,
                     trailing = {
                         Switch(
                             checked = notificationsEnabled,
-                            onCheckedChange = { notificationsEnabled = it },
+                            onCheckedChange = { settingsViewModel.setNotificationsEnabled(it) },
                             colors = SwitchDefaults.colors(checkedThumbColor = PrimaryBlue, checkedTrackColor = LightBlue)
                         )
                     }
@@ -111,25 +113,29 @@ fun SettingsScreen(
             item {
                 SettingsItem(
                     title = "Sonido y Efectos",
-                    subtitle = "Feedback auditivo en juegos",
+                    subtitle = if (soundEnabled) "Activado" else "Desactivado",
                     icon = Icons.AutoMirrored.Filled.VolumeUp,
                     iconColor = Success,
                     trailing = {
                         Switch(
                             checked = soundEnabled,
-                            onCheckedChange = { soundEnabled = it },
+                            onCheckedChange = { settingsViewModel.setSoundEnabled(it) },
                             colors = SwitchDefaults.colors(checkedThumbColor = PrimaryBlue, checkedTrackColor = LightBlue)
                         )
                     }
                 )
             }
             item {
+                val langLabel = when (appLanguage) {
+                    "en" -> "English"
+                    else -> "Español (Castellano)"
+                }
                 SettingsItem(
                     title = "Idioma de la App",
-                    subtitle = "Español (Castellano)",
+                    subtitle = langLabel,
                     icon = Icons.Default.Language,
                     iconColor = Success,
-                    onClick = { /* El idioma sigue la configuración del sistema */ }
+                    onClick = { showLanguageDialog = true }
                 )
             }
 
@@ -209,6 +215,46 @@ fun SettingsScreen(
             },
             confirmButton = {
                 TextButton(onClick = { showAbout = false }) {
+                    Text("Cerrar", color = PrimaryBlue)
+                }
+            }
+        )
+    }
+
+    if (showLanguageDialog) {
+        AlertDialog(
+            onDismissRequest = { showLanguageDialog = false },
+            icon = { Icon(Icons.Default.Language, null, tint = PrimaryBlue) },
+            title = { Text("Idioma de la App", fontWeight = FontWeight.Bold) },
+            text = {
+                Column {
+                    val languages = listOf("es" to "Español (Castellano)", "en" to "English")
+                    languages.forEach { (code, label) ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    settingsViewModel.setAppLanguage(code)
+                                    showLanguageDialog = false
+                                }
+                                .padding(vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = appLanguage == code,
+                                onClick = {
+                                    settingsViewModel.setAppLanguage(code)
+                                    showLanguageDialog = false
+                                }
+                            )
+                            Spacer(Modifier.width(12.dp))
+                            Text(label, style = MaterialTheme.typography.bodyLarge)
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showLanguageDialog = false }) {
                     Text("Cerrar", color = PrimaryBlue)
                 }
             }

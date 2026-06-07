@@ -9,6 +9,7 @@ import com.ute.guamanidiomas.data.remote.dto.LogoutRequest
 import com.ute.guamanidiomas.data.remote.dto.RegisterRequest
 import com.ute.guamanidiomas.domain.model.LoggedUser
 import com.ute.guamanidiomas.domain.repository.AuthRepository
+import com.ute.guamanidiomas.util.ErrorUtils
 import com.ute.guamanidiomas.util.JwtDecoder
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
@@ -25,7 +26,7 @@ class AuthRepositoryImpl @Inject constructor(
             val response = api.login(LoginRequest(email, password))
             if (!response.isSuccessful) {
                 val errorBody = response.errorBody()?.string() ?: ""
-                error(parseErrorMessage(errorBody, response.code()))
+                error(ErrorUtils.parseErrorMessage(errorBody, response.code()))
             }
             val body = response.body() ?: throw Exception("Respuesta vacía del servidor")
 
@@ -74,7 +75,7 @@ class AuthRepositoryImpl @Inject constructor(
         val response = api.register(RegisterRequest(username, email, password, password2))
         if (!response.isSuccessful) {
             val errorBody = response.errorBody()?.string() ?: ""
-            error(parseErrorMessage(errorBody, response.code()))
+            error(ErrorUtils.parseErrorMessage(errorBody, response.code()))
         }
         val body = response.body() ?: throw Exception("Respuesta vacía del servidor")
 
@@ -135,24 +136,4 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun isLoggedIn(): Boolean =
         !tokenDataStore.getAccessToken().isNullOrBlank()
-
-    private fun parseErrorMessage(body: String, code: Int): String {
-        return try {
-            val map = Gson().fromJson(body, Map::class.java)
-            map["detail"]?.toString()
-                ?: map["non_field_errors"]?.let { errors ->
-                    if (errors is List<*>) errors.joinToString(", ")
-                    else errors.toString()
-                }
-                ?: map.entries.firstOrNull { it.key !in setOf("detail", "non_field_errors") }
-                    ?.let { entry ->
-                        val value = entry.value
-                        val msg = if (value is List<*>) value.joinToString(", ") else value.toString()
-                        "${entry.key}: $msg"
-                    }
-                ?: "Error $code"
-        } catch (e: Exception) {
-            "Error $code"
-        }
-    }
 }

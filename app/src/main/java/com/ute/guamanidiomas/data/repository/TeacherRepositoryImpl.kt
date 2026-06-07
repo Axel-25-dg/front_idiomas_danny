@@ -9,6 +9,7 @@ import com.ute.guamanidiomas.data.remote.dto.TeacherResourceRequest
 import com.ute.guamanidiomas.data.remote.dto.TeacherStatsDto
 import com.ute.guamanidiomas.domain.model.teacher.*
 import com.ute.guamanidiomas.domain.repository.TeacherRepository
+import com.ute.guamanidiomas.util.ErrorUtils
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -62,15 +63,14 @@ class TeacherRepositoryImpl @Inject constructor(
         if (response.isSuccessful) {
             response.body()?.results?.map { it.toDomain() } ?: emptyList()
         } else {
-            val errorBody = response.errorBody()?.string()
-            throw Exception(apiError(response.code(), errorBody))
+            throw Exception(ErrorUtils.parseErrorMessage(response.errorBody()?.string(), response.code()))
         }
     }
 
     override suspend fun getClassroomById(id: Int): Result<Classroom> = runCatching {
         val response = classroomApi.getClassroomById(id)
         if (response.isSuccessful) response.body()!!.toDomain()
-        else throw Exception(apiError(response.code(), response.errorBody()?.string()))
+        else throw Exception(ErrorUtils.parseErrorMessage(response.errorBody()?.string(), response.code()))
     }
 
     override suspend fun createClassroom(payload: ClassroomPayload): Result<Classroom> = runCatching {
@@ -82,7 +82,7 @@ class TeacherRepositoryImpl @Inject constructor(
         )
         val response = classroomApi.createClassroom(request)
         if (response.isSuccessful) response.body()!!.toDomain()
-        else throw Exception(apiError(response.code(), response.errorBody()?.string()))
+        else throw Exception(ErrorUtils.parseErrorMessage(response.errorBody()?.string(), response.code()))
     }
 
     override suspend fun updateClassroom(id: Int, payload: ClassroomPayload): Result<Classroom> = runCatching {
@@ -94,12 +94,12 @@ class TeacherRepositoryImpl @Inject constructor(
         )
         val response = classroomApi.updateClassroom(id, request)
         if (response.isSuccessful) response.body()!!.toDomain()
-        else throw Exception(apiError(response.code(), response.errorBody()?.string()))
+        else throw Exception(ErrorUtils.parseErrorMessage(response.errorBody()?.string(), response.code()))
     }
 
     override suspend fun deleteClassroom(id: Int): Result<Unit> = runCatching {
         val response = classroomApi.deleteClassroom(id)
-        if (!response.isSuccessful) throw Exception(apiError(response.code(), response.errorBody()?.string()))
+        if (!response.isSuccessful) throw Exception(ErrorUtils.parseErrorMessage(response.errorBody()?.string(), response.code()))
     }
 
     // ── Enrollments ───────────────────────────────────────────────────────────
@@ -136,7 +136,7 @@ class TeacherRepositoryImpl @Inject constructor(
 
     override suspend fun removeStudent(classroomId: Int, studentId: Int): Result<Unit> = runCatching {
         val response = classroomApi.removeStudent(classroomId, mapOf("student_id" to studentId))
-        if (!response.isSuccessful) throw Exception(apiError(response.code(), response.errorBody()?.string()))
+        if (!response.isSuccessful) throw Exception(ErrorUtils.parseErrorMessage(response.errorBody()?.string(), response.code()))
     }
 
     // ── Exams ─────────────────────────────────────────────────────────────────
@@ -188,19 +188,19 @@ class TeacherRepositoryImpl @Inject constructor(
         )
         val response = examApi.updateExam(id, request)
         if (response.isSuccessful) response.body()!!.toDomain()
-        else throw Exception(apiError(response.code(), response.errorBody()?.string()))
+        else throw Exception(ErrorUtils.parseErrorMessage(response.errorBody()?.string(), response.code()))
     }
 
     override suspend fun deleteExam(id: Int): Result<Unit> = runCatching {
         val response = examApi.deleteExam(id)
-        if (!response.isSuccessful) throw Exception(apiError(response.code(), response.errorBody()?.string()))
+        if (!response.isSuccessful) throw Exception(ErrorUtils.parseErrorMessage(response.errorBody()?.string(), response.code()))
     }
 
     override suspend fun getExamResults(examId: Int): Result<List<ExamResult>> = runCatching {
         val response = examApi.getExamResults(examId)
         if (response.isSuccessful) {
             response.body()?.map { it.toDomain() } ?: emptyList()
-        } else throw Exception(apiError(response.code(), response.errorBody()?.string()))
+        } else throw Exception(ErrorUtils.parseErrorMessage(response.errorBody()?.string(), response.code()))
     }
 
     // ── Resources ─────────────────────────────────────────────────────────────
@@ -227,7 +227,7 @@ class TeacherRepositoryImpl @Inject constructor(
         )
         val response = resourceApi.createResource(request)
         if (response.isSuccessful) response.body()!!.toDomain()
-        else throw Exception(apiError(response.code(), response.errorBody()?.string()))
+        else throw Exception(ErrorUtils.parseErrorMessage(response.errorBody()?.string(), response.code()))
     }
 
     override suspend fun updateResource(id: Int, payload: TeacherResourcePayload): Result<TeacherResource> = runCatching {
@@ -242,12 +242,12 @@ class TeacherRepositoryImpl @Inject constructor(
         )
         val response = resourceApi.updateResource(id, request)
         if (response.isSuccessful) response.body()!!.toDomain()
-        else throw Exception(apiError(response.code(), response.errorBody()?.string()))
+        else throw Exception(ErrorUtils.parseErrorMessage(response.errorBody()?.string(), response.code()))
     }
 
     override suspend fun deleteResource(id: Int): Result<Unit> = runCatching {
         val response = resourceApi.deleteResource(id)
-        if (!response.isSuccessful) throw Exception(apiError(response.code(), response.errorBody()?.string()))
+        if (!response.isSuccessful) throw Exception(ErrorUtils.parseErrorMessage(response.errorBody()?.string(), response.code()))
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

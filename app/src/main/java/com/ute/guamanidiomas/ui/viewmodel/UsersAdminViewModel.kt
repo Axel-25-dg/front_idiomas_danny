@@ -37,12 +37,10 @@ class UsersAdminViewModel @Inject constructor(
         viewModelScope.launch {
             repository.getUsers()
                 .onSuccess { allUsers ->
-                    // Filter to only display users who are staff
-                    val staff = allUsers.filter { it.isStaff || it.role in setOf("teacher", "manager", "employee") }
-                    _uiState.update { it.copy(users = staff, isLoading = false) }
+                    _uiState.update { it.copy(users = allUsers, isLoading = false) }
                 }
                 .onFailure { error ->
-                    _uiState.update { it.copy(isLoading = false, error = error.message ?: "Error al cargar personal") }
+                    _uiState.update { it.copy(isLoading = false, error = error.message ?: "Error al cargar usuarios") }
                 }
         }
     }

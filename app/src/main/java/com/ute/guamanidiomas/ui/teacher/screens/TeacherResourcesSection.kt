@@ -118,10 +118,10 @@ fun TeacherResourcesSection(viewModel: TeacherMainViewModel) {
     // Diálogo nuevo recurso
     if (state.showCreateDialog) {
         ResourceFormDialog(
-            classrooms = state.classrooms,
+            courses    = state.courses,
             onDismiss  = { viewModel.dismissResourceDialog() },
-            onConfirm  = { classId, title, desc, type, url ->
-                viewModel.createResource(classId, title, desc, type, url)
+            onConfirm  = { courseId, title, desc, type, url ->
+                viewModel.createResource(courseId, title, desc, type, url)
             }
         )
     }
@@ -196,16 +196,16 @@ private fun ResourceCard(resource: TeacherResource, onDelete: () -> Unit) {
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Text(
-                    resource.title,
+                    resource.title ?: "Recurso sin título",
                     fontWeight = FontWeight.SemiBold,
                     fontSize   = 14.sp,
                     color      = TextPrimary,
                     maxLines   = 1,
                     overflow   = TextOverflow.Ellipsis
                 )
-                if (resource.description.isNotBlank()) {
+                if (!(resource.description ?: "").isBlank()) {
                     Text(
-                        resource.description,
+                        resource.description ?: "",
                         style  = MaterialTheme.typography.bodySmall,
                         color  = TextSecondary,
                         maxLines = 1,
@@ -213,7 +213,7 @@ private fun ResourceCard(resource: TeacherResource, onDelete: () -> Unit) {
                     )
                 }
                 Text(
-                    resource.classroomName.ifBlank { resource.url },
+                    (resource.classroomName ?: "").ifBlank { resource.url ?: "Sin enlace" },
                     style  = MaterialTheme.typography.bodySmall,
                     color  = PrimaryBlue.copy(alpha = 0.7f),
                     maxLines = 1,
@@ -230,28 +230,57 @@ private fun ResourceCard(resource: TeacherResource, onDelete: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ResourceFormDialog(
-    classrooms: List<com.ute.guamanidiomas.domain.model.teacher.Classroom>,
+    courses: List<com.ute.guamanidiomas.domain.model.Course>,
     onDismiss: () -> Unit,
-    onConfirm: (Int, String, String, String, String) -> Unit
+    onConfirm: (Int?, String, String, String, String) -> Unit
 ) {
     var title        by remember { mutableStateOf("") }
     var description  by remember { mutableStateOf("") }
     var fileUrl      by remember { mutableStateOf("") }
     var selectedType by remember { mutableStateOf(ResourceType.LINK) }
     var expandedType by remember { mutableStateOf(false) }
+    var selectedCourse by remember { mutableStateOf<com.ute.guamanidiomas.domain.model.Course?>(null) }
+    var expandedCourse by remember { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Nuevo Recurso", fontWeight = FontWeight.Bold) },
         text = {
             Column(
-                modifier = Modifier.fillMaxWidth().heightIn(max = 400.dp),
+                modifier = Modifier.fillMaxWidth().heightIn(max = 480.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+                // Selector de Curso
+                ExposedDropdownMenuBox(
+                    expanded         = expandedCourse,
+                    onExpandedChange = { expandedCourse = it }
+                ) {
+                    OutlinedTextField(
+                        value        = selectedCourse?.title ?: "Seleccionar curso",
+                        onValueChange = {},
+                        readOnly     = true,
+                        label        = { Text("Curso *") },
+                        leadingIcon  = { Icon(Icons.Default.School, null, tint = PrimaryBlue) },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expandedCourse) },
+                        modifier     = Modifier.fillMaxWidth().menuAnchor()
+                    )
+                    ExposedDropdownMenu(
+                        expanded         = expandedCourse,
+                        onDismissRequest = { expandedCourse = false }
+                    ) {
+                        courses.forEach { course ->
+                            DropdownMenuItem(
+                                text    = { Text(course.title ?: "Curso #${course.id}") },
+                                onClick = { selectedCourse = course; expandedCourse = false }
+                            )
+                        }
+                    }
+                }
+
                 OutlinedTextField(
                     value         = title,
                     onValueChange = { title = it },
-                    label         = { Text("Titulo") },
+                    label         = { Text("Titulo *") },
                     leadingIcon   = { Icon(Icons.Default.Title, null) },
                     singleLine    = true,
                     modifier      = Modifier.fillMaxWidth()
@@ -308,10 +337,16 @@ private fun ResourceFormDialog(
             Button(
                 onClick = {
                     if (title.isNotBlank()) {
-                        onConfirm(0, title.trim(), description.trim(), selectedType.value, fileUrl.trim())
+                        onConfirm(
+                            selectedCourse?.id,
+                            title.trim(),
+                            description.trim(),
+                            selectedType.value,
+                            fileUrl.trim()
+                        )
                     }
                 },
-                enabled = title.isNotBlank() && fileUrl.isNotBlank(),
+                enabled = title.isNotBlank() && fileUrl.isNotBlank() && selectedCourse != null,
                 colors  = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B5CF6))
             ) { Text("Agregar") }
         },

@@ -64,6 +64,7 @@ data class TeacherResourcesUiState(
     val resources: List<TeacherResource> = emptyList(),
     val showCreateDialog: Boolean = false,
     val classrooms: List<Classroom> = emptyList(),
+    val courses: List<Course> = emptyList(),
     val error: String? = null,
     val successMessage: String? = null
 )
@@ -360,11 +361,20 @@ class TeacherMainViewModel @Inject constructor(
         }
     }
 
+    private var lastLoadedCourseId: Int? = null
+
     fun loadModulesForCourse(courseId: Int) {
+        if (lastLoadedCourseId == courseId) return // Ya están cargados, evitar petición duplicada
         viewModelScope.launch {
+            lastLoadedCourseId = courseId
+            _examsState.value = _examsState.value.copy(modules = emptyList())
             moduleRepository.getModulesByCourse(courseId)
                 .onSuccess { modules ->
                     _examsState.value = _examsState.value.copy(modules = modules)
+                }
+                .onFailure {
+                    lastLoadedCourseId = null // Permitir reintentar en caso de error
+                    _examsState.value = _examsState.value.copy(modules = emptyList())
                 }
         }
     }
@@ -445,10 +455,10 @@ class TeacherMainViewModel @Inject constructor(
                         ExamResult(
                             id           = ex.id,
                             examId       = lessonId,
-                            examTitle    = ex.question,
+                            examTitle    = ex.question ?: "Pregunta sin título",
                             studentId    = 0,
                             studentEmail = ex.type.value,
-                            studentName  = ex.correctAnswer,
+                            studentName  = ex.correctAnswer ?: "",
                             score        = ex.xpReward,
                             passed       = ex.isActive,
                             submittedAt  = ""
@@ -499,16 +509,23 @@ class TeacherMainViewModel @Inject constructor(
 
             val resourcesDeferred  = async { teacherRepository.getResources(classroomId) }
             val classroomsDeferred = async { teacherRepository.getClassrooms() }
+            val coursesDeferred    = async {
+                courseRepository.getCourses(
+                    com.ute.guamanidiomas.domain.repository.CourseFilters(pageSize = 100)
+                )
+            }
 
             val resourcesResult = resourcesDeferred.await()
             val classrooms      = classroomsDeferred.await().getOrElse { emptyList() }
+            val courses         = coursesDeferred.await().getOrElse { Pair(emptyList(), 0) }.first
 
             resourcesResult
                 .onSuccess { resources ->
                     _resourcesState.value = _resourcesState.value.copy(
                         isLoading  = false,
                         resources  = resources,
-                        classrooms = classrooms
+                        classrooms = classrooms,
+                        courses    = courses
                     )
                 }
                 .onFailure { e ->
@@ -516,6 +533,7 @@ class TeacherMainViewModel @Inject constructor(
                         isLoading  = false,
                         resources  = emptyList(),
                         classrooms = classrooms,
+                        courses    = courses,
                         error      = e.message ?: "Error al cargar recursos"
                     )
                 }
@@ -531,7 +549,7 @@ class TeacherMainViewModel @Inject constructor(
     }
 
     fun createResource(
-        classroomId: Int, title: String, description: String,
+        courseId: Int?, title: String, description: String,
         resourceType: String, url: String
     ) {
         viewModelScope.launch {
@@ -542,7 +560,7 @@ class TeacherMainViewModel @Inject constructor(
                     description  = description,
                     resourceType = resourceType,
                     fileUrl      = url,
-                    courseId     = null,
+                    courseId     = courseId,
                     lessonId    = null,
                     isPublic     = true
                 )

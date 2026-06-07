@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import java.util.Locale
 import com.ute.guamanidiomas.domain.model.Payment
 import com.ute.guamanidiomas.domain.model.SubscriptionPlan
 import com.ute.guamanidiomas.ui.theme.*
@@ -124,7 +125,7 @@ fun PremiumScreen(
                         Spacer(Modifier.height(if (plan == state.plans.first()) 0.dp else 16.dp))
                         PlanCard(
                             title     = plan.name,
-                            price     = "$${"%.2f".format(plan.price)}",
+                            price     = "$${"%.2f".format(Locale.US, plan.price)}",
                             period    = "/ ${plan.durationDays} días",
                             features  = plan.features.ifEmpty {
                                 listOf("Acceso completo", "Sin anuncios", "Certificado digital")
@@ -383,7 +384,7 @@ private fun PaymentRow(payment: Payment) {
             Text(payment.createdAt.take(10), style = MaterialTheme.typography.labelSmall, color = TextSecondary)
         }
         Column(horizontalAlignment = Alignment.End) {
-            Text("$${"%.2f".format(payment.amount)}", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Black, color = statusColor)
+            Text("$${"%.2f".format(Locale.US, payment.amount)}", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Black, color = statusColor)
             Text(payment.status, style = MaterialTheme.typography.labelSmall, color = statusColor)
         }
     }

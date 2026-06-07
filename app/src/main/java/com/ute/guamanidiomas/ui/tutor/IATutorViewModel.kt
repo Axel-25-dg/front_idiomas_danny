@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ute.guamanidiomas.data.remote.api.TutorApi
 import com.ute.guamanidiomas.data.remote.api.TutorRequest
+import com.ute.guamanidiomas.util.ErrorUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -38,10 +39,11 @@ class IATutorViewModel @Inject constructor(
                 if (response.isSuccessful) {
                     _messages.add(ChatMessage(response.body()?.response ?: "No recibí una respuesta clara.", false))
                 } else {
-                    _messages.add(ChatMessage("Lo siento, hubo un error al conectar con mi cerebro artificial.", false))
+                    val errorMsg = ErrorUtils.parseErrorMessage(response.errorBody()?.string(), response.code())
+                    _messages.add(ChatMessage("Error del tutor: $errorMsg", false))
                 }
             } catch (e: Exception) {
-                _messages.add(ChatMessage("Error de conexión: ${e.message}", false))
+                _messages.add(ChatMessage(ErrorUtils.parseError(e), false))
             } finally {
                 _isLoading.value = false
             }

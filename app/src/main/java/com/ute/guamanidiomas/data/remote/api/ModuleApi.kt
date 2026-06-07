@@ -2,6 +2,7 @@ package com.ute.guamanidiomas.data.remote.api
 
 import com.ute.guamanidiomas.domain.model.Module
 import com.ute.guamanidiomas.domain.model.ModulePayload
+import com.google.gson.JsonElement
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -9,8 +10,8 @@ interface ModuleApi {
     @GET("modules/")
     suspend fun getModules(): Response<List<Module>>
 
-    @GET("courses/{courseId}/modules/")
-    suspend fun getModulesByCourse(@Path("courseId") courseId: Int): Response<List<Module>>
+    @GET("modules/")
+    suspend fun getModulesByCourse(@Query("course") courseId: Int): Response<JsonElement>
 
     @GET("modules/{id}/")
     suspend fun getModuleById(@Path("id") id: Int): Response<Module>
