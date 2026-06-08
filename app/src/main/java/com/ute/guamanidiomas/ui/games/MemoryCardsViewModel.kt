@@ -13,8 +13,8 @@ import javax.inject.Inject
 
 data class MemoryCard(
     val id: Int,
-    val content: String,     // palabra inglés o español
-    val pairId: Int,          // las dos cartas del mismo par comparten pairId
+    val content: String,
+    val pairId: Int,
     val isEnglish: Boolean,
     val isFlipped: Boolean = false,
     val isMatched: Boolean = false

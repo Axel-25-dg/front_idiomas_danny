@@ -45,7 +45,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Restaurar idioma persistido antes de montar la UI
         lifecycleScope.launch {
             val langCode = tokenDataStore.appLanguage.first()
             val appLocale = LocaleListCompat.forLanguageTags(langCode)

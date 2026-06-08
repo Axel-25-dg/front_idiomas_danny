@@ -1,7 +1,5 @@
 package com.ute.guamanidiomas.domain.model.teacher
 
-// ─── Classroom ────────────────────────────────────────────────────────────────
-
 data class Classroom(
     val id: Int = 0,
     val courseId: Int = 0,
@@ -23,8 +21,6 @@ data class ClassroomPayload(
     val isActive: Boolean = true
 )
 
-// ─── Enrollment ───────────────────────────────────────────────────────────────
-
 data class Enrollment(
     val id: Int = 0,
     val classroomId: Int = 0,
@@ -37,8 +33,6 @@ data class Enrollment(
     val modulesCompleted: Int = 0,
     val enrolledAt: String? = null
 )
-
-// ─── Exam ─────────────────────────────────────────────────────────────────────
 
 data class Exam(
     val id: Int = 0,
@@ -68,8 +62,6 @@ data class ExamPayload(
     val isActive: Boolean
 )
 
-// ─── ExamResult ───────────────────────────────────────────────────────────────
-
 data class ExamResult(
     val id: Int = 0,
     val examId: Int = 0,
@@ -81,8 +73,6 @@ data class ExamResult(
     val passed: Boolean = false,
     val submittedAt: String? = null
 )
-
-// ─── TeacherResource ──────────────────────────────────────────────────────────
 
 enum class ResourceType(val value: String, val label: String) {
     PDF("pdf", "PDF"),
@@ -121,8 +111,6 @@ data class TeacherResourcePayload(
     val lessonId: Int? = null,
     val isPublic: Boolean = true
 )
-
-// ─── Teacher Stats ────────────────────────────────────────────────────────────
 
 data class TeacherStats(
     val totalClassrooms: Int,

@@ -31,7 +31,7 @@ fun VerificationScreen() {
             verticalArrangement = Arrangement.Center,
         ) {
             Text(
-                text = "JumpUp UTE App",
+                text = "JumpUp App",
                 fontSize = 36.sp,
                 fontWeight = FontWeight.Bold,
                 color = AccentBlue,

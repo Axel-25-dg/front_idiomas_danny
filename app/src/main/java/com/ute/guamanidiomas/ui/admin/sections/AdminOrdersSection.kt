@@ -43,7 +43,6 @@ fun AdminOrdersSection(viewModel: AdminMainViewModel) {
     }
 
     Column(Modifier.fillMaxSize()) {
-        // Resumen de ingresos
         IngresosSummaryCard(
             totalRevenue     = state.totalRevenue,
             totalOrders      = state.orders.size,
@@ -51,7 +50,6 @@ fun AdminOrdersSection(viewModel: AdminMainViewModel) {
             completedCount   = state.orders.count { it.status?.lowercase() == "completed" }
         )
 
-        // Filtros por estado
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)

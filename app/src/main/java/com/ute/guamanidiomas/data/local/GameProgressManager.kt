@@ -14,11 +14,6 @@ import javax.inject.Singleton
 
 private val Context.gameDataStore by preferencesDataStore(name = "game_progress")
 
-/**
- * Persiste XP, rachas y logros localmente.
- * Los juegos actualizan estos valores al completarse.
- * El Home lee de aqui para mostrar datos reales incluso si el backend devuelve vacio.
- */
 @Singleton
 class GameProgressManager @Inject constructor(
     @ApplicationContext private val context: Context
@@ -38,8 +33,6 @@ class GameProgressManager @Inject constructor(
         private val VERB_LEVEL = intPreferencesKey("verb_level")
     }
 
-    // ── Lecturas ──────────────────────────────────────────────────────────────
-
     val totalXp: Flow<Int> = context.gameDataStore.data.map { it[TOTAL_XP] ?: 0 }
     val currentStreak: Flow<Int> = context.gameDataStore.data.map { it[CURRENT_STREAK] ?: 0 }
     val longestStreak: Flow<Int> = context.gameDataStore.data.map { it[LONGEST_STREAK] ?: 0 }
@@ -58,8 +51,6 @@ class GameProgressManager @Inject constructor(
             else -> 1
         }
     }
-
-    // ── Snapshot sincrono ─────────────────────────────────────────────────────
 
     data class StatsSnapshot(
         val totalXp: Int,
@@ -84,8 +75,6 @@ class GameProgressManager @Inject constructor(
         return getGameLevel(gameId).first()
     }
 
-    // ── Escrituras ────────────────────────────────────────────────────────────
-
     suspend fun addXp(xp: Int) {
         context.gameDataStore.edit { prefs ->
             val current = prefs[TOTAL_XP] ?: 0
@@ -97,23 +86,20 @@ class GameProgressManager @Inject constructor(
         val today = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
 
         context.gameDataStore.edit { prefs ->
-            // XP
             val currentXp = prefs[TOTAL_XP] ?: 0
             prefs[TOTAL_XP] = currentXp + score
 
-            // Games completed
             val completed = prefs[GAMES_COMPLETED] ?: 0
             prefs[GAMES_COMPLETED] = completed + 1
 
-            // Racha
             val lastDate = prefs[LAST_PLAY_DATE] ?: ""
             val yesterday = LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE)
 
             val streak = prefs[CURRENT_STREAK] ?: 0
             val newStreak = when {
-                lastDate == today -> streak // ya jugo hoy
-                lastDate == yesterday -> streak + 1 // dia consecutivo
-                else -> 1 // reiniciar racha
+                lastDate == today -> streak
+                lastDate == yesterday -> streak + 1
+                else -> 1
             }
             prefs[CURRENT_STREAK] = newStreak
 
@@ -122,7 +108,6 @@ class GameProgressManager @Inject constructor(
 
             prefs[LAST_PLAY_DATE] = today
 
-            // Nivel del juego (subir si score > umbral)
             val levelKey = when (gameId) {
                 "word_match"          -> WORD_MATCH_LEVEL
                 "flashcards"          -> FLASHCARDS_LEVEL
@@ -135,18 +120,16 @@ class GameProgressManager @Inject constructor(
             }
             if (levelKey != null && score >= 60) {
                 val currentLevel = prefs[levelKey] ?: 1
-                if (currentLevel < 10) { // maximo nivel 10
+                if (currentLevel < 10) {
                     prefs[levelKey] = currentLevel + 1
                 }
             }
         }
     }
 
-    // Sincronizar con backend si hay datos remotos
     suspend fun syncWithBackend(remoteXp: Int, remoteStreak: Int, remoteLongest: Int) {
         context.gameDataStore.edit { prefs ->
             val localXp = prefs[TOTAL_XP] ?: 0
-            // Usar el mayor entre local y remoto
             prefs[TOTAL_XP] = maxOf(localXp, remoteXp)
             prefs[CURRENT_STREAK] = maxOf(prefs[CURRENT_STREAK] ?: 0, remoteStreak)
             prefs[LONGEST_STREAK] = maxOf(prefs[LONGEST_STREAK] ?: 0, remoteLongest)

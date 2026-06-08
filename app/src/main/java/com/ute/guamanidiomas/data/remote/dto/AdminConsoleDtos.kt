@@ -18,4 +18,3 @@ data class AuditLogDto(
     @SerializedName("change_message") val changeMessage: String,
     @SerializedName("action_time") val actionTime: String
 )
-

@@ -38,7 +38,6 @@ fun UserManagementScreen(
     val textColor = AdminText
     val textMutedColor = AdminMuted
 
-    // Reset submit success and refresh list if needed
     LaunchedEffect(state.submitSuccess) {
         if (state.submitSuccess) {
             showSheet = false
@@ -198,8 +197,6 @@ fun StaffUserRow(
     user: User,
     onActiveToggle: () -> Unit
 ) {
-    // Determine Badge colors depending on role
-    // Teacher: Blue, Manager: Purple, Employee: Orange
     val (badgeBg, badgeText, roleLabel) = when (user.role?.lowercase() ?: "user") {
         "teacher", "profesor" -> Triple(Color(0xFF3B82F6).copy(alpha = 0.15f), Color(0xFF60A5FA), "Profesor")
         "manager", "jefe" -> Triple(Color(0xFF8B5CF6).copy(alpha = 0.15f), Color(0xFFA78BFA), "Jefe")
@@ -232,7 +229,6 @@ fun StaffUserRow(
                         color = Color(0xFFF8FAFC)
                     )
                     
-                    // Badge de Rol
                     Box(
                         modifier = Modifier
                             .background(badgeBg, RoundedCornerShape(6.dp))
@@ -262,7 +258,6 @@ fun StaffUserRow(
                 )
             }
             
-            // Switch de Activación
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -403,7 +398,6 @@ fun UserFormSheet(
                 )
             )
 
-            // Exposed Dropdown Menu Box for Roles
             ExposedDropdownMenuBox(
                 expanded = dropdownExpanded,
                 onExpandedChange = { dropdownExpanded = it },
@@ -458,7 +452,6 @@ fun UserFormSheet(
                 
                 Button(
                     onClick = {
-                        // Form validations
                         if (username.isBlank() || email.isBlank() || firstName.isBlank() || lastName.isBlank() || password.isBlank()) {
                             formErrors = "Todos los campos son obligatorios."
                             return@Button

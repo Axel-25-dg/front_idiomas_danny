@@ -7,15 +7,12 @@ import retrofit2.http.Query
 
 interface HomeApi {
 
-    // Dashboard consolidado del estudiante
     @GET("dashboard/student/")
     suspend fun getStudentDashboard(): Response<StudentDashboardDto>
 
-    // Ranking global
     @GET("ranking/")
     suspend fun getRanking(): Response<List<RankingEntryDto>>
 
-    // Legacy endpoints (fallback si dashboard no existe)
     @GET("stats/")
     suspend fun getStats(): Response<HomeStatsPage>
 

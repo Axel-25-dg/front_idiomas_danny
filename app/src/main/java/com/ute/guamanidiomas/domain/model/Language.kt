@@ -3,7 +3,7 @@ package com.ute.guamanidiomas.domain.model
 data class Language(
     val id: Int,
     val name: String,
-    val code: String, // ej: "EN", "FR"
+    val code: String,
     val description: String,
     val isActive: Boolean,
     val totalCourses: Int,

@@ -33,7 +33,6 @@ class WordMatchViewModel @Inject constructor(
     private val progressManager: GameProgressManager
 ) : ViewModel() {
 
-    // Palabras por nivel — cada nivel agrega vocabulario mas dificil
     private val levelWords = mapOf(
         1 to listOf(WordPair("Dog", "Perro"), WordPair("Cat", "Gato"), WordPair("House", "Casa"), WordPair("Book", "Libro"), WordPair("Water", "Agua"), WordPair("Sun", "Sol"), WordPair("Moon", "Luna"), WordPair("Tree", "Arbol")),
         2 to listOf(WordPair("Apple", "Manzana"), WordPair("School", "Escuela"), WordPair("Teacher", "Profesor"), WordPair("Student", "Estudiante"), WordPair("Computer", "Computadora"), WordPair("Phone", "Telefono"), WordPair("Friend", "Amigo"), WordPair("Family", "Familia")),
@@ -56,7 +55,7 @@ class WordMatchViewModel @Inject constructor(
 
     fun startGame(level: Int = _uiState.value.level) {
         val words = levelWords[level.coerceIn(1, 5)] ?: levelWords[1]!!
-        val pairsCount = (4 + level).coerceAtMost(8) // nivel 1 = 5 parejas, nivel 5 = 8
+        val pairsCount = (4 + level).coerceAtMost(8)
         val gamePairs = words.shuffled().take(pairsCount)
         _uiState.value = WordMatchUiState(
             wordsEnglish = gamePairs.map { it.english }.shuffled(),
@@ -89,7 +88,7 @@ class WordMatchViewModel @Inject constructor(
         if (pair != null) {
             val newMatchedEng = state.matchedPairs + eng
             val newMatchedSpa = state.matchedSpanish + spa
-            val xpPerMatch = 10 + (level * 3) // mas XP en niveles altos
+            val xpPerMatch = 10 + (level * 3)
             val newScore = state.score + xpPerMatch
             _uiState.value = state.copy(
                 matchedPairs = newMatchedEng,

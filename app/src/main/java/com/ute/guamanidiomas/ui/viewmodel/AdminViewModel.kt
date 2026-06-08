@@ -110,12 +110,10 @@ class AdminViewModel @Inject constructor(
         }
     }
 
-
     fun resetStatus() {
         _state.update { it.copy(deleteSuccess = false, saveSuccess = false, error = null) }
     }
 
-    // Module Management
     fun loadModules(courseId: Int) {
         _state.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
@@ -177,4 +175,3 @@ class AdminViewModel @Inject constructor(
         }
     }
 }
-

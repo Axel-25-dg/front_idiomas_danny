@@ -44,7 +44,6 @@ class SettingsViewModel @Inject constructor(
     fun setAppLanguage(lang: String) {
         viewModelScope.launch {
             tokenDataStore.setAppLanguage(lang)
-            // Aplicar cambio de idioma inmediatamente sin reiniciar la app
             val localeList = LocaleListCompat.forLanguageTags(lang)
             AppCompatDelegate.setApplicationLocales(localeList)
         }

@@ -12,9 +12,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-// Conjunto de roles que van al panel de administrador
 private val ADMIN_ROLES    = setOf("admin", "superuser", "superusuario", "administrador", "staff")
-// Conjunto de roles que van al panel de profesor
 private val TEACHER_ROLES  = setOf("teacher", "profesor", "docente", "instructor")
 
 @HiltViewModel
@@ -33,7 +31,6 @@ class AuthViewModel @Inject constructor(
         .map { it != null }
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
-    // ── Derivados basados EXCLUSIVAMENTE en role ──────────────────
     val userRole: StateFlow<String> = _currentUser
         .map { it?.role?.lowercase()?.trim() ?: "" }
         .stateIn(viewModelScope, SharingStarted.Eagerly, "")
@@ -46,8 +43,6 @@ class AuthViewModel @Inject constructor(
         .map { it in TEACHER_ROLES }
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
-    // isStaff se mantiene por compatibilidad de UI que lo muestra,
-    // pero NUNCA se debe usar para decidir navegación
     val isStaff: StateFlow<Boolean> = _currentUser
         .map { it?.isStaff == true }
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)

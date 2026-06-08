@@ -38,11 +38,9 @@ fun CartBottomSheet(
     val total by cartViewModel.totalWithTax.collectAsState()
     val checkoutState by cartViewModel.checkoutState.collectAsState()
 
-    // Navegar al éxito cuando el checkout termina
     LaunchedEffect(checkoutState) {
         if (checkoutState is CheckoutState.Success) {
             onOrderSuccess((checkoutState as CheckoutState.Success).orderId)
-            // No reseteamos aquí para que el componente Success se muestre
         }
     }
 
@@ -57,7 +55,6 @@ fun CartBottomSheet(
                 .fillMaxWidth()
                 .padding(bottom = 24.dp)
         ) {
-            // ── Header ────────────────────────────────────────
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -90,7 +87,6 @@ fun CartBottomSheet(
             Spacer(Modifier.height(16.dp))
             HorizontalDivider(color = Border.copy(alpha = 0.5f))
 
-            // ── Contenido según estado ────────────────────────
             if (items.isEmpty() && checkoutState !is CheckoutState.Success) {
                 EmptyCart(onDismiss)
             } else {
@@ -141,7 +137,6 @@ private fun CartContent(
 
         HorizontalDivider(color = Border.copy(alpha = 0.5f), modifier = Modifier.padding(vertical = 16.dp))
 
-        // Resumen de Totales con estilo Premium
         Column(
             modifier = Modifier.padding(horizontal = 24.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -158,7 +153,6 @@ private fun CartContent(
 
         Spacer(Modifier.height(24.dp))
 
-        // Aviso de autenticación si no está logueado
         if (!isAuthenticated) {
             Surface(
                 color = GoldPrimary.copy(alpha = 0.08f),
@@ -236,7 +230,6 @@ private fun CartItemRow(item: CartItem, viewModel: CartViewModel) {
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Thumbnail / Icono
             Box(
                 modifier = Modifier
                     .size(56.dp)

@@ -24,8 +24,6 @@ import com.ute.guamanidiomas.ui.admin.components.*
 import com.ute.guamanidiomas.ui.theme.*
 import java.util.Locale
 
-// ─── Suscripciones ────────────────────────────────────────────────────────────
-
 @Composable
 fun AdminSubscriptionsSection(viewModel: AdminMainViewModel) {
     val state by viewModel.subscriptionsState.collectAsState()
@@ -103,8 +101,6 @@ fun AdminSubscriptionsSection(viewModel: AdminMainViewModel) {
     }
 }
 
-// ─── Gamificación ─────────────────────────────────────────────────────────────
-
 @Composable
 fun AdminGamificationSection() {
     LazyColumn(
@@ -160,8 +156,6 @@ fun AdminGamificationSection() {
         }
     }
 }
-
-// ─── Roles ────────────────────────────────────────────────────────────────────
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -344,8 +338,6 @@ private fun AssignRoleAdminDialog(
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } }
     )
 }
-
-// ─── Auditoría ────────────────────────────────────────────────────────────────
 
 @Composable
 fun AdminAuditSection(viewModel: AdminMainViewModel) {

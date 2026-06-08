@@ -62,7 +62,6 @@ class HomeViewModel @Inject constructor(
                 var achievementsCount = 0
                 achievementsResult.onSuccess { list -> achievementsCount = list.size }
 
-                // Dashboard del estudiante — fuente principal de stats
                 var stats: UserStats? = null
                 var completedLessons = 0
                 var totalLessons = 0
@@ -84,12 +83,10 @@ class HomeViewModel @Inject constructor(
                     activeClassrooms = dashboard.activeClassrooms
                     if (dashboard.achievementsCount > 0) achievementsCount = dashboard.achievementsCount
 
-                    // Sincronizar con progreso local de juegos
                     gameProgressManager.syncWithBackend(
                         dashboard.totalXp, dashboard.currentStreak, dashboard.longestStreak
                     )
                 }.onFailure {
-                    // Fallback: usar GET /api/stats/ si dashboard no existe
                     homeRepository.getStats().onSuccess { list ->
                         list.firstOrNull()?.let { dto ->
                             stats = UserStats(
@@ -99,7 +96,6 @@ class HomeViewModel @Inject constructor(
                             gameProgressManager.syncWithBackend(dto.totalXp, dto.currentStreak, dto.longestStreak)
                         }
                     }
-                    // Fallback local si todo falla
                     if (stats == null) {
                         val local = gameProgressManager.getSnapshot()
                         if (local.totalXp > 0) {

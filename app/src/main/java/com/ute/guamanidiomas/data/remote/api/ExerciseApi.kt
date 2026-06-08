@@ -25,7 +25,6 @@ interface ExerciseApi {
     @DELETE("exercises/{id}/")
     suspend fun deleteExercise(@Path("id") id: Int): Response<Unit>
 
-    // Compatibilidad con LearningPath (ejercicios por módulo)
     @GET("modules/{moduleId}/exercises/")
     suspend fun getExercisesByModule(@Path("moduleId") moduleId: Int): Response<List<ExerciseDto>>
 }

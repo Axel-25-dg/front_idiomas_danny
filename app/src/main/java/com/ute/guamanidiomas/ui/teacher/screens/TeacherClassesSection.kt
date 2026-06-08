@@ -34,7 +34,6 @@ fun TeacherClassesSection(viewModel: TeacherMainViewModel) {
     val clipboardManager = LocalClipboardManager.current
     var deletingId by remember { mutableStateOf<Int?>(null) }
 
-    // Snackbar messages
     LaunchedEffect(state.successMessage) {
         if (state.successMessage != null) viewModel.clearClassroomsMessages()
     }
@@ -49,7 +48,6 @@ fun TeacherClassesSection(viewModel: TeacherMainViewModel) {
     Box(Modifier.fillMaxSize()) {
         if (state.classrooms.isEmpty() && !state.isLoading) {
             if (state.error != null) {
-                // Mostrar error con botón reintentar
                 Column(
                     Modifier.fillMaxSize().padding(32.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -100,7 +98,6 @@ fun TeacherClassesSection(viewModel: TeacherMainViewModel) {
             }
         }
 
-        // FAB crear clase
         FloatingActionButton(
             onClick           = { viewModel.showCreateClassroomDialog() },
             modifier          = Modifier
@@ -113,7 +110,6 @@ fun TeacherClassesSection(viewModel: TeacherMainViewModel) {
         }
     }
 
-    // Diálogo crear / editar clase
     if (state.showCreateDialog) {
         ClassroomFormDialog(
             editing  = state.editingClassroom,
@@ -130,7 +126,6 @@ fun TeacherClassesSection(viewModel: TeacherMainViewModel) {
         )
     }
 
-    // Confirmar eliminación
     deletingId?.let { id ->
         AlertDialog(
             onDismissRequest = { deletingId = null },
@@ -204,7 +199,6 @@ private fun ClassroomCard(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-                // Badge activo/inactivo
                 Surface(
                     color = if (classroom.isActive) Success.copy(alpha = 0.12f) else ErrorColor.copy(alpha = 0.12f),
                     shape = RoundedCornerShape(6.dp)
@@ -234,7 +228,6 @@ private fun ClassroomCard(
             HorizontalDivider(color = Border)
             Spacer(Modifier.height(10.dp))
 
-            // Código de acceso prominente
             if (!(classroom.accessCode ?: "").isBlank()) {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
@@ -273,14 +266,12 @@ private fun ClassroomCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                // Estudiantes
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.Group, null, tint = Success, modifier = Modifier.size(16.dp))
                     Spacer(Modifier.width(4.dp))
                     Text("${classroom.studentCount} estudiantes", fontSize = 13.sp, color = TextSecondary)
                 }
 
-                // Acciones
                 Row {
                     IconButton(onClick = onEdit, modifier = Modifier.size(34.dp)) {
                         Icon(Icons.Default.Edit, null, tint = PrimaryBlue, modifier = Modifier.size(18.dp))

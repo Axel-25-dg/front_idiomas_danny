@@ -137,11 +137,9 @@ private fun MemoryCardItem(card: MemoryCard, onClick: () -> Unit) {
                 .graphicsLayer { rotationY = if (rotation > 90f) 180f else 0f }
         ) {
             if (rotation <= 90f) {
-                // Cara oculta
                 Text("?", fontSize = 28.sp, fontWeight = FontWeight.Black,
                     color = if (card.isFlipped || card.isMatched) Color.Transparent else TextTertiary)
             } else {
-                // Cara visible
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.padding(8.dp)

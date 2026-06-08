@@ -68,7 +68,6 @@ fun AchievementsScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         item {
-                            // Summary
                             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                 AchievementStatCard(
                                     label = "Desbloqueados",

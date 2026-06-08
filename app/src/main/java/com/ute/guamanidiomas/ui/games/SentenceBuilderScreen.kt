@@ -81,7 +81,6 @@ fun SentenceBuilderScreen(
                     
                     Spacer(Modifier.height(40.dp))
 
-                    // Área de construcción
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -103,7 +102,6 @@ fun SentenceBuilderScreen(
 
                     Spacer(Modifier.height(40.dp))
 
-                    // Palabras disponibles
                     FlowRow(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center,
@@ -120,7 +118,6 @@ fun SentenceBuilderScreen(
 
                     Spacer(Modifier.weight(1f))
 
-                    // Retroalimentación
                     AnimatedVisibility(visible = uiState.isCorrect != null) {
                         val isCorrect = uiState.isCorrect == true
                         Box(

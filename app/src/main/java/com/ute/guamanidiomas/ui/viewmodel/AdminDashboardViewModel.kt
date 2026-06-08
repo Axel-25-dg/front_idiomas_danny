@@ -15,7 +15,6 @@ import javax.inject.Inject
 
 data class AdminDashboardUiState(
     val isLoading: Boolean = false,
-    // Métricas del dashboard principal
     val totalUsers: Int = 0,
     val totalTeachers: Int = 0,
     val totalStudents: Int = 0,
@@ -24,7 +23,6 @@ data class AdminDashboardUiState(
     val totalSubscriptions: Int = 0,
     val totalPayments: Int = 0,
     val totalCertificates: Int = 0,
-    // Métricas de órdenes
     val totalOrders: Int = 0,
     val totalRevenue: Double = 0.0,
     val ordersByStatus: Map<String, Int> = emptyMap(),

@@ -19,7 +19,6 @@ class GamificationRepositoryImpl @Inject constructor(
     override suspend fun getMyStats(): Result<List<StudentStats>> = runCatching {
         val response = api.getMyStats()
         if (response.isSuccessful) {
-            // Backend devuelve { count, results: [...] }
             response.body()?.results?.map { it.toDomain() } ?: emptyList()
         } else throw Exception("Error ${response.code()}: ${response.message()}")
     }
@@ -50,7 +49,6 @@ class GamificationRepositoryImpl @Inject constructor(
     override suspend fun getAllAchievements(): Result<List<Achievement>> = runCatching {
         val response = api.getAllAchievements()
         if (response.isSuccessful) {
-            // Backend devuelve { count, results: [...] }
             response.body()?.results?.map { it.toDomain() } ?: emptyList()
         } else throw Exception("Error ${response.code()}")
     }
@@ -58,7 +56,6 @@ class GamificationRepositoryImpl @Inject constructor(
     override suspend fun getMyAchievements(): Result<List<UserAchievement>> = runCatching {
         val response = api.getMyAchievements()
         if (response.isSuccessful) {
-            // Backend devuelve { count, results: [...] } o lista directa
             response.body()?.results?.map { it.toDomain() } ?: emptyList()
         } else throw Exception("Error ${response.code()}")
     }

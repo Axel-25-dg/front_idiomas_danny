@@ -39,7 +39,6 @@ class VocabQuizViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(VocabQuizUiState())
     val uiState = _uiState.asStateFlow()
 
-    // Banco de preguntas — vocabulario inglés/español
     private val allWords = listOf(
         "Apple" to "Manzana", "House" to "Casa", "Book" to "Libro",
         "Water" to "Agua", "School" to "Escuela", "Teacher" to "Profesor",
@@ -82,7 +81,6 @@ class VocabQuizViewModel @Inject constructor(
                 if (st.isAnswered) continue
                 val newTime = st.timeLeft - 1
                 if (newTime <= 0) {
-                    // tiempo agotado — avanza sin puntos
                     _uiState.update { it.copy(timeLeft = 10, isAnswered = true) }
                     delay(800)
                     nextQuestion()

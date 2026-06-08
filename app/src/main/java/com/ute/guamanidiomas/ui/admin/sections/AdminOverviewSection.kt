@@ -43,7 +43,6 @@ fun AdminOverviewSection(viewModel: AdminMainViewModel) {
         contentPadding  = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Banner de bienvenida
         item {
             WelcomeBanner(
                 adminName    = state.adminName,
@@ -57,7 +56,6 @@ fun AdminOverviewSection(viewModel: AdminMainViewModel) {
             item { AdminErrorBanner(message = err) }
         }
 
-        // Grid de estadísticas principales — 2x3
         item {
             Text(
                 "Métricas Globales",
@@ -130,7 +128,6 @@ fun AdminOverviewSection(viewModel: AdminMainViewModel) {
             }
         }
 
-        // Órdenes recientes
         if (state.recentOrders.isNotEmpty()) {
             item {
                 Text(
@@ -145,7 +142,6 @@ fun AdminOverviewSection(viewModel: AdminMainViewModel) {
             }
         }
 
-        // Actividad del sistema
         if (state.recentAuditLogs.isNotEmpty()) {
             item {
                 Text(

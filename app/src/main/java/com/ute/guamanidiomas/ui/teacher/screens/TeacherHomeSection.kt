@@ -46,7 +46,6 @@ fun TeacherHomeSection(
         contentPadding  = PaddingValues(horizontal = 16.dp, vertical = 20.dp),
         verticalArrangement = Arrangement.spacedBy(18.dp)
     ) {
-        // Saludo personalizado
         item {
             GreetingCard(
                 teacherName  = state.teacherName,
@@ -54,7 +53,6 @@ fun TeacherHomeSection(
             )
         }
 
-        // Error si existe
         state.error?.let { err ->
             item {
                 Card(
@@ -73,7 +71,6 @@ fun TeacherHomeSection(
             }
         }
 
-        // Estadísticas principales — 2 filas de 2 tarjetas
         item {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Row(
@@ -117,7 +114,6 @@ fun TeacherHomeSection(
             }
         }
 
-        // Accesos rápidos
         item {
             Text(
                 "Acceso Rápido",
@@ -131,7 +127,6 @@ fun TeacherHomeSection(
             QuickActionsRow(onSectionClick = onSectionClick)
         }
 
-        // Clases recientes
         if (state.recentClassrooms.isNotEmpty()) {
             item {
                 Row(

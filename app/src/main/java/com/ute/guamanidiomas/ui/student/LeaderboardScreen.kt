@@ -70,7 +70,6 @@ fun LeaderboardScreen(
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        // Top 3 banner
                         if (state.students.size >= 3) {
                             item { TopThreeBanner(state.students.take(3)) }
                             item { Spacer(Modifier.height(8.dp)) }
@@ -143,7 +142,6 @@ private fun LeaderboardRow(position: Int, student: StudentStats) {
             Modifier.padding(14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Position
             Box(
                 modifier = Modifier
                     .size(36.dp)

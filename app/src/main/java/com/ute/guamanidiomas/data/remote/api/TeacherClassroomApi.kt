@@ -11,15 +11,12 @@ import retrofit2.http.*
 
 interface TeacherClassroomApi {
 
-    // Dashboard consolidado del profesor
     @GET("dashboard/teacher/")
     suspend fun getTeacherDashboard(): Response<TeacherDashboardDto>
 
-    // Legacy stats (fallback)
     @GET("teacher/stats/")
     suspend fun getTeacherStats(): Response<TeacherStatsDto>
 
-    // Classrooms
     @GET("classrooms/")
     suspend fun getClassrooms(
         @Query("page") page: Int = 1,
@@ -41,11 +38,9 @@ interface TeacherClassroomApi {
     @DELETE("classrooms/{id}/")
     suspend fun deleteClassroom(@Path("id") id: Int): Response<Unit>
 
-    // Enrollments / students of a classroom
     @GET("classrooms/{id}/enrollments/")
     suspend fun getEnrollments(@Path("id") classroomId: Int): Response<EnrollmentPage>
 
-    // Remover estudiante de la clase
     @POST("classrooms/{id}/remove-student/")
     suspend fun removeStudent(
         @Path("id") classroomId: Int,
@@ -53,7 +48,6 @@ interface TeacherClassroomApi {
     ): Response<Unit>
 }
 
-/** Wrapper paginado para enrollments (por si el ViewSet aplica paginación) */
 data class EnrollmentPage(
     val count: Int = 0,
     val next: String? = null,

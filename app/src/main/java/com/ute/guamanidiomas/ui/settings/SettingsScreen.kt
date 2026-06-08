@@ -155,7 +155,7 @@ fun SettingsScreen(
             item {
                 SettingsItem(
                     title = "Acerca de",
-                    subtitle = "JumpUp UTE v1.0 • Plataforma de Idiomas",
+                    subtitle = "JumpUp v1.0 • Plataforma de Idiomas",
                     icon = Icons.Default.Info,
                     iconColor = TextSecondary,
                     onClick = { showAbout = true }
@@ -202,7 +202,7 @@ fun SettingsScreen(
         AlertDialog(
             onDismissRequest = { showAbout = false },
             icon = { Icon(Icons.Default.School, null, tint = PrimaryBlue) },
-            title = { Text("JumpUp UTE", fontWeight = FontWeight.Bold) },
+            title = { Text("JumpUp", fontWeight = FontWeight.Bold) },
             text = {
                 Text(
                     "Plataforma de aprendizaje de inglés\n\n" +

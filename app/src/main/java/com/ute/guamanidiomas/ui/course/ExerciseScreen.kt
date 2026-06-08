@@ -35,7 +35,7 @@ import com.ute.guamanidiomas.R
 fun ExerciseScreen(
     exerciseId: Int,
     onClose: () -> Unit,
-    onComplete: (Int) -> Unit, // Pasa el ID del ejercicio completado
+    onComplete: (Int) -> Unit,
     viewModel: ExerciseViewModel = hiltViewModel(),
     gamificationViewModel: GamificationViewModel = hiltViewModel(),
     settingsViewModel: com.ute.guamanidiomas.ui.viewmodel.SettingsViewModel = hiltViewModel()
@@ -65,7 +65,6 @@ fun ExerciseScreen(
 
     val gson = remember { Gson() }
     
-    // Estados para la respuesta
     var selectedOption by remember { mutableStateOf<String?>(null) }
     var selectedWords by remember { mutableStateOf(listOf<String>()) }
     var availableWords by remember { 
@@ -91,7 +90,6 @@ fun ExerciseScreen(
             .statusBarsPadding()
             .padding(24.dp)
     ) {
-        // Header
         Row(verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = onClose) {
                 Icon(Icons.Default.Close, null, tint = TextSecondary)
@@ -108,7 +106,6 @@ fun ExerciseScreen(
 
         Spacer(Modifier.height(40.dp))
 
-        // Question
         Text(
             text = when (exercise.type) {
                 ExerciseType.TRANSLATION -> "Traduce esta frase"
@@ -128,7 +125,6 @@ fun ExerciseScreen(
 
         Spacer(Modifier.height(32.dp))
 
-        // Body
         Box(modifier = Modifier.weight(1f)) {
             when (exercise.type) {
                 ExerciseType.MULTIPLE_CHOICE -> {
@@ -154,7 +150,6 @@ fun ExerciseScreen(
                 }
                 ExerciseType.TRANSLATION -> {
                     Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
-                        // Area de Respuesta
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -175,7 +170,6 @@ fun ExerciseScreen(
                             }
                         }
 
-                        // Pool de Palabras
                         FlowRow(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -194,7 +188,6 @@ fun ExerciseScreen(
             }
         }
 
-        // Bottom Bar
         Button(
             onClick = {
                 if (isVerified) {
@@ -214,7 +207,6 @@ fun ExerciseScreen(
                         else -> false
                     }
                     isVerified = true
-                    // Reproducir sonido de feedback si está habilitado
                     if (isSoundEnabled) {
                         try {
                             val soundRes = if (isCorrect) R.raw.success_effect else R.raw.error_effect

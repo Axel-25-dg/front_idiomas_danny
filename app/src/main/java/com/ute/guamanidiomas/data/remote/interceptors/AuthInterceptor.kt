@@ -22,7 +22,6 @@ class AuthInterceptor @Inject constructor(
         val request = chain.request()
         val path = request.url.encodedPath
 
-        // No agregar token a endpoints publicos
         if (path.endsWith("login/") || path.contains("/auth/login") ||
             path.endsWith("register/") || path.contains("/auth/register") ||
             path.contains("token/refresh/")) {
@@ -37,7 +36,6 @@ class AuthInterceptor @Inject constructor(
 
         val response = chain.proceed(authenticatedRequest)
 
-        // Si el token expiro (401), intentar refresh automatico
         if (response.code == 401 && token != null) {
             response.close()
 
@@ -45,10 +43,8 @@ class AuthInterceptor @Inject constructor(
             if (refreshToken != null) {
                 val newAccessToken = refreshAccessToken(chain, refreshToken)
                 if (newAccessToken != null) {
-                    // Guardar nuevo token
                     runBlocking { tokenDataStore.saveTokens(newAccessToken, refreshToken) }
 
-                    // Reintentar la peticion original con el nuevo token
                     val retryRequest = request.newBuilder()
                         .header("Authorization", "Bearer $newAccessToken")
                         .build()
@@ -56,9 +52,7 @@ class AuthInterceptor @Inject constructor(
                 }
             }
 
-            // Si el refresh fallo, limpiar sesion
             runBlocking { tokenDataStore.clearSession() }
-            // Devolver un 401 para que la UI lo maneje
             return chain.proceed(authenticatedRequest)
         }
 

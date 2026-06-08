@@ -63,7 +63,7 @@ fun NavGraph(
     val isCheckingSession by authViewModel.isCheckingSession.collectAsState()
 
     if (isCheckingSession) {
-        LoadingScreen("Iniciando JumpUp UTE...")
+        LoadingScreen("Iniciando JumpUp...")
         return
     }
 
@@ -80,7 +80,6 @@ private fun NavGraphContent(
 ) {
     val navController     = rememberNavController()
     val isAuthenticated   by authViewModel.isAuthenticated.collectAsState()
-    // Leer role directamente del StateFlow del ViewModel — única fuente de verdad
     val userRole          by authViewModel.userRole.collectAsState()
     val isTeacher         by authViewModel.isTeacherRole.collectAsState()
     val isAdmin           by authViewModel.isAdminRole.collectAsState()
@@ -363,7 +362,6 @@ private fun NavGraphContent(
                 JoinClassScreen(
                     onBack = { navController.popBackStack() },
                     onJoinSuccess = { _ ->
-                        // Despues de unirse, ir a Mis Clases para ver la clase nueva
                         navController.navigate(Screen.MyClasses.route) {
                             popUpTo(Screen.JoinClass.route) { inclusive = true }
                         }

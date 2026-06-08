@@ -43,7 +43,6 @@ fun CatalogScreen(
     val gridState = rememberLazyGridState()
     val cartCount by cartViewModel.totalItems.collectAsState()
 
-    // Paginación eficiente
     val shouldLoadMore by remember {
         derivedStateOf {
             val lastVisible = gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
@@ -62,9 +61,8 @@ fun CatalogScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = paddingValues.calculateBottomPadding()) // Asegura espacio libre abajo
+                .padding(bottom = paddingValues.calculateBottomPadding())
         ) {
-            // 1. La cabecera se queda fija arriba para una navegación intuitiva y limpia
             CatalogTopBar(
                 search = state.search,
                 onSearchChange = viewModel::setSearch,
@@ -75,7 +73,6 @@ fun CatalogScreen(
                 onLanguageSelect = viewModel::setLanguage
             )
 
-            // 2. Contenedor de estados dinámicos del catálogo
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -136,7 +133,6 @@ fun CatalogScreen(
                         }
                     }
                     else -> {
-                        // Grilla limpia únicamente enfocada en renderizar las Cards
                         LazyVerticalGrid(
                             columns = GridCells.Fixed(2),
                             state = gridState,

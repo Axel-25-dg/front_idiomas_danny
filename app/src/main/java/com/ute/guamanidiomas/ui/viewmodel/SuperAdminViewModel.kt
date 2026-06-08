@@ -108,4 +108,3 @@ class SuperAdminViewModel @Inject constructor(
         _state.update { it.copy(error = null, successMessage = null) }
     }
 }
-

@@ -142,7 +142,6 @@ private fun CourseDetailContent(
                 .height(280.dp)
                 .background(Brush.verticalGradient(heroBg))
         ) {
-            // Decorative circles
             Box(
                 modifier = Modifier
                     .size(200.dp)

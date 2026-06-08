@@ -25,8 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ute.guamanidiomas.ui.theme.*
 
-// ─── Navegación inferior del profesor ─────────────────────────────────────────
-
 enum class TeacherSection(
     val label: String,
     val icon: ImageVector,
@@ -106,8 +104,6 @@ private fun TeacherNavItem(
         )
     }
 }
-
-// ─── TopBar del profesor ──────────────────────────────────────────────────────
 
 @Composable
 fun TeacherTopBar(
@@ -201,8 +197,6 @@ fun TeacherTopBar(
     }
 }
 
-// ─── Tarjeta de estadística ───────────────────────────────────────────────────
-
 @Composable
 fun TeacherStatCard(
     label: String,
@@ -239,8 +233,6 @@ fun TeacherStatCard(
         }
     }
 }
-
-// ─── Estado vacío ─────────────────────────────────────────────────────────────
 
 @Composable
 fun EmptyState(
@@ -288,8 +280,6 @@ fun EmptyState(
     }
 }
 
-// ─── Chip de nivel / badge ────────────────────────────────────────────────────
-
 @Composable
 fun LevelBadge(level: String, modifier: Modifier = Modifier) {
     val color = when (level.uppercase()) {
@@ -315,8 +305,6 @@ fun LevelBadge(level: String, modifier: Modifier = Modifier) {
         )
     }
 }
-
-// ─── Botón de acción principal ────────────────────────────────────────────────
 
 @Composable
 fun TeacherPrimaryButton(

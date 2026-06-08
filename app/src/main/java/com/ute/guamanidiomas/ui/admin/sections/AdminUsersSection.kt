@@ -44,7 +44,6 @@ fun AdminUsersSection(viewModel: AdminMainViewModel) {
         return
     }
 
-    // Calcular la lista filtrada dentro del composable
     val displayUsers = remember(state.allUsers, state.searchQuery, state.filterRole) {
         state.allUsers.filter { user ->
             val matchesSearch = state.searchQuery.isBlank() ||
@@ -59,7 +58,6 @@ fun AdminUsersSection(viewModel: AdminMainViewModel) {
 
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
-            // Barra de búsqueda
             OutlinedTextField(
                 value         = state.searchQuery,
                 onValueChange = { viewModel.setUserSearchQuery(it) },
@@ -72,7 +70,6 @@ fun AdminUsersSection(viewModel: AdminMainViewModel) {
                 shape         = RoundedCornerShape(12.dp)
             )
 
-            // Filtros por rol
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -108,7 +105,6 @@ fun AdminUsersSection(viewModel: AdminMainViewModel) {
                     onAction = { showCreateDialog = true }
                 )
             } else {
-                // Resumen
                 Row(
                     Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -140,7 +136,6 @@ fun AdminUsersSection(viewModel: AdminMainViewModel) {
             }
         }
 
-        // FAB
         FloatingActionButton(
             onClick        = { showCreateDialog = true },
             modifier       = Modifier.align(Alignment.BottomEnd).padding(20.dp),
@@ -151,7 +146,6 @@ fun AdminUsersSection(viewModel: AdminMainViewModel) {
         }
     }
 
-    // Diálogo crear usuario
     if (showCreateDialog) {
         CreateUserDialog(
             isSubmitting = state.isSubmitting,
@@ -164,7 +158,6 @@ fun AdminUsersSection(viewModel: AdminMainViewModel) {
         )
     }
 
-    // Detalle usuario
     selectedUser?.let { user ->
         UserDetailSheet(
             user      = user,
@@ -192,7 +185,6 @@ private fun UserAdminCard(
             Modifier.padding(14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Avatar
             Box(
                 modifier = Modifier
                     .size(44.dp)
@@ -235,7 +227,6 @@ private fun UserAdminCard(
                 )
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                // Cambiar rol
                 Box {
                     IconButton(onClick = { showRoleMenu = true }, modifier = Modifier.size(34.dp)) {
                         Icon(Icons.Default.ManageAccounts, null, tint = PrimaryBlue, modifier = Modifier.size(18.dp))
@@ -249,7 +240,6 @@ private fun UserAdminCard(
                         }
                     }
                 }
-                // Activar / Desactivar
                 Switch(
                     checked       = user.isActive,
                     onCheckedChange = { onToggleActive() },

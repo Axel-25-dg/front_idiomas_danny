@@ -26,7 +26,6 @@ class ModuleRepositoryImpl @Inject constructor(
         val response = api.getModulesByCourse(courseId)
         if (response.isSuccessful) {
             val json = response.body() ?: return@runCatching emptyList()
-            // El backend puede devolver una lista directa [...] o paginado {count, results: [...]}
             val modulesList = if (json.isJsonArray) {
                 val type = object : TypeToken<List<Module>>() {}.type
                 gson.fromJson<List<Module>>(json, type)

@@ -36,7 +36,6 @@ fun TeacherStudentsSection(viewModel: TeacherMainViewModel) {
     }
 
     Column(Modifier.fillMaxSize()) {
-        // Selector de clase
         if (state.classrooms.isNotEmpty()) {
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
@@ -71,7 +70,6 @@ fun TeacherStudentsSection(viewModel: TeacherMainViewModel) {
                     "Esta clase no tiene estudiantes inscritos aún"
             )
         } else {
-            // Resumen
             Row(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -112,7 +110,6 @@ private fun StudentCard(enrollment: Enrollment) {
             modifier          = Modifier.padding(14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Avatar
             Box(
                 modifier = Modifier
                     .size(46.dp)

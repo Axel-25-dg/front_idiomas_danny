@@ -10,7 +10,6 @@ data class ExerciseDto(
     @SerializedName("lesson_title") val lessonTitle: String? = null,
     @SerializedName("module") val moduleId: Int? = null,
     @SerializedName("question_text") val questionText: String? = null,
-    // Compatibilidad con campo viejo
     val question: String? = null,
     @SerializedName("exercise_type") val exerciseType: String? = null,
     @SerializedName("correct_answer") val correctAnswer: String? = null,

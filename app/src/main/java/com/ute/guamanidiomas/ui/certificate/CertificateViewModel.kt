@@ -19,28 +19,25 @@ class CertificateViewModel @Inject constructor() : ViewModel() {
 
     fun downloadCertificate(context: Context, studentName: String, courseName: String, certificateId: String) {
         val pdfDocument = PdfDocument()
-        val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create() // A4 size
+        val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create()
         val page = pdfDocument.startPage(pageInfo)
         val canvas: Canvas = page.canvas
         val paint = Paint()
 
-        // Dibujar Fondo
         paint.color = android.graphics.Color.WHITE
         canvas.drawRect(0f, 0f, 595f, 842f, paint)
 
-        // Borde Azul UTE
-        paint.color = 0xFF1E40AF.toInt() // PrimaryBlue
+        paint.color = 0xFF1E40AF.toInt()
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = 20f
         canvas.drawRect(40f, 40f, 555f, 802f, paint)
 
-        // Títulos
         paint.style = Paint.Style.FILL
         paint.textAlign = Paint.Align.CENTER
         paint.isFakeBoldText = true
 
         paint.textSize = 36f
-        canvas.drawText("JUMPUP UTE", 297f, 150f, paint)
+        canvas.drawText("JUMPUP", 297f, 150f, paint)
 
         paint.textSize = 24f
         paint.color = android.graphics.Color.DKGRAY
@@ -65,7 +62,6 @@ class CertificateViewModel @Inject constructor() : ViewModel() {
             yPos += 30f
         }
 
-        // Firmas y detalles
         paint.textSize = 12f
         paint.color = android.graphics.Color.GRAY
         canvas.drawText("ID: $certificateId", 297f, 750f, paint)
@@ -78,7 +74,6 @@ class CertificateViewModel @Inject constructor() : ViewModel() {
 
         pdfDocument.finishPage(page)
 
-        // Guardar archivo
         savePdfToStorage(context, pdfDocument, "Certificado_$certificateId.pdf")
         pdfDocument.close()
     }
@@ -96,7 +91,6 @@ class CertificateViewModel @Inject constructor() : ViewModel() {
         val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
         } else {
-            // Fallback para versiones anteriores
             val directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
             val file = java.io.File(directory, fileName)
             android.net.Uri.fromFile(file)

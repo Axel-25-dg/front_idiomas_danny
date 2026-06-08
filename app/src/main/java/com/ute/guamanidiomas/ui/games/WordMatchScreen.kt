@@ -106,7 +106,6 @@ fun WordMatchScreen(
                     )
 
                     Row(modifier = Modifier.weight(1f)) {
-                        // English Column
                         Column(
                             modifier = Modifier
                                 .weight(1f)
@@ -127,7 +126,6 @@ fun WordMatchScreen(
                             }
                         }
 
-                        // Spanish Column
                         Column(
                             modifier = Modifier
                                 .weight(1f)

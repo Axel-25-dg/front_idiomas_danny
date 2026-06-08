@@ -68,7 +68,6 @@ fun FlashcardsScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    // Progress indicator
                     Text(
                         text = "Carta ${uiState.currentIndex + 1} de ${uiState.cards.size}",
                         style = MaterialTheme.typography.labelLarge,
@@ -84,7 +83,6 @@ fun FlashcardsScreen(
                     
                     Spacer(Modifier.height(48.dp))
 
-                    // Flip Card
                     FlashcardItem(
                         card = currentCard,
                         isFlipped = uiState.isFlipped,
@@ -175,7 +173,6 @@ fun FlashcardItem(
             contentAlignment = Alignment.Center
         ) {
             if (rotation <= 90f || rotation >= 270f) {
-                // Frente (Inglés)
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
                         text = card.english,
@@ -191,7 +188,6 @@ fun FlashcardItem(
                     )
                 }
             } else {
-                // Dorso (Español) - Girar el contenido 180 grados para que no se vea al revés
                 Column(
                     modifier = Modifier.graphicsLayer { rotationY = 180f },
                     horizontalAlignment = Alignment.CenterHorizontally

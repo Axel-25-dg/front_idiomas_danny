@@ -62,7 +62,6 @@ fun VerbConjugationScreen(
                     )
                     Spacer(Modifier.height(28.dp))
 
-                    // Verb card
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(24.dp),

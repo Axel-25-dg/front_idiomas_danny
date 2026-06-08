@@ -50,7 +50,6 @@ fun JoinClassScreen(
             .fillMaxSize()
             .background(BackgroundColor)
     ) {
-        // Blue gradient header with geometric shapes
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -59,7 +58,6 @@ fun JoinClassScreen(
                     brush = Brush.verticalGradient(HeroGradient)
                 )
         ) {
-            // Geometric decoration circles
             Box(
                 modifier = Modifier
                     .size(160.dp)
@@ -84,7 +82,6 @@ fun JoinClassScreen(
                     .background(Color.White.copy(alpha = 0.06f))
             )
 
-            // Back button
             IconButton(
                 onClick = onBack,
                 modifier = Modifier
@@ -101,7 +98,6 @@ fun JoinClassScreen(
                 )
             }
 
-            // Header icon centered
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -141,7 +137,6 @@ fun JoinClassScreen(
             }
         }
 
-        // White card form overlapping header
         Column(
             modifier = Modifier
                 .fillMaxWidth()

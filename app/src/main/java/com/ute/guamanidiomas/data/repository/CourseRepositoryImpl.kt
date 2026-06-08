@@ -79,7 +79,6 @@ class CourseRepositoryImpl @Inject constructor(
             val response = api.joinClass(mapOf("access_code" to accessCode))
             if (response.isSuccessful) {
                 val body = response.body() ?: emptyMap()
-                // El backend devuelve el classroom al que se unio. Extraemos el id.
                 val id = (body["id"] as? Number)?.toInt()
                     ?: (body["classroom"] as? Number)?.toInt()
                     ?: 0

@@ -60,7 +60,6 @@ fun HangmanScreen(
         ) {
             Spacer(Modifier.height(8.dp))
 
-            // Round indicator
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text("Ronda ${uiState.round}/${uiState.totalRounds}", color = TextSecondary, style = MaterialTheme.typography.labelLarge)
                 Text("Vidas: ${"❤️".repeat(uiState.remainingLives.coerceAtLeast(0))}${"🖤".repeat(uiState.wrongGuesses.coerceAtLeast(0))}", fontSize = 16.sp)
@@ -68,12 +67,10 @@ fun HangmanScreen(
 
             Spacer(Modifier.height(16.dp))
 
-            // Hangman drawing
             HangmanDrawing(wrongGuesses = uiState.wrongGuesses)
 
             Spacer(Modifier.height(16.dp))
 
-            // Hint
             Surface(color = LightBlue, shape = RoundedCornerShape(10.dp)) {
                 Text(
                     "💡 ${uiState.hint}",
@@ -86,7 +83,6 @@ fun HangmanScreen(
 
             Spacer(Modifier.height(16.dp))
 
-            // Word display
             Text(
                 uiState.displayWord,
                 fontSize   = 30.sp,
@@ -98,7 +94,6 @@ fun HangmanScreen(
 
             Spacer(Modifier.height(24.dp))
 
-            // Game over overlay
             if (uiState.isGameOver) {
                 Surface(
                     color = if (uiState.isWon) Success.copy(alpha = 0.1f) else ErrorColor.copy(alpha = 0.1f),
@@ -134,7 +129,6 @@ fun HangmanScreen(
                     }
                 }
             } else {
-                // Keyboard
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(7),
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -184,7 +178,6 @@ private fun HangmanDrawing(wrongGuesses: Int) {
             .background(BackgroundColor),
         contentAlignment = Alignment.Center
     ) {
-        // ASCII-style simplified drawing using text emojis
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text("   |———|", fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace, color = TextSecondary, fontSize = 18.sp)

@@ -14,7 +14,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun AdminDashboardScreen(
     onLogout: () -> Unit,
-    // Callbacks de compatibilidad con el NavGraph existente
     onNavigateToUsers: () -> Unit = {},
     onNavigateToCourses: () -> Unit = {},
     onNavigateToRoles: () -> Unit = {},
@@ -27,7 +26,6 @@ fun AdminDashboardScreen(
     val scope          = rememberCoroutineScope()
     val overviewState  by viewModel.overviewState.collectAsState()
 
-    // Cargar datos al cambiar sección
     LaunchedEffect(currentSection) {
         when (currentSection) {
             AdminSection.OVERVIEW       -> viewModel.loadOverview()

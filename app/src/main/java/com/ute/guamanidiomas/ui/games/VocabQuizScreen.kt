@@ -75,7 +75,6 @@ fun VocabQuizScreen(
                         modifier = Modifier.fillMaxSize().padding(20.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        // Progress + timer row
                         Row(
                             Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -102,7 +101,6 @@ fun VocabQuizScreen(
 
                         Spacer(Modifier.height(32.dp))
 
-                        // Word card
                         Surface(
                             modifier = Modifier.fillMaxWidth(),
                             shape    = RoundedCornerShape(24.dp),
@@ -130,7 +128,6 @@ fun VocabQuizScreen(
 
                         Spacer(Modifier.height(28.dp))
 
-                        // Options
                         question.options.forEach { option ->
                             val bgColor = when {
                                 !uiState.isAnswered -> SurfaceColor

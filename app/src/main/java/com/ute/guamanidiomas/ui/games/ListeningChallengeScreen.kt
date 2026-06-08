@@ -62,7 +62,6 @@ fun ListeningChallengeScreen(
                     )
                     Spacer(Modifier.height(28.dp))
 
-                    // Audio simulation card
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(24.dp),

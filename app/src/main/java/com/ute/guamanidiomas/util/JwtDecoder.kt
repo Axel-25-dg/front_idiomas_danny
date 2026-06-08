@@ -9,7 +9,6 @@ object JwtDecoder {
             val parts = token.split(".")
             if (parts.size < 2) return null
             
-            // La segunda parte del token es el Payload (los claims)
             val payload64 = parts[1]
             val bytes = Base64.decode(payload64, Base64.DEFAULT)
             val jsonString = String(bytes, charset("UTF-8"))

@@ -2,8 +2,6 @@ package com.ute.guamanidiomas.data.remote.dto
 
 import com.google.gson.annotations.SerializedName
 
-// ─── Dashboard Student ────────────────────────────────────────────────────────
-
 data class StudentDashboardDto(
     @SerializedName("total_xp") val totalXp: Int = 0,
     val level: Int = 1,
@@ -19,8 +17,6 @@ data class StudentDashboardDto(
     @SerializedName("achievements_count") val achievementsCount: Int = 0
 )
 
-// ─── Ranking ──────────────────────────────────────────────────────────────────
-
 data class RankingEntryDto(
     val position: Int = 0,
     @SerializedName("user_id") val userId: Int = 0,
@@ -29,8 +25,6 @@ data class RankingEntryDto(
     val level: Int = 1,
     @SerializedName("current_streak") val currentStreak: Int = 0
 )
-
-// ─── Legacy DTOs (kept for backward compatibility) ────────────────────────────
 
 data class HomeStatsDto(
     val id: Int = 0,

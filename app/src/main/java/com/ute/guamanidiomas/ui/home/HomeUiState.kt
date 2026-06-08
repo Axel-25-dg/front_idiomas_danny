@@ -46,7 +46,6 @@ data class HomeUiState(
     val unlockedAchievementsCount: Int = 0,
     val lessonProgressList: List<UserProgress> = emptyList(),
     val teacherTasks: List<TeacherTask> = emptyList(),
-    // Campos del dashboard real del backend
     val completedLessonsCount: Int = 0,
     val totalLessonsCount: Int = 0,
     val progressPercentage: Int = 0,

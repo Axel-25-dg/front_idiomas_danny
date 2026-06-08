@@ -65,7 +65,6 @@ fun ProfileScreen(
     
     val achievementRows = remember(achievements) { achievements.chunked(2) }
 
-    // Recargar al entrar
     androidx.compose.runtime.LaunchedEffect(Unit) {
         gamificationViewModel.loadDashboard()
     }
@@ -87,7 +86,6 @@ fun ProfileScreen(
                 contentPadding = PaddingValues(bottom = 36.dp),
                 verticalArrangement = Arrangement.spacedBy(0.dp)
             ) {
-                // Sección Hero principal integrada
                 item {
                     ProfileHeroSection(
                         username = user?.username,
@@ -96,7 +94,6 @@ fun ProfileScreen(
                     )
                 }
 
-                // Fila de Estadísticas de Impacto
                 item {
                     ProfileStatsSection(
                         xp = stats?.totalXp ?: 0,
@@ -106,13 +103,11 @@ fun ProfileScreen(
                     Spacer(Modifier.height(28.dp))
                 }
 
-                // Banner Acceso Premium Destacado
                 item {
                     PremiumBannerCard(onNavigateToPremium)
                     Spacer(Modifier.height(16.dp))
                 }
 
-                // Accesos rápidos del estudiante
                 item {
                     Row(
                         modifier = Modifier
@@ -142,7 +137,6 @@ fun ProfileScreen(
                     Spacer(Modifier.height(24.dp))
                 }
 
-                // Sección: Información Adicional
                 item {
                     SectionHeader("Información Académica")
                     InfoRow(icon = Icons.Default.School, label = "Institución", value = "UTE Universidad")
@@ -151,7 +145,6 @@ fun ProfileScreen(
                     Spacer(Modifier.height(24.dp))
                 }
 
-                // Sección: Logros Obtenidos
                 if (achievements.isNotEmpty()) {
                     item {
                         Text(
@@ -199,7 +192,6 @@ fun ProfileScreen(
                     }
                 }
 
-                // Botón de Acción de Salida
                 item {
                     Spacer(Modifier.height(36.dp))
                     LogoutButton(onLogout)
@@ -271,7 +263,6 @@ private fun ProfileHeroSection(username: String?, email: String?, level: String)
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            // Avatar con Anillo de Progreso Estético
             Box(
                 modifier = Modifier
                     .size(96.dp)
@@ -413,7 +404,6 @@ private fun PremiumBannerCard(onClick: () -> Unit) {
             .clip(RoundedCornerShape(24.dp))
             .background(Brush.linearGradient(HeroGradient))
     ) {
-        // Círculos abstractos limpios de decoración de fondo
         Box(
             modifier = Modifier
                 .size(130.dp)

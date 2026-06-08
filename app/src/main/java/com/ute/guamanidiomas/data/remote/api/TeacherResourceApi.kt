@@ -28,7 +28,6 @@ interface TeacherResourceApi {
     suspend fun deleteResource(@Path("id") id: Int): Response<Unit>
 }
 
-/** Wrapper paginado para resources */
 data class TeacherResourcePage(
     val count: Int = 0,
     val next: String? = null,

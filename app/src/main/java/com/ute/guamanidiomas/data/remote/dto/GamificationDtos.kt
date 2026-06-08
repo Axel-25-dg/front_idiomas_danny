@@ -91,7 +91,6 @@ data class UserAchievementDto(
     val id: Int = 0,
     @SerializedName("user") val userId: Int = 0,
     val achievement: AchievementDetailDto? = null,
-    // Fallback fields - el backend puede enviar estos campos directamente
     @SerializedName("achievement_name") val achievementName: String? = null,
     val title: String? = null,
     val name: String? = null,

@@ -33,7 +33,6 @@ class AuthRepositoryImpl @Inject constructor(
             val claims  = JwtDecoder.getClaims(body.access)
             val userId  = claims?.optInt("user_id", 0) ?: 0
 
-            // Leer el role directamente del JWT — esta es la ÚNICA fuente de verdad
             val role = claims
                 ?.takeIf { it.has("role") && !it.isNull("role") }
                 ?.optString("role", "student")
@@ -41,19 +40,17 @@ class AuthRepositoryImpl @Inject constructor(
                 ?.trim()
                 ?: "student"
 
-            // isStaff se guarda solo para referencia futura; NUNCA se usa para decidir navegación
             val isStaff    = claims?.optBoolean("is_staff", false) ?: false
             val isSuperuser = claims?.optBoolean("is_superuser", false) ?: false
 
             Log.d("ROLE_DEBUG", "Login → role=$role  is_staff=$isStaff  is_superuser=$isSuperuser")
 
             tokenDataStore.saveTokens(body.access, body.refresh)
-            // Guardamos isStaff=false siempre porque la navegación usa role, no isStaff
             tokenDataStore.saveUser(
                 id       = userId,
                 username = email.substringBefore("@"),
                 email    = email,
-                isStaff  = false,   // no se usa para navegación
+                isStaff  = false,
                 role     = role
             )
 
@@ -61,7 +58,7 @@ class AuthRepositoryImpl @Inject constructor(
                 id       = userId,
                 username = email.substringBefore("@"),
                 email    = email,
-                isStaff  = false,   // no se usa para navegación
+                isStaff  = false,
                 role     = role
             )
         }
@@ -84,7 +81,6 @@ class AuthRepositoryImpl @Inject constructor(
         val usernameStr    = registeredUser?.username ?: username
         val emailStr       = registeredUser?.email ?: email
 
-        // Hacer login automático para obtener el JWT con el role real
         val loginResponse = api.login(LoginRequest(email, password))
         if (!loginResponse.isSuccessful) {
             error("Registro exitoso pero no se pudo iniciar sesión automáticamente.")

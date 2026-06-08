@@ -40,7 +40,6 @@ data class RegisteredUserDto(
     @SerializedName("created_at") val createdAt: String? = null
 )
 
-/** El backend devuelve role como objeto { id, name } */
 data class RoleResponseDto(
     val id: Int = 0,
     val name: String? = null

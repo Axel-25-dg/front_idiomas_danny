@@ -3,8 +3,6 @@ package com.ute.guamanidiomas.data.remote.dto
 import com.google.gson.annotations.SerializedName
 import com.ute.guamanidiomas.domain.model.teacher.*
 
-// ─── Classroom ────────────────────────────────────────────────────────────────
-
 data class ClassroomDto(
     val id: Int = 0,
     @SerializedName("course") val courseId: Int? = null,
@@ -19,7 +17,6 @@ data class ClassroomDto(
     @SerializedName("student_count") val studentCount: Int? = null,
     @SerializedName("is_active") val isActive: Boolean? = null,
     @SerializedName("created_at") val createdAt: String? = null,
-    // Enrollments inline — el backend los incluye en el detalle de la clase
     val enrollments: List<EnrollmentInlineDto>? = null
 ) {
     fun toDomain() = Classroom(
@@ -37,7 +34,6 @@ data class ClassroomDto(
     )
 }
 
-/** Enrollment que viene inline dentro del ClassroomDetailSerializer */
 data class EnrollmentInlineDto(
     val id: Int = 0,
     val student: Int? = null,
@@ -59,8 +55,6 @@ data class ClassroomPage(
     val previous: String? = null,
     val results: List<ClassroomDto>? = null
 )
-
-// ─── Enrollment ───────────────────────────────────────────────────────────────
 
 data class EnrollmentDto(
     val id: Int = 0,
@@ -87,8 +81,6 @@ data class EnrollmentDto(
         enrolledAt       = enrolledAt.orEmpty()
     )
 }
-
-// ─── Exam ─────────────────────────────────────────────────────────────────────
 
 data class ExamDto(
     val id: Int,
@@ -141,8 +133,6 @@ data class ExamPage(
     val results: List<ExamDto>
 )
 
-// ─── ExamResult ───────────────────────────────────────────────────────────────
-
 data class ExamResultDto(
     val id: Int,
     @SerializedName("exam") val examId: Int,
@@ -167,8 +157,6 @@ data class ExamResultDto(
     )
 }
 
-// ─── TeacherResource ──────────────────────────────────────────────────────────
-
 data class TeacherResourceDto(
     val id: Int = 0,
     @SerializedName("teacher_email") val teacherEmail: String? = null,
@@ -182,7 +170,6 @@ data class TeacherResourceDto(
     val lesson: Int? = null,
     @SerializedName("is_public") val isPublic: Boolean? = null,
     @SerializedName("created_at") val createdAt: String? = null,
-    // Compatibilidad con campos anteriores
     @SerializedName("classroom") val classroomId: Int = 0,
     @SerializedName("classroom_name") val classroomName: String? = null
 ) {
@@ -210,8 +197,6 @@ data class TeacherResourceRequest(
     @SerializedName("is_public") val isPublic: Boolean = true
 )
 
-// ─── Teacher Stats (summary for dashboard home) ───────────────────────────────
-
 data class TeacherStatsDto(
     @SerializedName("total_classrooms") val totalClassrooms: Int = 0,
     @SerializedName("total_students") val totalStudents: Int = 0,
@@ -227,8 +212,6 @@ data class TeacherStatsDto(
         averageScore    = averageScore
     )
 }
-
-// ─── Teacher Dashboard (nuevo endpoint /api/dashboard/teacher/) ───────────────
 
 data class TeacherDashboardDto(
     val classrooms: Int = 0,

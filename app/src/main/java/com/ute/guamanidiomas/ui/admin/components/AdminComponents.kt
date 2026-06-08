@@ -24,8 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ute.guamanidiomas.ui.theme.*
 
-// ─── Secciones del panel admin ────────────────────────────────────────────────
-
 enum class AdminSection(
     val label: String,
     val icon: ImageVector,
@@ -41,8 +39,6 @@ enum class AdminSection(
     AUDIT("Auditoría", Icons.Default.History, "Sistema")
 }
 
-// ─── Drawer item ──────────────────────────────────────────────────────────────
-
 @Composable
 fun AdminDrawerContent(
     currentSection: AdminSection,
@@ -57,7 +53,6 @@ fun AdminDrawerContent(
             .width(280.dp)
             .background(Color(0xFF0F172A))
     ) {
-        // Header
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -118,7 +113,6 @@ fun AdminDrawerContent(
 
         HorizontalDivider(color = Color.White.copy(alpha = 0.08f))
 
-        // Navegación agrupada
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -147,7 +141,6 @@ fun AdminDrawerContent(
 
         HorizontalDivider(color = Color.White.copy(alpha = 0.08f))
 
-        // Botón cerrar sesión
         TextButton(
             onClick  = onLogout,
             modifier = Modifier
@@ -225,8 +218,6 @@ private fun DrawerNavItem(
     }
 }
 
-// ─── Tarjeta de estadística del admin ────────────────────────────────────────
-
 @Composable
 fun AdminStatCard(
     label: String,
@@ -272,8 +263,6 @@ fun AdminStatCard(
     }
 }
 
-// ─── TopBar del admin ────────────────────────────────────────────────────────
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminTopBar(
@@ -285,7 +274,7 @@ fun AdminTopBar(
         title = {
             Column {
                 Text(title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                Text("JumpUp UTE Academy", style = MaterialTheme.typography.labelSmall, color = TextSecondary)
+                Text("JumpUp Academy", style = MaterialTheme.typography.labelSmall, color = TextSecondary)
             }
         },
         navigationIcon = {
@@ -306,8 +295,6 @@ fun AdminTopBar(
         )
     )
 }
-
-// ─── Estado vacío ─────────────────────────────────────────────────────────────
 
 @Composable
 fun AdminEmptyState(
@@ -349,8 +336,6 @@ fun AdminEmptyState(
     }
 }
 
-// ─── Banner de error ──────────────────────────────────────────────────────────
-
 @Composable
 fun AdminErrorBanner(message: String, onDismiss: (() -> Unit)? = null, modifier: Modifier = Modifier) {
     Card(
@@ -373,8 +358,6 @@ fun AdminErrorBanner(message: String, onDismiss: (() -> Unit)? = null, modifier:
         }
     }
 }
-
-// ─── Badge de rol ─────────────────────────────────────────────────────────────
 
 @Composable
 fun RoleBadge(role: String) {

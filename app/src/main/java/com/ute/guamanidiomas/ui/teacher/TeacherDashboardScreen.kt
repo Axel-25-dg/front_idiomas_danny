@@ -12,7 +12,6 @@ import com.ute.guamanidiomas.ui.theme.*
 @Composable
 fun TeacherDashboardScreen(
     onLogout: () -> Unit,
-    // Las siguientes lambdas se mantienen por compatibilidad con NavGraph existente
     onNavigateToClasses: () -> Unit = {},
     onNavigateToStudents: () -> Unit = {},
     onManageCourse: (Int) -> Unit = {},
@@ -23,7 +22,6 @@ fun TeacherDashboardScreen(
     val homeState      by viewModel.homeState.collectAsState()
     val classroomsState by viewModel.classroomsState.collectAsState()
 
-    // Cargar datos de la sección activa al cambiar
     LaunchedEffect(currentSection) {
         when (currentSection) {
             TeacherSection.HOME      -> viewModel.loadHome()

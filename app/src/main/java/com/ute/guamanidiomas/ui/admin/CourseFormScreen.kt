@@ -35,11 +35,9 @@ fun CourseFormScreen(
 
     val levels = listOf("A1", "A2", "B1", "B2", "C1", "C2")
 
-
     val uiState by viewModel.state.collectAsState()
     val errorMessage = uiState.error
     val isSuccess = uiState.saveSuccess
-
 
     LaunchedEffect(courseId) {
         viewModel.resetStatus()
@@ -56,7 +54,6 @@ fun CourseFormScreen(
         }
     }
 
-    // Monitorear si se guardó con éxito en el Servidor para regresar de pantalla
     LaunchedEffect(isSuccess) {
         if (isSuccess) {
             viewModel.resetStatus()
@@ -84,7 +81,7 @@ fun CourseFormScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = AdminBg // Dark mode refinado
+                    containerColor = AdminBg
                 )
             )
         }
@@ -92,7 +89,7 @@ fun CourseFormScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(AdminBg) // Fondo oscuro minimalista
+                .background(AdminBg)
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
@@ -102,7 +99,6 @@ fun CourseFormScreen(
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Campo: Título
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
@@ -116,7 +112,6 @@ fun CourseFormScreen(
                     )
                 )
 
-                // Campo: Descripción
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
@@ -137,7 +132,6 @@ fun CourseFormScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // Campo: Precio
                     OutlinedTextField(
                         value = price,
                         onValueChange = { price = it },
@@ -152,7 +146,6 @@ fun CourseFormScreen(
                         )
                     )
 
-                    // Selector de Nivel (DropdownMenu)
                     Box(modifier = Modifier.weight(1f)) {
                         ExposedDropdownMenuBox(
                             expanded = expandedLevelDropdown,
@@ -206,7 +199,6 @@ fun CourseFormScreen(
                     )
                 }
 
-                // Mostrar error del Backend en tiempo real si existe
                 if (!errorMessage.isNullOrEmpty()) {
                     Text(
                         text = errorMessage,
@@ -219,7 +211,6 @@ fun CourseFormScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Botón Guardar Curso (POST o PUT automático según el ID)
                 Button(
                     onClick = {
                         val parsedPrice = price.toDoubleOrNull() ?: 0.0
@@ -230,13 +221,13 @@ fun CourseFormScreen(
                             price = parsedPrice,
                             level = level,
                             isActive = isActive,
-                            languageId = 1 // ID 1 inyectado en producción para el Idioma Inglés
+                            languageId = 1
                         )
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),
-                    enabled = !uiState.isSaving, // Evita dobles clics mientras se conecta a Django
+                    enabled = !uiState.isSaving,
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = AccentBlue)
                 ) {

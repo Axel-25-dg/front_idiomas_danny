@@ -138,7 +138,7 @@ private fun ModuleTopBar(onBack: () -> Unit) {
                     color = TextPrimary
                 )
                 Text(
-                    text = "JUMPUP UTE ACADEMY",
+                    text = "JUMPUP ACADEMY",
                     style = MaterialTheme.typography.labelSmall.copy(
                         fontSize = 9.sp,
                         letterSpacing = 1.2.sp

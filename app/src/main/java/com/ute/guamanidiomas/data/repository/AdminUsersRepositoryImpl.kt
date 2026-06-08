@@ -50,12 +50,11 @@ class AdminUsersRepositoryImpl @Inject constructor(
         passwordProvisional: String
     ): Result<User> = runCatching {
         try {
-            // Mapear nombre de rol a role_id
             val roleId = when (role.lowercase()) {
                 "admin", "administrador" -> 1
                 "teacher", "profesor"    -> 2
                 "student", "estudiante"  -> 3
-                else -> 3 // default student
+                else -> 3
             }
             val request = UserCreateRequest(
                 username  = username,
@@ -83,7 +82,6 @@ class AdminUsersRepositoryImpl @Inject constructor(
         role: String?
     ): Result<User> = runCatching {
         try {
-            // Mapear nombre de rol a role_id si se envía
             val roleId = when (role?.lowercase()) {
                 "admin", "administrador" -> 1
                 "teacher", "profesor"    -> 2

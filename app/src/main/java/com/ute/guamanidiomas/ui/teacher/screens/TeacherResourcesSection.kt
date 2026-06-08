@@ -87,7 +87,6 @@ fun TeacherResourcesSection(viewModel: TeacherMainViewModel) {
                     }
                 }
 
-                // Agrupar por tipo
                 val grouped = state.resources.groupBy { it.resourceType }
                 grouped.forEach { (type, resources) ->
                     item {
@@ -115,7 +114,6 @@ fun TeacherResourcesSection(viewModel: TeacherMainViewModel) {
         }
     }
 
-    // Diálogo nuevo recurso
     if (state.showCreateDialog) {
         ResourceFormDialog(
             courses    = state.courses,
@@ -126,7 +124,6 @@ fun TeacherResourcesSection(viewModel: TeacherMainViewModel) {
         )
     }
 
-    // Confirmar eliminación
     deletingId?.let { id ->
         AlertDialog(
             onDismissRequest = { deletingId = null },
@@ -250,7 +247,6 @@ private fun ResourceFormDialog(
                 modifier = Modifier.fillMaxWidth().heightIn(max = 480.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Selector de Curso
                 ExposedDropdownMenuBox(
                     expanded         = expandedCourse,
                     onExpandedChange = { expandedCourse = it }
@@ -294,7 +290,6 @@ private fun ResourceFormDialog(
                     modifier      = Modifier.fillMaxWidth()
                 )
 
-                // Tipo de recurso
                 ExposedDropdownMenuBox(
                     expanded         = expandedType,
                     onExpandedChange = { expandedType = it }

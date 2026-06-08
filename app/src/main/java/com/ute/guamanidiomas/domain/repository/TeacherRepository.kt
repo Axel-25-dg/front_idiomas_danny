@@ -4,21 +4,17 @@ import com.ute.guamanidiomas.domain.model.teacher.*
 
 interface TeacherRepository {
 
-    // ── Stats ────────────────────────────────────────────────────────────────
     suspend fun getTeacherStats(): Result<TeacherStats>
 
-    // ── Classrooms ────────────────────────────────────────────────────────────
     suspend fun getClassrooms(): Result<List<Classroom>>
     suspend fun getClassroomById(id: Int): Result<Classroom>
     suspend fun createClassroom(payload: ClassroomPayload): Result<Classroom>
     suspend fun updateClassroom(id: Int, payload: ClassroomPayload): Result<Classroom>
     suspend fun deleteClassroom(id: Int): Result<Unit>
 
-    // ── Enrollments ───────────────────────────────────────────────────────────
     suspend fun getEnrollments(classroomId: Int): Result<List<Enrollment>>
     suspend fun removeStudent(classroomId: Int, studentId: Int): Result<Unit>
 
-    // ── Exams ─────────────────────────────────────────────────────────────────
     suspend fun getExams(classroomId: Int? = null): Result<List<Exam>>
     suspend fun getExamById(id: Int): Result<Exam>
     suspend fun createExam(payload: ExamPayload): Result<Exam>
@@ -26,7 +22,6 @@ interface TeacherRepository {
     suspend fun deleteExam(id: Int): Result<Unit>
     suspend fun getExamResults(examId: Int): Result<List<ExamResult>>
 
-    // ── Resources ─────────────────────────────────────────────────────────────
     suspend fun getResources(courseId: Int? = null): Result<List<TeacherResource>>
     suspend fun createResource(payload: TeacherResourcePayload): Result<TeacherResource>
     suspend fun updateResource(id: Int, payload: TeacherResourcePayload): Result<TeacherResource>

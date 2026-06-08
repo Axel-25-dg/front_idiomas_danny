@@ -33,4 +33,3 @@ data class AdminDashboardDto(
     val payments: Int = 0,
     val certificates: Int = 0
 )
-

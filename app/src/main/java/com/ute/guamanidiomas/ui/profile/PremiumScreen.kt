@@ -221,7 +221,6 @@ private fun PremiumHero(isPremium: Boolean) {
             .padding(24.dp),
         contentAlignment = Alignment.Center
     ) {
-        // Decorative elements
         Box(
             modifier = Modifier
                 .size(140.dp)

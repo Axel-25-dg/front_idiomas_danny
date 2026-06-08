@@ -14,4 +14,3 @@ interface AdminConsoleRepository {
     suspend fun approveOrder(orderId: Int): Result<OrderDto>
     suspend fun getAuditLogs(): Result<List<AuditLogDto>>
 }
-

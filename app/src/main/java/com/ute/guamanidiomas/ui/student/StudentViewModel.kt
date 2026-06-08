@@ -16,8 +16,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-// ─── UI States ────────────────────────────────────────────────────────────────
-
 data class MyClassesUiState(
     val isLoading: Boolean = false,
     val classrooms: List<Classroom> = emptyList(),
@@ -51,8 +49,6 @@ data class LeaderboardUiState(
     val error: String? = null
 )
 
-// ─── ViewModel ────────────────────────────────────────────────────────────────
-
 @HiltViewModel
 class StudentViewModel @Inject constructor(
     private val classroomRepository: StudentClassroomRepository,
@@ -61,27 +57,20 @@ class StudentViewModel @Inject constructor(
     private val homeRepository: com.ute.guamanidiomas.domain.repository.HomeRepository
 ) : ViewModel() {
 
-    // ── My Classes ────────────────────────────────────────────────────────────
     private val _classesState = MutableStateFlow(MyClassesUiState())
     val classesState: StateFlow<MyClassesUiState> = _classesState.asStateFlow()
 
-    // ── Class Detail ──────────────────────────────────────────────────────────
     private val _classDetailState = MutableStateFlow(ClassDetailUiState())
     val classDetailState: StateFlow<ClassDetailUiState> = _classDetailState.asStateFlow()
 
-    // ── Certificates ──────────────────────────────────────────────────────────
     private val _certificatesState = MutableStateFlow(MyCertificatesUiState())
     val certificatesState: StateFlow<MyCertificatesUiState> = _certificatesState.asStateFlow()
 
-    // ── Achievements ──────────────────────────────────────────────────────────
     private val _achievementsState = MutableStateFlow(AchievementsUiState())
     val achievementsState: StateFlow<AchievementsUiState> = _achievementsState.asStateFlow()
 
-    // ── Leaderboard ───────────────────────────────────────────────────────────
     private val _leaderboardState = MutableStateFlow(LeaderboardUiState())
     val leaderboardState: StateFlow<LeaderboardUiState> = _leaderboardState.asStateFlow()
-
-    // ─── MY CLASSES ──────────────────────────────────────────────────────────
 
     fun loadMyClasses() {
         viewModelScope.launch {
@@ -102,19 +91,14 @@ class StudentViewModel @Inject constructor(
         }
     }
 
-    // ─── CLASS DETAIL ────────────────────────────────────────────────────────
-
     fun loadClassDetail(classroomId: Int) {
         viewModelScope.launch {
             _classDetailState.value = _classDetailState.value.copy(isLoading = true, error = null)
 
-            // El backend tiene un bug: GET /api/classrooms/{id}/ devuelve 404 para estudiantes
-            // Workaround: buscar la clase en /classrooms/mine/ y cargar recursos aparte
             val classroomsResult = classroomRepository.getMyClassrooms()
             val classroom = classroomsResult.getOrNull()?.find { it.id == classroomId }
 
             if (classroom != null) {
-                // Cargar recursos asociados por course_id
                 val resources = classroomRepository.getClassroomResources(classroom.courseId)
                     .getOrElse { emptyList() }
 
@@ -124,7 +108,6 @@ class StudentViewModel @Inject constructor(
                     resources = resources
                 )
             } else {
-                // Fallback: intentar el endpoint directo
                 val directResult = classroomRepository.getClassroomById(classroomId)
                 directResult
                     .onSuccess { cls ->
@@ -161,8 +144,6 @@ class StudentViewModel @Inject constructor(
                 }
         }
     }
-
-    // ─── CERTIFICATES ────────────────────────────────────────────────────────
 
     fun loadMyCertificates() {
         viewModelScope.launch {
@@ -201,8 +182,6 @@ class StudentViewModel @Inject constructor(
         _certificatesState.value = _certificatesState.value.copy(verifyResult = null, error = null)
     }
 
-    // ─── ACHIEVEMENTS ────────────────────────────────────────────────────────
-
     fun loadAchievements() {
         viewModelScope.launch {
             _achievementsState.value = _achievementsState.value.copy(isLoading = true, error = null)
@@ -221,12 +200,9 @@ class StudentViewModel @Inject constructor(
         }
     }
 
-    // ─── LEADERBOARD ─────────────────────────────────────────────────────────
-
     fun loadLeaderboard() {
         viewModelScope.launch {
             _leaderboardState.value = _leaderboardState.value.copy(isLoading = true, error = null)
-            // Usar endpoint real /api/ranking/
             homeRepository.getRanking()
                 .onSuccess { ranking ->
                     val stats = ranking.map { entry ->
@@ -247,7 +223,6 @@ class StudentViewModel @Inject constructor(
                     )
                 }
                 .onFailure {
-                    // Fallback: usar stats como antes
                     gamificationRepository.getMyStats()
                         .onSuccess { statsList ->
                             _leaderboardState.value = _leaderboardState.value.copy(

@@ -2,7 +2,7 @@
   <img src="capturas/Logo-ute.png" alt="Logo UTE" width="200"/>
 </p>
 
-<h1 align="center">JumpUp UTE — Plataforma Móvil de Aprendizaje de Idiomas</h1>
+<h1 align="center">JumpUp — Plataforma Móvil de Aprendizaje de Idiomas</h1>
 
 <p align="center">
   <strong>Universidad Tecnológica Equinoccial (UTE)</strong><br/>
@@ -545,7 +545,7 @@ app/src/main/java/com/ute/guamanidiomas/
 
 | Campo | Detalle |
 |---|---|
-| **Proyecto** | Plataforma de Aprendizaje de Idiomas — JumpUp UTE |
+| **Proyecto** | Plataforma de Aprendizaje de Idiomas — JumpUp |
 | **Universidad** | Universidad Tecnológica Equinoccial (UTE) |
 | **Facultad** | Ciencias de la Ingeniería e Industrias |
 | **Carrera** | Software |

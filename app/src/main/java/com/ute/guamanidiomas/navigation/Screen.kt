@@ -1,11 +1,9 @@
 package com.ute.guamanidiomas.navigation
 
 sealed class Screen(val route: String) {
-    // Auth
     data object Login    : Screen("login")
     data object Register : Screen("register")
 
-    // Student / Client
     data object Home     : Screen("home")
     data object Catalog  : Screen("catalog")
     data object Orders   : Screen("orders")
@@ -41,14 +39,12 @@ sealed class Screen(val route: String) {
         fun createRoute(courseId: Int) = "certificate/$courseId"
     }
 
-    // Teacher
     data object TeacherDashboard : Screen("teacher")
     data object TeacherClasses   : Screen("teacher/classes")
     data object TeacherStudents  : Screen("teacher/students")
     data object TeacherExams     : Screen("teacher/exams")
     data object TeacherResources : Screen("teacher/resources")
 
-    // Admin
     data object AdminDashboard : Screen("admin")
     data object UserManagement : Screen("admin/users")
     data object RolesManagement : Screen("admin/roles")

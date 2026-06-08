@@ -65,7 +65,6 @@ fun EditProfileScreen(
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Avatar Editor
             Box(contentAlignment = Alignment.BottomEnd) {
                 Box(
                     modifier = Modifier
@@ -94,7 +93,6 @@ fun EditProfileScreen(
 
             Spacer(Modifier.height(32.dp))
 
-            // Form Fields
             OutlinedTextField(
                 value = username,
                 onValueChange = { username = it },
@@ -112,7 +110,7 @@ fun EditProfileScreen(
 
             OutlinedTextField(
                 value = email,
-                onValueChange = { }, // Email usually read-only or needs verification
+                onValueChange = { },
                 label = { Text("Correo Electrónico") },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),

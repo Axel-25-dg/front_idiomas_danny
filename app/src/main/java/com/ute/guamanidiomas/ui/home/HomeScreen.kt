@@ -60,7 +60,6 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsState()
     val cartCount by cartViewModel.totalItems.collectAsState()
 
-    // Recargar datos al entrar para asegurar que las stats estén actualizadas (juegos, etc)
     LaunchedEffect(Unit) {
         viewModel.loadHomeData()
     }
@@ -88,7 +87,6 @@ fun HomeScreen(
                 CircularProgressIndicator(color = PrimaryBlue, strokeWidth = 3.dp)
             }
         } else {
-            // Fondo degradado orgánico de ambiente para romper la monotonía azul/blanca plana
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -110,7 +108,6 @@ fun HomeScreen(
                     contentPadding = PaddingValues(bottom = 32.dp),
                     verticalArrangement = Arrangement.spacedBy(0.dp)
                 ) {
-                    // Barra de Estadísticas Estilo Bento Moderno
                     item {
                         HomeStatsBar(
                             streak = uiState.stats?.currentStreak ?: 0,
@@ -119,7 +116,6 @@ fun HomeScreen(
                         )
                     }
 
-                    // Banner Destacado / Hero
                     item {
                         HeroBannerCard(
                             onCatalogClick = onCatalogClick,
@@ -128,7 +124,6 @@ fun HomeScreen(
                         )
                     }
 
-                    // Sección: Explorar Idiomas
                     if (uiState.languages.isNotEmpty()) {
                         item {
                             HomeSectionHeader(
@@ -154,7 +149,6 @@ fun HomeScreen(
                         }
                     }
 
-                    // ── Accesos rápidos del estudiante ────────────────────────────────
                     item {
                         HomeSectionHeader(
                             title    = "Mi academia",
@@ -172,7 +166,6 @@ fun HomeScreen(
                         Spacer(Modifier.height(8.dp))
                     }
 
-                    // Sección: Cursos Destacados
                     if (featuredCourses.isNotEmpty()) {
                         item {
                             HomeSectionHeader(
@@ -198,7 +191,6 @@ fun HomeScreen(
                         }
                     }
 
-                    // Nueva Sección: Tareas del Profesor
                     if (uiState.teacherTasks.isNotEmpty()) {
                         item {
                             HomeSectionHeader(
@@ -219,7 +211,6 @@ fun HomeScreen(
                         }
                     }
 
-                    // Tarjeta de Progreso General Rediseñada
                     item {
                         ProgressCard(
                             username = uiState.userName,
@@ -355,7 +346,6 @@ private fun HomeTopBar(cartCount: Int, onOpenCart: () -> Unit, onLogout: () -> U
 
 @Composable
 private fun HomeStatsBar(streak: Int, xp: Int, achievements: Int) {
-    // Diseño Bento Box integrado sin bordes duros artificiales
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -379,7 +369,7 @@ private fun HomeStatsBar(streak: Int, xp: Int, achievements: Int) {
         )
         StatBentoBox(
             icon = Icons.Default.EmojiEvents,
-            color = Success, // Cambiado a Success (Verde/Esmeralda) para romper el monocromo azul
+            color = Success,
             value = "$achievements",
             label = "Logros",
             modifier = Modifier.weight(1f)
@@ -450,7 +440,6 @@ private fun HeroBannerCard(
             .clip(RoundedCornerShape(24.dp))
             .background(darkPremiumGradient)
     ) {
-        // Decoraciones fluidas usando rojo energético para máxima personalidad visual
         Box(
             modifier = Modifier
                 .size(160.dp)
@@ -759,7 +748,6 @@ private fun ProgressCard(username: String, xp: Int, streak: Int, modulesComplete
 
                     Spacer(Modifier.height(16.dp))
 
-                    // Línea de Progreso con Extremos Redondeados Limpios
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -778,7 +766,6 @@ private fun ProgressCard(username: String, xp: Int, streak: Int, modulesComplete
 
                     Spacer(Modifier.height(20.dp))
 
-                    // Estadísticas secundarias limpias sin exceso de chips de colores pesados
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,

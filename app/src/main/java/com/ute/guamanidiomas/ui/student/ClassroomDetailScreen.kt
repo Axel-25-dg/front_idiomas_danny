@@ -82,10 +82,8 @@ fun ClassroomDetailScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            // Info de la clase
             item { ClassInfoCard(classroom) }
 
-            // Recursos
             if (state.resources.isNotEmpty()) {
                 item {
                     Text(

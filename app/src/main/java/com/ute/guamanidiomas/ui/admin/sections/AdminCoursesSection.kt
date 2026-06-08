@@ -46,7 +46,6 @@ fun AdminCoursesSection(viewModel: AdminMainViewModel) {
 
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
-            // Buscador
             OutlinedTextField(
                 value         = search,
                 onValueChange = { search = it },
@@ -63,7 +62,6 @@ fun AdminCoursesSection(viewModel: AdminMainViewModel) {
                 AdminErrorBanner(message = err, modifier = Modifier.padding(horizontal = 16.dp))
             }
 
-            // Resumen por nivel
             if (state.courses.isNotEmpty()) {
                 LevelSummaryRow(courses = state.courses)
             }
@@ -100,7 +98,6 @@ fun AdminCoursesSection(viewModel: AdminMainViewModel) {
         }
     }
 
-    // Confirmar eliminación
     deletingId?.let { id ->
         AlertDialog(
             onDismissRequest = { deletingId = null },
@@ -155,7 +152,6 @@ private fun CourseAdminCard(
         color    = SurfaceColor
     ) {
         Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
-            // Nivel badge
             Box(
                 modifier = Modifier
                     .size(46.dp)

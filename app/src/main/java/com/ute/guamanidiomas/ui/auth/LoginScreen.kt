@@ -63,16 +63,14 @@ fun LoginScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-            // --- CABECERA DE GRADIENTE ADAPTATIVA ---
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight() // <-- CAMBIO: Evita que el título se corte
+                    .wrapContentHeight()
             ) {
-                // Fondo con degradado
                 Box(
                     modifier = Modifier
-                        .matchParentSize() // Se adapta al tamaño real del contenido
+                        .matchParentSize()
                         .clip(
                             RoundedCornerShape(
                                 bottomStart = 40.dp,
@@ -86,7 +84,6 @@ fun LoginScreen(
                         )
                 )
 
-                // Decoraciones geométricas
                 Box(
                     modifier = Modifier
                         .size(180.dp)
@@ -104,16 +101,13 @@ fun LoginScreen(
                         .background(Color.White.copy(alpha = 0.04f))
                 )
 
-                // Contenido de la cabecera (Logo + Títulos)
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .statusBarsPadding()
-                        // Agregamos padding inferior extra para compensar el solapamiento de la tarjeta
                         .padding(start = 24.dp, end = 24.dp, top = 32.dp, bottom = 56.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Contenedor del Logo
                     Box(
                         modifier = Modifier
                             .size(88.dp)
@@ -143,7 +137,7 @@ fun LoginScreen(
                     Spacer(Modifier.height(16.dp))
 
                     Text(
-                        text = "JumpUp UTE",
+                        text = "JumpUp",
                         style = MaterialTheme.typography.headlineMedium,
                         color = Color.White,
                         fontWeight = FontWeight.Black,
@@ -161,11 +155,10 @@ fun LoginScreen(
                 }
             }
 
-            // --- SECCIÓN DEL FORMULARIO (TARJETA BLANCA) ---
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .offset(y = (-32).dp) // Solapamiento sutil sobre el gradiente
+                    .offset(y = (-32).dp)
                     .padding(horizontal = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -193,7 +186,6 @@ fun LoginScreen(
 
                         Spacer(Modifier.height(24.dp))
 
-                        // Alerta de Error corregida
                         if (errorMsg != null) {
                             Surface(
                                 color = LightRed,
@@ -273,7 +265,6 @@ fun LoginScreen(
 
                 Spacer(Modifier.height(24.dp))
 
-                // Divisor
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier

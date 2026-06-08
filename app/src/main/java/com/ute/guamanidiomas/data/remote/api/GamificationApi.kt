@@ -14,7 +14,6 @@ import retrofit2.http.Query
 
 interface GamificationApi {
 
-    // Stats puede devolver paginado { count, results } o lista directa
     @GET("stats/")
     suspend fun getMyStats(): Response<DjangoPage<StudentStatsDto>>
 
@@ -29,11 +28,9 @@ interface GamificationApi {
         @Query("page_size") pageSize: Int = 20
     ): Response<DjangoPage<LessonProgressDto>>
 
-    // Achievements puede devolver paginado { count, results }
     @GET("achievements/")
     suspend fun getAllAchievements(): Response<DjangoPage<AchievementDetailDto>>
 
-    // My achievements puede devolver lista directa o paginado
     @GET("my-achievements/")
     suspend fun getMyAchievements(): Response<DjangoPage<UserAchievementDto>>
 }

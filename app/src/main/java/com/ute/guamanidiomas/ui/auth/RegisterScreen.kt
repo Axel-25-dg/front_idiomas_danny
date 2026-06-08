@@ -65,13 +65,11 @@ fun RegisterScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-            // --- CABECERA DE GRADIENTE ADAPTATIVA ---
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight() // <-- CAMBIO CLAVE: Evita que el título se corte
+                    .wrapContentHeight()
             ) {
-                // Fondo con degradado dinámico
                 Box(
                     modifier = Modifier
                         .matchParentSize()
@@ -88,7 +86,6 @@ fun RegisterScreen(
                         )
                 )
 
-                // Decoraciones geométricas
                 Box(
                     modifier = Modifier
                         .size(160.dp)
@@ -114,12 +111,10 @@ fun RegisterScreen(
                         .background(PrimaryRed.copy(alpha = 0.2f))
                 )
 
-                // Contenido de la cabecera (Logo, Título, Subtítulo)
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .statusBarsPadding()
-                        // Agregamos padding bottom de 56.dp para tolerar el solapamiento de la tarjeta blanca
                         .padding(start = 24.dp, end = 24.dp, top = 24.dp, bottom = 56.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -171,11 +166,10 @@ fun RegisterScreen(
                 }
             }
 
-            // --- SECCIÓN DEL FORMULARIO (TARJETA BLANCA) ---
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .offset(y = (-32).dp) // Desplazamiento controlado hacia arriba
+                    .offset(y = (-32).dp)
                     .padding(horizontal = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -189,7 +183,6 @@ fun RegisterScreen(
                 ) {
                     Column(modifier = Modifier.padding(28.dp)) {
 
-                        // Alerta de Error optimizada
                         if (errorMsg != null) {
                             Surface(
                                 color = LightRed,
@@ -289,7 +282,6 @@ fun RegisterScreen(
 
                 Spacer(Modifier.height(24.dp))
 
-                // Footer (Volver al login)
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(bottom = 32.dp)

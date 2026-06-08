@@ -22,8 +22,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-// ─── UI States ────────────────────────────────────────────────────────────────
-
 data class AdminOverviewState(
     val isLoading: Boolean = false,
     val adminName: String = "",
@@ -89,8 +87,6 @@ data class AdminSubscriptionsState(
     val error: String? = null
 )
 
-// ─── ViewModel ────────────────────────────────────────────────────────────────
-
 @HiltViewModel
 class AdminMainViewModel @Inject constructor(
     private val usersRepository: AdminUsersRepository,
@@ -122,8 +118,6 @@ class AdminMainViewModel @Inject constructor(
     init {
         loadOverview()
     }
-
-    // ─── OVERVIEW ─────────────────────────────────────────────────────────────
 
     fun loadOverview() {
         viewModelScope.launch {
@@ -178,8 +172,6 @@ class AdminMainViewModel @Inject constructor(
         }
     }
 
-    // ─── USERS ────────────────────────────────────────────────────────────────
-
     fun loadUsers() {
         viewModelScope.launch {
             _usersState.value = _usersState.value.copy(isLoading = true, error = null)
@@ -194,7 +186,6 @@ class AdminMainViewModel @Inject constructor(
                 .onSuccess { users ->
                     val teachers = users.filter { it.role?.lowercase() in setOf("teacher", "profesor", "docente", "instructor") }
                     val students = studentsResult.getOrElse { 
-                        // Fallback: filtrar localmente si el endpoint no existe
                         users.filter { it.role?.lowercase() in setOf("student", "user", "estudiante") || (!it.isStaff && it.role.isNullOrBlank()) }
                     }
                     _usersState.value = _usersState.value.copy(
@@ -291,8 +282,6 @@ class AdminMainViewModel @Inject constructor(
         _usersState.value = _usersState.value.copy(error = null, successMessage = null)
     }
 
-    // ─── COURSES ──────────────────────────────────────────────────────────────
-
     fun loadCourses() {
         viewModelScope.launch {
             _coursesState.value = _coursesState.value.copy(isLoading = true, error = null)
@@ -329,8 +318,6 @@ class AdminMainViewModel @Inject constructor(
                 }
         }
     }
-
-    // ─── ORDERS ───────────────────────────────────────────────────────────────
 
     fun loadOrders(statusFilter: String = "") {
         viewModelScope.launch {
@@ -374,8 +361,6 @@ class AdminMainViewModel @Inject constructor(
     fun clearOrdersMessages() {
         _ordersState.value = _ordersState.value.copy(error = null, successMessage = null)
     }
-
-    // ─── ROLES / AUDIT ────────────────────────────────────────────────────────
 
     fun loadRoles() {
         viewModelScope.launch {
@@ -422,8 +407,6 @@ class AdminMainViewModel @Inject constructor(
                 }
         }
     }
-
-    // ─── SUBSCRIPTIONS ────────────────────────────────────────────────────────
 
     fun loadSubscriptions() {
         viewModelScope.launch {

@@ -25,10 +25,6 @@ import com.ute.guamanidiomas.ui.teacher.TeacherMainViewModel
 import com.ute.guamanidiomas.ui.teacher.components.*
 import com.ute.guamanidiomas.ui.theme.*
 
-/**
- * Lecciones Interactivas = Lessons con content_type = "interactive"
- * Se crean con POST /api/lessons/ y las preguntas con POST /api/exercises/
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TeacherExamsSection(viewModel: TeacherMainViewModel) {
@@ -85,7 +81,6 @@ fun TeacherExamsSection(viewModel: TeacherMainViewModel) {
             }
         }
 
-        // FAB
         FloatingActionButton(
             onClick        = { showCreateDialog = true },
             modifier       = Modifier.align(Alignment.BottomEnd).padding(20.dp),
@@ -94,7 +89,6 @@ fun TeacherExamsSection(viewModel: TeacherMainViewModel) {
         ) { Icon(Icons.Default.Add, "Crear leccion interactiva") }
     }
 
-    // Dialog crear leccion interactiva
     if (showCreateDialog) {
         CreateInteractiveLessonDialog(
             viewModel = viewModel,
@@ -106,7 +100,6 @@ fun TeacherExamsSection(viewModel: TeacherMainViewModel) {
         )
     }
 
-    // Dialog agregar pregunta
     showAddQuestion?.let { lessonId ->
         AddQuestionDialog(
             onDismiss = { showAddQuestion = null },
@@ -166,7 +159,6 @@ private fun CreateInteractiveLessonDialog(viewModel: TeacherMainViewModel, onDis
     var selectedModuleId by remember { mutableIntStateOf(0) }
     var selectedModuleTitle by remember { mutableStateOf("") }
 
-    // Estado para los selectores dinámicos de curso y módulo
     val examsState by viewModel.examsState.collectAsState()
     val courses = examsState.courses
     val modules = examsState.modules
@@ -201,7 +193,6 @@ private fun CreateInteractiveLessonDialog(viewModel: TeacherMainViewModel, onDis
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                // Selector desplegable de Curso
                 ExposedDropdownMenuBox(
                     expanded = expandedCourse,
                     onExpandedChange = { expandedCourse = !expandedCourse }
@@ -224,7 +215,6 @@ private fun CreateInteractiveLessonDialog(viewModel: TeacherMainViewModel, onDis
                                 onClick = {
                                     selectedCourseName = course.title ?: "Curso #${course.id}"
                                     expandedCourse = false
-                                    // Limpiar módulo anterior y cargar módulos del curso seleccionado
                                     selectedModuleName = "Selecciona un Módulo"
                                     selectedModuleId = 0
                                     viewModel.loadModulesForCourse(course.id)
@@ -234,7 +224,6 @@ private fun CreateInteractiveLessonDialog(viewModel: TeacherMainViewModel, onDis
                     }
                 }
 
-                // Selector desplegable de Módulo (habilitado solo si hay módulos cargados)
                 ExposedDropdownMenuBox(
                     expanded = expandedModule,
                     onExpandedChange = { if (modules.isNotEmpty()) expandedModule = !expandedModule }

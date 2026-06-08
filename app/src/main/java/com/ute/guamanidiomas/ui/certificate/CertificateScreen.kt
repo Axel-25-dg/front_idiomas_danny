@@ -91,7 +91,7 @@ fun CertificateScreen(
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "JUMPUP UTE",
+                        text = "JUMPUP",
                         style = MaterialTheme.typography.headlineMedium,
                         color = PrimaryBlue,
                         fontWeight = FontWeight.Black

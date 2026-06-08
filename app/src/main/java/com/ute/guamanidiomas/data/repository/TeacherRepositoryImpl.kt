@@ -20,10 +20,7 @@ class TeacherRepositoryImpl @Inject constructor(
     private val resourceApi: TeacherResourceApi
 ) : TeacherRepository {
 
-    // ── Stats ─────────────────────────────────────────────────────────────────
-
     override suspend fun getTeacherStats(): Result<TeacherStats> = runCatching {
-        // Intentar nuevo endpoint dashboard/teacher/
         val dashResponse = classroomApi.getTeacherDashboard()
         if (dashResponse.isSuccessful && dashResponse.body() != null) {
             val d = dashResponse.body()!!
@@ -35,7 +32,6 @@ class TeacherRepositoryImpl @Inject constructor(
                 averageScore    = 0.0
             )
         } else {
-            // Fallback: viejo endpoint o calculo manual
             val response = classroomApi.getTeacherStats()
             if (response.isSuccessful) {
                 response.body()?.toDomain() ?: TeacherStats(0, 0, 0, 0, 0.0)
@@ -55,8 +51,6 @@ class TeacherRepositoryImpl @Inject constructor(
             }
         }
     }
-
-    // ── Classrooms ────────────────────────────────────────────────────────────
 
     override suspend fun getClassrooms(): Result<List<Classroom>> = runCatching {
         val response = classroomApi.getClassrooms()
@@ -102,15 +96,11 @@ class TeacherRepositoryImpl @Inject constructor(
         if (!response.isSuccessful) throw Exception(ErrorUtils.parseErrorMessage(response.errorBody()?.string(), response.code()))
     }
 
-    // ── Enrollments ───────────────────────────────────────────────────────────
-
     override suspend fun getEnrollments(classroomId: Int): Result<List<Enrollment>> = runCatching {
-        // Intentar primero el endpoint de enrollments
         val response = classroomApi.getEnrollments(classroomId)
         if (response.isSuccessful && (response.body()?.results?.isNotEmpty() == true)) {
             response.body()?.results?.map { it.toDomain() } ?: emptyList()
         } else {
-            // Fallback: leer enrollments del detalle de la clase
             val detailResponse = classroomApi.getClassroomById(classroomId)
             if (detailResponse.isSuccessful) {
                 val dto = detailResponse.body()
@@ -139,14 +129,11 @@ class TeacherRepositoryImpl @Inject constructor(
         if (!response.isSuccessful) throw Exception(ErrorUtils.parseErrorMessage(response.errorBody()?.string(), response.code()))
     }
 
-    // ── Exams ─────────────────────────────────────────────────────────────────
-
     override suspend fun getExams(classroomId: Int?): Result<List<Exam>> = runCatching {
         val response = examApi.getExams(classroomId = classroomId)
         if (response.isSuccessful) {
             response.body()?.results?.map { it.toDomain() } ?: emptyList()
         } else {
-            // Si /api/exams/ no existe (404), devolver lista vacia
             emptyList()
         }
     }
@@ -203,14 +190,11 @@ class TeacherRepositoryImpl @Inject constructor(
         } else throw Exception(ErrorUtils.parseErrorMessage(response.errorBody()?.string(), response.code()))
     }
 
-    // ── Resources ─────────────────────────────────────────────────────────────
-
     override suspend fun getResources(courseId: Int?): Result<List<TeacherResource>> = runCatching {
         val response = resourceApi.getResources(courseId)
         if (response.isSuccessful) {
             response.body()?.results?.map { it.toDomain() } ?: emptyList()
         } else {
-            // Si el endpoint no existe en el backend, devolver lista vacía sin crashear
             emptyList()
         }
     }
@@ -249,8 +233,6 @@ class TeacherRepositoryImpl @Inject constructor(
         val response = resourceApi.deleteResource(id)
         if (!response.isSuccessful) throw Exception(ErrorUtils.parseErrorMessage(response.errorBody()?.string(), response.code()))
     }
-
-    // ── Helpers ───────────────────────────────────────────────────────────────
 
     private fun apiError(code: Int, body: String?): String =
         "Error $code${body?.takeIf { it.isNotBlank() }?.let { ": $it" } ?: ""}"

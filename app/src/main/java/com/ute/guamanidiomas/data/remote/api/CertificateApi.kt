@@ -5,10 +5,6 @@ import com.ute.guamanidiomas.data.remote.dto.CertificateRequest
 import retrofit2.Response
 import retrofit2.http.*
 
-/**
- * El backend GET /certificates/ devuelve respuesta paginada:
- * { "count": N, "next": null, "previous": null, "results": [...] }
- */
 data class CertificatePage(
     val count: Int = 0,
     val next: String? = null,

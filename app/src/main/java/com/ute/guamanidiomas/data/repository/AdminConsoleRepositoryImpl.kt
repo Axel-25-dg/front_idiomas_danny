@@ -72,4 +72,3 @@ class AdminConsoleRepositoryImpl @Inject constructor(
         else throw Exception(ErrorUtils.parseErrorMessage(response.errorBody()?.string(), response.code()))
     }
 }
-

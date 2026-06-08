@@ -8,7 +8,6 @@ data class Course(
     @SerializedName("language_name") val languageName: String? = null,
     val title: String? = null,
     val description: String? = null,
-    // El backend puede enviar "level" o "difficulty_level"
     val level: String? = null,
     @SerializedName("difficulty_level") val difficultyLevel: String? = null,
     val price: Double = 0.0,
@@ -17,7 +16,6 @@ data class Course(
     @SerializedName("is_active") val isActive: Boolean = true,
     @SerializedName("created_at") val createdAt: String? = null
 ) {
-    /** Nivel real — usa difficulty_level del backend o level como fallback */
     val displayLevel: String get() = difficultyLevel ?: level ?: ""
 }
 

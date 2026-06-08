@@ -16,8 +16,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-// ─── UI States ────────────────────────────────────────────────────────────────
-
 data class TeacherHomeUiState(
     val isLoading: Boolean = false,
     val stats: TeacherStats = TeacherStats(0, 0, 0, 0, 0.0),
@@ -69,8 +67,6 @@ data class TeacherResourcesUiState(
     val successMessage: String? = null
 )
 
-// ─── ViewModel ────────────────────────────────────────────────────────────────
-
 @HiltViewModel
 class TeacherMainViewModel @Inject constructor(
     private val teacherRepository: TeacherRepository,
@@ -81,31 +77,24 @@ class TeacherMainViewModel @Inject constructor(
     private val tokenDataStore: TokenDataStore
 ) : ViewModel() {
 
-    // ── Home ──────────────────────────────────────────────────────────────────
     private val _homeState = MutableStateFlow(TeacherHomeUiState())
     val homeState: StateFlow<TeacherHomeUiState> = _homeState.asStateFlow()
 
-    // ── Classrooms ────────────────────────────────────────────────────────────
     private val _classroomsState = MutableStateFlow(TeacherClassroomsUiState())
     val classroomsState: StateFlow<TeacherClassroomsUiState> = _classroomsState.asStateFlow()
 
-    // ── Students ──────────────────────────────────────────────────────────────
     private val _studentsState = MutableStateFlow(TeacherStudentsUiState())
     val studentsState: StateFlow<TeacherStudentsUiState> = _studentsState.asStateFlow()
 
-    // ── Exams ─────────────────────────────────────────────────────────────────
     private val _examsState = MutableStateFlow(TeacherExamsUiState())
     val examsState: StateFlow<TeacherExamsUiState> = _examsState.asStateFlow()
 
-    // ── Resources ─────────────────────────────────────────────────────────────
     private val _resourcesState = MutableStateFlow(TeacherResourcesUiState())
     val resourcesState: StateFlow<TeacherResourcesUiState> = _resourcesState.asStateFlow()
 
     init {
         loadHome()
     }
-
-    // ─── HOME ─────────────────────────────────────────────────────────────────
 
     fun loadHome() {
         viewModelScope.launch {
@@ -132,14 +121,11 @@ class TeacherMainViewModel @Inject constructor(
         }
     }
 
-    // ─── CLASSROOMS ──────────────────────────────────────────────────────────
-
     fun loadClassrooms() {
         viewModelScope.launch {
             _classroomsState.value = _classroomsState.value.copy(isLoading = true, error = null)
 
             val classroomsDeferred = async { teacherRepository.getClassrooms() }
-            // Cargar TODOS los cursos disponibles (sin límite de página)
             val coursesDeferred    = async {
                 courseRepository.getCourses(
                     com.ute.guamanidiomas.domain.repository.CourseFilters(pageSize = 100)
@@ -195,7 +181,6 @@ class TeacherMainViewModel @Inject constructor(
             teacherRepository.createClassroom(
                 ClassroomPayload(courseId = courseId, name = name, description = description)
             ).onSuccess { createdClassroom ->
-                // Agregar inmediatamente a la lista local para feedback instantáneo
                 val currentList = _classroomsState.value.classrooms
                 _classroomsState.value = _classroomsState.value.copy(
                     isLoading        = false,
@@ -203,7 +188,6 @@ class TeacherMainViewModel @Inject constructor(
                     classrooms       = currentList + createdClassroom,
                     successMessage   = "Clase «${createdClassroom.name}» creada — Código: ${createdClassroom.accessCode}"
                 )
-                // Recargar desde el backend en background para sincronizar
                 loadClassrooms()
                 loadHome()
             }.onFailure { e ->
@@ -265,8 +249,6 @@ class TeacherMainViewModel @Inject constructor(
         )
     }
 
-    // ─── STUDENTS ────────────────────────────────────────────────────────────
-
     fun loadStudents(classroomId: Int? = null) {
         viewModelScope.launch {
             _studentsState.value = _studentsState.value.copy(isLoading = true, error = null)
@@ -299,7 +281,6 @@ class TeacherMainViewModel @Inject constructor(
         viewModelScope.launch {
             teacherRepository.removeStudent(classroomId, studentId)
                 .onSuccess {
-                    // Recargar lista de estudiantes
                     loadStudents(classroomId)
                 }
                 .onFailure { e ->
@@ -310,13 +291,10 @@ class TeacherMainViewModel @Inject constructor(
         }
     }
 
-    // ─── EXAMS ───────────────────────────────────────────────────────────────
-
     fun loadExams(classroomId: Int? = null) {
         viewModelScope.launch {
             _examsState.value = _examsState.value.copy(isLoading = true, error = null)
 
-            // Los "examenes" son Lessons con content_type = "interactive"
             val lessonsResult = lessonRepository.getAllLessons()
             val coursesResult = courseRepository.getCourses(
                 com.ute.guamanidiomas.domain.repository.CourseFilters(pageSize = 100)
@@ -364,7 +342,7 @@ class TeacherMainViewModel @Inject constructor(
     private var lastLoadedCourseId: Int? = null
 
     fun loadModulesForCourse(courseId: Int) {
-        if (lastLoadedCourseId == courseId) return // Ya están cargados, evitar petición duplicada
+        if (lastLoadedCourseId == courseId) return
         viewModelScope.launch {
             lastLoadedCourseId = courseId
             _examsState.value = _examsState.value.copy(modules = emptyList())
@@ -373,7 +351,7 @@ class TeacherMainViewModel @Inject constructor(
                     _examsState.value = _examsState.value.copy(modules = modules)
                 }
                 .onFailure {
-                    lastLoadedCourseId = null // Permitir reintentar en caso de error
+                    lastLoadedCourseId = null
                     _examsState.value = _examsState.value.copy(modules = emptyList())
                 }
         }
@@ -407,7 +385,6 @@ class TeacherMainViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             _examsState.value = _examsState.value.copy(isLoading = true)
-            // classroomId aqui se usa como moduleId
             val payload = com.ute.guamanidiomas.domain.model.LessonPayload(
                 moduleId    = classroomId,
                 title       = title,
@@ -424,7 +401,7 @@ class TeacherMainViewModel @Inject constructor(
                         showCreateDialog = false,
                         successMessage = "Leccion «$title» creada"
                     )
-                    loadExams() // Refrescar lista automaticamente
+                    loadExams()
                 }
                 .onFailure { e ->
                     _examsState.value = _examsState.value.copy(
@@ -500,8 +477,6 @@ class TeacherMainViewModel @Inject constructor(
     fun clearExamsMessages() {
         _examsState.value = _examsState.value.copy(error = null, successMessage = null)
     }
-
-    // ─── RESOURCES ───────────────────────────────────────────────────────────
 
     fun loadResources(classroomId: Int? = null) {
         viewModelScope.launch {

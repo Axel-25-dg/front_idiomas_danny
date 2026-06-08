@@ -31,7 +31,7 @@ data class GameInfo(
     val icon: ImageVector,
     val color: Color,
     val xpReward: Int,
-    val difficulty: String  // Fácil / Medio / Difícil
+    val difficulty: String
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -144,7 +144,6 @@ fun GameCenterScreen(
         ) {
             Spacer(Modifier.height(12.dp))
 
-            // Hero
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -253,7 +252,6 @@ fun GameGridCard(game: GameInfo, onClick: () -> Unit) {
     }
 }
 
-// Mantener compatibilidad con la función GameCard existente
 @Composable
 fun GameCard(game: GameInfo, onClick: () -> Unit) = GameGridCard(game = game, onClick = onClick)
 

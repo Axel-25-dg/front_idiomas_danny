@@ -32,13 +32,12 @@ class TeacherViewModel @Inject constructor(
     fun loadTeacherData() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
-            // En un escenario real, filtraríamos los cursos donde el usuario actual es el profesor
             courseRepository.getCourses()
                 .onSuccess { (courses, _) ->
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
                         classes = courses,
-                        totalStudents = courses.size * 15 // Simulación
+                        totalStudents = courses.size * 15
                     )
                 }
                 .onFailure { e ->

@@ -30,10 +30,8 @@ class CheckoutViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = CheckoutUiState.Loading
             
-            // 1. Crear el pedido
             orderRepository.createOrder()
                 .onSuccess { order ->
-                    // 2. Añadir items del carrito al pedido
                     var lastOrder = order
                     
                     try {
@@ -46,7 +44,6 @@ class CheckoutViewModel @Inject constructor(
                             }
                         }
                         
-                        // 3. Confirmar el pedido
                         orderRepository.confirmOrder(lastOrder.id)
                             .onSuccess { confirmedOrder ->
                                 onClearCart()

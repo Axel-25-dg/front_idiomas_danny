@@ -24,7 +24,7 @@ class IATutorViewModel @Inject constructor(
     val isLoading: StateFlow<Boolean> = _isLoading
 
     init {
-        _messages.add(ChatMessage("¡Hola! Soy tu tutor IA de JumpUp UTE. ¿En qué puedo ayudarte hoy con tu inglés?", false))
+        _messages.add(ChatMessage("¡Hola! Soy tu tutor IA de JumpUp. ¿En qué puedo ayudarte hoy con tu inglés?", false))
     }
 
     fun sendMessage(text: String) {
