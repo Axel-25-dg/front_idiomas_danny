@@ -1,5 +1,6 @@
 package com.ute.guamanidiomas.ui.auth
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -17,12 +18,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.ute.guamanidiomas.R
 import com.ute.guamanidiomas.ui.components.IdiomasTextField
 import com.ute.guamanidiomas.ui.components.IdiomasButton
 import com.ute.guamanidiomas.ui.viewmodel.AuthViewModel
@@ -116,22 +120,12 @@ fun LoginScreen(
                             .background(Color.White),
                         contentAlignment = Alignment.Center
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(72.dp)
-                                .clip(CircleShape)
-                                .background(
-                                    Brush.linearGradient(listOf(PrimaryBlue, DarkBlue))
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "J",
-                                fontSize = 36.sp,
-                                fontWeight = FontWeight.Black,
-                                color = Color.White
-                            )
-                        }
+                        Image(
+                            painter = painterResource(id = R.drawable.jumpup_logo),
+                            contentDescription = "JumpUp Logo",
+                            modifier = Modifier.size(72.dp).clip(CircleShape),
+                            contentScale = ContentScale.Crop
+                        )
                     }
 
                     Spacer(Modifier.height(16.dp))

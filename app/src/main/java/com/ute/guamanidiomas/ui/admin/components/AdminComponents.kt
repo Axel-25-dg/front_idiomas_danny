@@ -1,5 +1,6 @@
 package com.ute.guamanidiomas.ui.admin.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -18,10 +19,13 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ute.guamanidiomas.R
 import com.ute.guamanidiomas.ui.theme.*
 
 enum class AdminSection(
@@ -278,8 +282,16 @@ fun AdminTopBar(
             }
         },
         navigationIcon = {
-            IconButton(onClick = onMenuClick) {
-                Icon(Icons.Default.Menu, "Menú", tint = TextPrimary)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = onMenuClick) {
+                    Icon(Icons.Default.Menu, "Menu", tint = TextPrimary)
+                }
+                Image(
+                    painter = painterResource(id = R.drawable.jumpup_logo),
+                    contentDescription = "JumpUp Logo",
+                    modifier = Modifier.size(32.dp).clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
             }
         },
         actions = {
